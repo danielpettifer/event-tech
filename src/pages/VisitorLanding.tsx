@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   IonContent,
   IonPage,
@@ -20,52 +20,25 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  IonToast
+  IonToast,
+  IonChip,
+  IonBadge
 } from '@ionic/react';
-import { close, chevronForward, lockClosed, person } from 'ionicons/icons';
+import { close, chevronForward, lockClosed, person, heart, star } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
+import { ItemService } from '../services/ItemService';
+import { Item } from '../types/Item';
 import './VisitorLanding.css';
 
-// Dummy data for items
-const dummyItems = [
-  {
-    id: 1,
-    title: 'Abstract Composition #1',
-    artist: 'Jane Smith',
-    year: 2023,
-    medium: 'Oil on Canvas',
-    dimensions: '120 x 90 cm',
-    price: '£2,500',
-    image: 'https://via.placeholder.com/400x300/333/fff?text=Abstract+Art+1'
-  },
-  {
-    id: 2,
-    title: 'Urban Landscape',
-    artist: 'John Doe',
-    year: 2022,
-    medium: 'Acrylic on Canvas',
-    dimensions: '100 x 80 cm',
-    price: '£1,800',
-    image: 'https://via.placeholder.com/400x300/666/fff?text=Urban+Landscape'
-  },
-  {
-    id: 3,
-    title: 'Still Life with Flowers',
-    artist: 'Maria Garcia',
-    year: 2023,
-    medium: 'Watercolor',
-    dimensions: '60 x 45 cm',
-    price: '£950',
-    image: 'https://via.placeholder.com/400x300/999/fff?text=Still+Life'
-  }
-];
-
 const VisitorLanding: React.FC = () => {
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [items, setItems] = useState<Item[]>([]);
+  const [backgroundImages, setBackgroundImages] = useState<string[]>([]);
+  const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
   const [visitorForm, setVisitorForm] = useState({
     name: '',
     email: '',
@@ -73,12 +46,38 @@ const VisitorLanding: React.FC = () => {
     interest: ''
   });
   const [adminForm, setAdminForm] = useState({
-    email: '',
+    email: 'admin@gallery.com',
     password: ''
   });
   const history = useHistory();
 
-  const handleItemClick = (item: any) => {
+  useEffect(() => {
+    // Initialize sample data if needed
+    ItemService.initializeSampleData();
+    
+    // Load public items
+    const publicItems = ItemService.getPublicItems();
+    setItems(publicItems);
+    
+    // Load background images
+    const bgImages = ItemService.getLandingPageBackgroundImages();
+    setBackgroundImages(bgImages);
+  }, []);
+
+  useEffect(() => {
+    // Set up background image rotation if there are multiple images
+    if (backgroundImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentBackgroundIndex(prevIndex => 
+          prevIndex === backgroundImages.length - 1 ? 0 : prevIndex + 1
+        );
+      }, 20000); // 20 seconds per image
+      
+      return () => clearInterval(interval);
+    }
+  }, [backgroundImages.length]);
+
+  const handleItemClick = (item: Item) => {
     setSelectedItem(item);
     setIsItemModalOpen(true);
   };
@@ -93,7 +92,7 @@ const VisitorLanding: React.FC = () => {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userEmail', adminForm.email);
       setIsAdminModalOpen(false);
-      setAdminForm({ email: '', password: '' });
+      setAdminForm({ email: 'admin@gallery.com', password: '' });
       history.push('/admin');
     } else {
       setToastMessage('Invalid credentials. Use admin@gallery.com / admin123');
@@ -102,12 +101,29 @@ const VisitorLanding: React.FC = () => {
   };
 
   const handleVisitorSubmit = () => {
-    // Handle visitor form submission
-    console.log('Visitor form submitted:', visitorForm);
+    // Handle visitor form submission - store in localStorage
+    const submissions = JSON.parse(localStorage.getItem('visitor_submissions') || '[]');
+    const newSubmission = {
+      id: Date.now().toString(),
+      ...visitorForm,
+      submittedAt: new Date().toISOString()
+    };
+    submissions.push(newSubmission);
+    localStorage.setItem('visitor_submissions', JSON.stringify(submissions));
+    
     setToastMessage('Thank you for your message!');
     setShowToast(true);
     // Reset form
     setVisitorForm({ name: '', email: '', message: '', interest: '' });
+  };
+
+  const formatPrice = (price: number, currency: string) => {
+    if (price >= 1000000) {
+      return `${currency} ${(price / 1000000).toFixed(1)}M`;
+    } else if (price >= 1000) {
+      return `${currency} ${(price / 1000).toFixed(0)}K`;
+    }
+    return `${currency} ${price.toLocaleString()}`;
   };
 
   return (
@@ -115,27 +131,60 @@ const VisitorLanding: React.FC = () => {
       <IonContent fullscreen className="visitor-landing">
         {/* Background Image Container */}
         <div className="background-container">
-          <div className="background-image"></div>
+          {backgroundImages.length > 0 ? (
+            backgroundImages.map((image, index) => (
+              <div
+                key={index}
+                className={`background-image ${index === currentBackgroundIndex ? 'active' : ''}`}
+                style={{
+                  backgroundImage: `url(${image})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
+                }}
+              ></div>
+            ))
+          ) : (
+            <div 
+              className="background-image active"
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+              }}
+            ></div>
+          )}
         </div>
 
         {/* Items Display */}
         <div className="items-container">
           <IonGrid>
             <IonRow>
-              {dummyItems.map((item) => (
+              {items.map((item) => (
                 <IonCol size="12" sizeMd="6" sizeLg="4" key={item.id}>
                   <IonCard 
                     className="item-card" 
                     button 
                     onClick={() => handleItemClick(item)}
                   >
-                    <img src={item.image} alt={item.title} />
+                    <img src={item.thumbnailImage || item.images[0]} alt={item.title} />
                     <IonCardHeader>
                       <IonCardTitle>{item.title}</IonCardTitle>
+                      {item.isFeatured && (
+                        <IonChip color="warning" style={{ marginTop: '4px' }}>
+                          <IonIcon icon={star} />
+                          <IonLabel>Featured</IonLabel>
+                        </IonChip>
+                      )}
                     </IonCardHeader>
                     <IonCardContent>
-                      <p>{item.artist}, {item.year}</p>
-                      <p>{item.price}</p>
+                      <p><strong>{item.artist}</strong>, {item.year}</p>
+                      <p><strong>Medium:</strong> {item.medium}</p>
+                      <p><strong>Price:</strong> {formatPrice(item.price, item.currency)}</p>
+                      <div style={{ marginTop: '8px' }}>
+                        {item.tags.slice(0, 3).map((tag, index) => (
+                          <IonChip key={index} color="primary" style={{ marginRight: '4px', fontSize: '0.8rem' }}>
+                            <IonLabel>{tag}</IonLabel>
+                          </IonChip>
+                        ))}
+                      </div>
                     </IonCardContent>
                   </IonCard>
                 </IonCol>
@@ -212,7 +261,7 @@ const VisitorLanding: React.FC = () => {
           <IonContent>
             {selectedItem && (
               <div className="item-detail">
-                <img src={selectedItem.image} alt={selectedItem.title} />
+                <img src={selectedItem.thumbnailImage || selectedItem.images[0]} alt={selectedItem.title} />
                 <IonCard>
                   <IonCardContent>
                     <h2>{selectedItem.title}</h2>
@@ -220,7 +269,47 @@ const VisitorLanding: React.FC = () => {
                     <p><strong>Year:</strong> {selectedItem.year}</p>
                     <p><strong>Medium:</strong> {selectedItem.medium}</p>
                     <p><strong>Dimensions:</strong> {selectedItem.dimensions}</p>
-                    <p><strong>Price:</strong> {selectedItem.price}</p>
+                    <p><strong>Price:</strong> {formatPrice(selectedItem.price, selectedItem.currency)}</p>
+                    <p><strong>Category:</strong> {selectedItem.category}</p>
+                    <p><strong>Style:</strong> {selectedItem.style}</p>
+                    {selectedItem.description && (
+                      <p><strong>Description:</strong> {selectedItem.description}</p>
+                    )}
+                    <div style={{ marginTop: '16px' }}>
+                      <strong>Tags:</strong>
+                      <div style={{ marginTop: '8px' }}>
+                        {selectedItem.tags.map((tag, index) => (
+                          <IonChip key={index} color="primary" style={{ marginRight: '4px' }}>
+                            <IonLabel>{tag}</IonLabel>
+                          </IonChip>
+                        ))}
+                      </div>
+                    </div>
+                    {selectedItem.images.length > 1 && (
+                      <div style={{ marginTop: '16px' }}>
+                        <strong>Additional Images:</strong>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
+                          {selectedItem.images.slice(1).map((image, index) => (
+                            <img 
+                              key={index}
+                              src={image} 
+                              alt={`${selectedItem.title} - Image ${index + 2}`}
+                              style={{ 
+                                width: '80px', 
+                                height: '80px', 
+                                objectFit: 'cover', 
+                                borderRadius: '4px',
+                                cursor: 'pointer'
+                              }}
+                              onClick={() => {
+                                // Could implement full-size image viewer here
+                                window.open(image, '_blank');
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </IonCardContent>
                 </IonCard>
               </div>
