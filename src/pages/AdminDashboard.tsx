@@ -22,7 +22,10 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  IonBadge
+  IonBadge,
+  IonSearchbar,
+  IonFab,
+  IonFabButton
 } from '@ionic/react';
 import {
   business,
@@ -34,9 +37,13 @@ import {
   logOut,
   statsChart,
   mail,
-  home
+  home,
+  add,
+  search
 } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
+import { ClientService } from '../services/ClientService';
+import { Client } from '../types/Client';
 import './AdminDashboard.css';
 
 // Dummy data
@@ -56,6 +63,19 @@ const dummyRecentVisitors = [
 const AdminDashboard: React.FC = () => {
   const [selectedSection, setSelectedSection] = useState('dashboard');
   const [userEmail, setUserEmail] = useState('');
+  const [clients, setClients] = useState<Client[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [clientStats, setClientStats] = useState<{
+    totalClients: number;
+    emailListClients: number;
+    topCategories: { category: string; count: number; }[];
+    topInterests: { interest: string; count: number; }[];
+  }>({
+    totalClients: 0,
+    emailListClients: 0,
+    topCategories: [],
+    topInterests: []
+  });
   const history = useHistory();
 
   useEffect(() => {
@@ -71,7 +91,32 @@ const AdminDashboard: React.FC = () => {
     if (email) {
       setUserEmail(email);
     }
+
+    // Initialize sample data and load clients
+    ClientService.initializeSampleData();
+    loadClients();
+    loadClientStats();
   }, [history]);
+
+  const loadClients = () => {
+    const allClients = ClientService.getAllClients();
+    setClients(allClients);
+  };
+
+  const loadClientStats = () => {
+    const stats = ClientService.getClientStats();
+    setClientStats(stats);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      const searchResults = ClientService.searchClients(query);
+      setClients(searchResults);
+    } else {
+      loadClients();
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
@@ -191,8 +236,92 @@ const AdminDashboard: React.FC = () => {
       case 'clients':
         return (
           <div className="section-content">
-            <h2>Client Management</h2>
-            <p>Manage your clients here. (Coming soon)</p>
+            <div className="section-header">
+              <h2>Client Management</h2>
+              <div className="client-stats">
+                <IonBadge color="primary">{clientStats.totalClients} Total</IonBadge>
+                <IonBadge color="success">{clientStats.emailListClients} Email List</IonBadge>
+              </div>
+            </div>
+            
+            <IonSearchbar
+              value={searchQuery}
+              onIonInput={(e) => handleSearch(e.detail.value!)}
+              placeholder="Search clients by name, email, location..."
+              className="client-search"
+            />
+
+            <div className="clients-list">
+              {clients.length === 0 ? (
+                <IonCard>
+                  <IonCardContent>
+                    <p>No clients found. {searchQuery ? 'Try adjusting your search.' : 'Add your first client to get started.'}</p>
+                  </IonCardContent>
+                </IonCard>
+              ) : (
+                clients.map((client) => (
+                  <IonCard key={client.id} className="client-card">
+                    <IonCardContent>
+                      <div className="client-info">
+                        <IonAvatar className="client-avatar">
+                          <div className="avatar-placeholder">
+                            {client.firstName.charAt(0)}{client.lastName.charAt(0)}
+                          </div>
+                        </IonAvatar>
+                        <div className="client-details">
+                          <h3>{client.firstName} {client.lastName}</h3>
+                          <p>{client.email}</p>
+                          <p>{client.townCity}, {client.country}</p>
+                          {client.generalInformation && (
+                            <p className="client-notes">{client.generalInformation}</p>
+                          )}
+                          <div className="client-tags">
+                            {client.categories.slice(0, 3).map((category, index) => (
+                              <IonBadge key={index} color="medium" className="tag">
+                                {category}
+                              </IonBadge>
+                            ))}
+                            {client.categories.length > 3 && (
+                              <IonBadge color="light" className="tag">
+                                +{client.categories.length - 3} more
+                              </IonBadge>
+                            )}
+                          </div>
+                          <div className="client-interests">
+                            {client.interests.slice(0, 2).map((interest, index) => (
+                              <IonBadge key={index} color="tertiary" className="tag">
+                                {interest}
+                              </IonBadge>
+                            ))}
+                            {client.interests.length > 2 && (
+                              <IonBadge color="light" className="tag">
+                                +{client.interests.length - 2} interests
+                              </IonBadge>
+                            )}
+                          </div>
+                        </div>
+                        <div className="client-actions">
+                          {client.onEmailList && (
+                            <IonBadge color="success">
+                              <IonIcon icon={mail} />
+                            </IonBadge>
+                          )}
+                          <p className="client-date">
+                            Added: {new Date(client.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </IonCardContent>
+                  </IonCard>
+                ))
+              )}
+            </div>
+
+            <IonFab vertical="bottom" horizontal="end" slot="fixed">
+              <IonFabButton>
+                <IonIcon icon={add} />
+              </IonFabButton>
+            </IonFab>
           </div>
         );
       case 'items':

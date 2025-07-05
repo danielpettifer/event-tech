@@ -125,7 +125,8 @@
 /* Section Content */
 .section-content {
   padding: 20px;
-  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .section-content h2 {
@@ -136,6 +137,105 @@
 .section-content p {
   color: var(--ion-color-medium);
   font-size: 1.1rem;
+}
+
+/* Client Management Styles */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.client-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.client-search {
+  margin-bottom: 20px;
+}
+
+.clients-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.client-card {
+  margin: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.client-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.client-info {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.client-avatar {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+}
+
+.client-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.client-details h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.client-details p {
+  margin: 2px 0;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+}
+
+.client-notes {
+  font-style: italic;
+  color: var(--ion-color-dark) !important;
+  margin: 8px 0 !important;
+}
+
+.client-tags, .client-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.tag {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+}
+
+.client-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.client-date {
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+  margin: 0;
+  text-align: right;
 }
 
 /* Split Pane Adjustments */
