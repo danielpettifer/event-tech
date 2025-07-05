@@ -19,9 +19,10 @@ import {
   IonIcon,
   IonGrid,
   IonRow,
-  IonCol
+  IonCol,
+  IonToast
 } from '@ionic/react';
-import { close, chevronForward } from 'ionicons/icons';
+import { close, chevronForward, lockClosed, person } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import './VisitorLanding.css';
 
@@ -61,27 +62,50 @@ const dummyItems = [
 
 const VisitorLanding: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const [visitorForm, setVisitorForm] = useState({
     name: '',
     email: '',
     message: '',
     interest: ''
   });
+  const [adminForm, setAdminForm] = useState({
+    email: '',
+    password: ''
+  });
   const history = useHistory();
 
   const handleItemClick = (item: any) => {
     setSelectedItem(item);
-    setIsModalOpen(true);
+    setIsItemModalOpen(true);
   };
 
   const handleAdminLogin = () => {
-    history.push('/admin/login');
+    setIsAdminModalOpen(true);
+  };
+
+  const handleAdminSubmit = () => {
+    // Demo credentials
+    if (adminForm.email === 'admin@gallery.com' && adminForm.password === 'admin123') {
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('userEmail', adminForm.email);
+      setIsAdminModalOpen(false);
+      setAdminForm({ email: '', password: '' });
+      history.push('/admin');
+    } else {
+      setToastMessage('Invalid credentials. Use admin@gallery.com / admin123');
+      setShowToast(true);
+    }
   };
 
   const handleVisitorSubmit = () => {
     // Handle visitor form submission
     console.log('Visitor form submitted:', visitorForm);
+    setToastMessage('Thank you for your message!');
+    setShowToast(true);
     // Reset form
     setVisitorForm({ name: '', email: '', message: '', interest: '' });
   };
@@ -174,12 +198,12 @@ const VisitorLanding: React.FC = () => {
         </IonButton>
 
         {/* Item Detail Modal */}
-        <IonModal isOpen={isModalOpen} onDidDismiss={() => setIsModalOpen(false)}>
+        <IonModal isOpen={isItemModalOpen} onDidDismiss={() => setIsItemModalOpen(false)}>
           <IonHeader>
             <IonToolbar>
               <IonTitle>{selectedItem?.title}</IonTitle>
               <IonButtons slot="end">
-                <IonButton onClick={() => setIsModalOpen(false)}>
+                <IonButton onClick={() => setIsItemModalOpen(false)}>
                   <IonIcon icon={close} />
                 </IonButton>
               </IonButtons>
@@ -203,6 +227,73 @@ const VisitorLanding: React.FC = () => {
             )}
           </IonContent>
         </IonModal>
+
+        {/* Admin Login Modal */}
+        <IonModal isOpen={isAdminModalOpen} onDidDismiss={() => setIsAdminModalOpen(false)}>
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>Admin Login</IonTitle>
+              <IonButtons slot="end">
+                <IonButton onClick={() => setIsAdminModalOpen(false)}>
+                  <IonIcon icon={close} />
+                </IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent>
+            <div style={{ padding: '20px' }}>
+              <IonCard>
+                <IonCardHeader>
+                  <IonCardTitle>
+                    <IonIcon icon={lockClosed} style={{ marginRight: '8px' }} />
+                    Gallery Admin Access
+                  </IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  <IonItem>
+                    <IonIcon icon={person} slot="start" />
+                    <IonLabel position="stacked">Email</IonLabel>
+                    <IonInput
+                      type="email"
+                      value={adminForm.email}
+                      onIonInput={(e) => setAdminForm({...adminForm, email: e.detail.value!})}
+                      placeholder="admin@gallery.com"
+                    />
+                  </IonItem>
+                  <IonItem>
+                    <IonIcon icon={lockClosed} slot="start" />
+                    <IonLabel position="stacked">Password</IonLabel>
+                    <IonInput
+                      type="password"
+                      value={adminForm.password}
+                      onIonInput={(e) => setAdminForm({...adminForm, password: e.detail.value!})}
+                      placeholder="Enter password"
+                    />
+                  </IonItem>
+                  <IonButton 
+                    expand="block" 
+                    onClick={handleAdminSubmit}
+                    style={{ marginTop: '20px' }}
+                  >
+                    Login
+                  </IonButton>
+                  <p style={{ textAlign: 'center', marginTop: '16px', fontSize: '0.9rem', color: '#666' }}>
+                    Demo: admin@gallery.com / admin123
+                  </p>
+                </IonCardContent>
+              </IonCard>
+            </div>
+          </IonContent>
+        </IonModal>
+
+        {/* Toast for notifications */}
+        <IonToast
+          isOpen={showToast}
+          onDidDismiss={() => setShowToast(false)}
+          message={toastMessage}
+          duration={3000}
+          position="top"
+        />
       </IonContent>
     </IonPage>
   );
