@@ -1,0 +1,136 @@
+.admin-login {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.login-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  color: white;
+}
+
+.login-header h1 {
+  margin: 0 0 8px 0;
+  font-size: 2.5rem;
+  font-weight: 300;
+}
+
+.login-header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.login-item {
+  margin-bottom: 16px;
+  --border-radius: 8px;
+  --background: rgba(248, 249, 250, 0.8);
+}
+
+.login-item ion-icon {
+  color: var(--ion-color-medium);
+  margin-right: 8px;
+}
+
+.login-button {
+  margin-top: 24px;
+  --border-radius: 8px;
+  height: 48px;
+  font-weight: 600;
+}
+
+.demo-credentials {
+  margin-top: 24px;
+  padding: 16px;
+  background: rgba(var(--ion-color-light-rgb), 0.3);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.demo-credentials p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+
+.demo-credentials p:first-child {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .login-container {
+    padding: 40px;
+  }
+  
+  .login-header h1 {
+    font-size: 3rem;
+  }
+  
+  .login-card {
+    max-width: 450px;
+  }
+}
+
+/* Animation for smooth entrance */
+.login-card {
+  animation: slideUp 0.6s ease-out;
+}
+
+.login-header {
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Focus states */
+.login-item ion-input {
+  --padding-start: 12px;
+  --padding-end: 12px;
+}
+
+.login-item.item-has-focus {
+  --border-color: var(--ion-color-primary);
+  --highlight-color-focused: var(--ion-color-primary);
+}

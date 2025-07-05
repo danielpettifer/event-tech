@@ -1,0 +1,149 @@
+.visitor-landing {
+  --background: transparent;
+}
+
+.background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.background-image {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-size: cover;
+  background-position: center;
+  animation: slowZoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes slowZoom {
+  0% {
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  100% {
+    transform: scale(1.05);
+    filter: blur(1px);
+  }
+}
+
+.items-container {
+  padding: 20px;
+  margin-top: 60px;
+}
+
+.item-card {
+  margin-bottom: 16px;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.item-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+}
+
+.visitor-form-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.visitor-form-container ion-card {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  margin: 0;
+}
+
+.submit-button {
+  margin-top: 16px;
+}
+
+.admin-login-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 101;
+  --background: rgba(255, 255, 255, 0.2);
+  --color: white;
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+}
+
+.item-detail {
+  padding: 20px;
+}
+
+.item-detail img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.item-detail ion-card {
+  margin: 0;
+}
+
+.item-detail h2 {
+  margin-top: 0;
+  color: var(--ion-color-primary);
+}
+
+.item-detail p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .visitor-form-container {
+    max-width: 400px;
+    left: auto;
+    right: 20px;
+  }
+  
+  .items-container {
+    padding: 40px;
+    margin-top: 80px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .items-container {
+    max-width: 1200px;
+    margin: 80px auto 0;
+    padding: 40px 20px;
+  }
+}
+
+/* Ensure only specific areas scroll */
+.visitor-landing .scroll-content {
+  overflow-y: auto;
+}
+
+/* Fixed headers and footers */
+.visitor-landing ion-header,
+.visitor-landing .visitor-form-container,
+.visitor-landing .admin-login-button {
+  position: fixed;
+}

@@ -1,0 +1,229 @@
+/* Company Section */
+.company-section {
+  padding: 16px;
+  border-bottom: 1px solid var(--ion-color-light);
+}
+
+.company-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.company-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.logo-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--ion-color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+}
+
+.company-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.company-info p {
+  margin: 2px 0 0 0;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+}
+
+/* Navigation */
+.selected {
+  --background: var(--ion-color-primary-tint);
+  --color: var(--ion-color-primary);
+}
+
+/* Personal Section */
+.personal-section {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+}
+
+.personal-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.personal-info h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.personal-info p {
+  margin: 2px 0 0 0;
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--ion-color-secondary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.logout-button {
+  --color: var(--ion-color-danger);
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  padding: 20px;
+}
+
+.stat-card {
+  margin-bottom: 16px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  color: var(--ion-color-primary);
+}
+
+.stat-item h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+}
+
+.stat-item p {
+  margin: 4px 0 0 0;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+}
+
+/* Section Content */
+.section-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.section-content h2 {
+  color: var(--ion-color-primary);
+  margin-bottom: 16px;
+}
+
+.section-content p {
+  color: var(--ion-color-medium);
+  font-size: 1.1rem;
+}
+
+/* Split Pane Adjustments */
+ion-split-pane {
+  --side-min-width: 280px;
+  --side-max-width: 320px;
+}
+
+/* Menu Styling */
+ion-menu ion-content {
+  --background: var(--ion-color-light-tint);
+}
+
+ion-menu ion-header ion-toolbar {
+  --background: var(--ion-color-primary);
+  --color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 16px;
+  }
+  
+  .stat-item {
+    gap: 12px;
+  }
+  
+  .stat-icon {
+    font-size: 2rem;
+  }
+  
+  .stat-item h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Card Hover Effects */
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* List Items */
+ion-list ion-item {
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+}
+
+ion-list ion-item ion-icon {
+  margin-right: 16px;
+}
+
+/* Badge Styling */
+ion-badge {
+  --background: var(--ion-color-primary-tint);
+  --color: var(--ion-color-primary);
+}
+
+/* Recent Visitors List */
+.dashboard-content ion-list ion-item {
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
+.dashboard-content ion-list ion-item ion-label h3 {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.dashboard-content ion-list ion-item ion-label p {
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  margin: 2px 0;
+}
+
+/* Ensure proper scrolling */
+ion-content {
+  --overflow: auto;
+}
+
+/* Fixed headers */
+ion-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
