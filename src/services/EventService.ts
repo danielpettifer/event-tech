@@ -336,6 +336,28 @@ export class EventService {
         contactEmail: "vip@gallery.com",
         specialInstructions: "Invitation only. Formal dress code.",
         isPublic: false
+      },
+      {
+        title: "Masterpieces Through Time",
+        description: "A comprehensive exhibition showcasing iconic artworks from different periods, featuring Van Gogh, Hokusai, Vermeer, and other masters.",
+        startDate: "2025-02-15",
+        endDate: "2025-05-15",
+        startTime: "10:00",
+        endTime: "18:00",
+        location: "Main Gallery - All Floors",
+        eventType: "Exhibition",
+        status: "Published",
+        maxAttendees: 300,
+        currentAttendees: 127,
+        ticketPrice: 15,
+        isTicketed: true,
+        featuredArtists: ["Vincent van Gogh", "Katsushika Hokusai", "Johannes Vermeer", "Claude Monet", "Sandro Botticelli", "Grant Wood"],
+        featuredArtworks: ["The Starry Night", "The Great Wave off Kanagawa", "Girl with a Pearl Earring", "Water Lilies", "The Birth of Venus", "American Gothic"],
+        tags: ["Masterpieces", "Historical", "Multi-Period", "Featured Exhibition", "International Artists", "Classical Art"],
+        contactEmail: "exhibitions@gallery.com",
+        contactPhone: "+44 20 7123 4567",
+        specialInstructions: "Audio guides available in multiple languages. Photography permitted without flash.",
+        isPublic: true
       }
     ];
 

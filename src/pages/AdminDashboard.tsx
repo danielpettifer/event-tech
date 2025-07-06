@@ -51,6 +51,7 @@ import EventForm from '../components/EventForm';
 import { ItemService } from '../services/ItemService';
 import { Item } from '../types/Item';
 import ItemForm from '../components/ItemForm';
+import { GallerySettingsService } from '../services/GallerySettingsService';
 import './AdminDashboard.css';
 
 // Dummy data
@@ -111,6 +112,9 @@ const AdminDashboard: React.FC = () => {
     totalValue: 0,
     averagePrice: 0
   });
+
+  // Active event state
+  const [activeEventId, setActiveEventId] = useState<string | undefined>(undefined);
   
   const history = useHistory();
 
@@ -138,6 +142,7 @@ const AdminDashboard: React.FC = () => {
     loadEventStats();
     loadItems();
     loadItemStats();
+    loadActiveEvent();
   }, [history]);
 
   const loadClients = () => {
@@ -280,6 +285,17 @@ const AdminDashboard: React.FC = () => {
     setSelectedItem(null);
   };
 
+  // Active event management
+  const handleSetActiveEvent = (eventId: string) => {
+    GallerySettingsService.updateActiveEvent(eventId);
+    setActiveEventId(eventId);
+  };
+
+  const loadActiveEvent = () => {
+    const activeId = GallerySettingsService.getActiveEventId();
+    setActiveEventId(activeId);
+  };
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: statsChart },
     { id: 'events', label: 'Events', icon: calendar },
@@ -384,114 +400,193 @@ const AdminDashboard: React.FC = () => {
         return renderDashboard();
       case 'events':
         return (
-          <div className="section-content">
-            <div className="section-header">
-              <h2>Event Management</h2>
-              <div className="event-stats">
-                <IonBadge color="primary">{eventStats.totalEvents} Total</IonBadge>
-                <IonBadge color="success">{eventStats.activeEvents} Active</IonBadge>
-                <IonBadge color="warning">{eventStats.upcomingEvents} Upcoming</IonBadge>
-                <IonBadge color="medium">{eventStats.completedEvents} Completed</IonBadge>
-              </div>
-            </div>
-            
-            <IonSearchbar
-              value={eventSearchQuery}
-              onIonInput={(e) => handleEventSearch(e.detail.value!)}
-              placeholder="Search events by title, type, location, artists..."
-              className="event-search"
-            />
+          <div className="section-content events-management">
+            <div className="events-layout">
+              {/* Left Column - Event List */}
+              <div className="events-sidebar">
+                <div className="events-sidebar-header">
+                  <h3>Events</h3>
+                  <IonButton fill="clear" size="small" onClick={handleAddEvent}>
+                    <IonIcon icon={add} />
+                  </IonButton>
+                </div>
+                
+                <IonSearchbar
+                  value={eventSearchQuery}
+                  onIonInput={(e) => handleEventSearch(e.detail.value!)}
+                  placeholder="Search events..."
+                  className="events-sidebar-search"
+                />
 
-            <div className="events-list">
-              {events.length === 0 ? (
-                <IonCard>
-                  <IonCardContent>
-                    <p>No events found. {eventSearchQuery ? 'Try adjusting your search.' : 'Add your first event to get started.'}</p>
-                  </IonCardContent>
-                </IonCard>
-              ) : (
-                events.map((event) => (
-                  <IonCard key={event.id} className="event-card" button onClick={() => handleEditEvent(event)}>
-                    <IonCardContent>
-                      <div className="event-info">
-                        <div className="event-header">
-                          <h3>{event.title}</h3>
-                          <IonBadge color={
-                            event.status === 'Active' ? 'success' :
-                            event.status === 'Published' ? 'primary' :
-                            event.status === 'Draft' ? 'medium' :
-                            event.status === 'Completed' ? 'dark' :
-                            'warning'
-                          }>
+                <div className="events-sidebar-list">
+                  {events.length === 0 ? (
+                    <div className="no-events">
+                      <p>No events found.</p>
+                    </div>
+                  ) : (
+                    events.map((event) => (
+                      <div 
+                        key={event.id} 
+                        className={`event-sidebar-item ${selectedEvent?.id === event.id ? 'selected' : ''}`}
+                        onClick={() => setSelectedEvent(event)}
+                      >
+                        <div className="event-sidebar-header">
+                          <h4>{event.title}</h4>
+                          <IonBadge 
+                            color={
+                              event.status === 'Active' ? 'success' :
+                              event.status === 'Published' ? 'primary' :
+                              event.status === 'Draft' ? 'medium' :
+                              event.status === 'Completed' ? 'dark' :
+                              'warning'
+                            }
+                          >
                             {event.status}
                           </IonBadge>
                         </div>
-                        <p className="event-description">{event.description}</p>
-                        <div className="event-details">
-                          <div className="event-meta">
-                            <p><strong>Type:</strong> {event.eventType}</p>
-                            <p><strong>Location:</strong> {event.location}</p>
-                            <p><strong>Date:</strong> {new Date(event.startDate).toLocaleDateString()} - {new Date(event.endDate).toLocaleDateString()}</p>
-                            <p><strong>Time:</strong> {event.startTime} - {event.endTime}</p>
-                          </div>
-                          <div className="event-attendance">
-                            <p><strong>Attendees:</strong> {event.currentAttendees}{event.maxAttendees ? ` / ${event.maxAttendees}` : ''}</p>
-                            {event.isTicketed && event.ticketPrice && (
-                              <p><strong>Price:</strong> £{event.ticketPrice}</p>
-                            )}
-                          </div>
+                        <p className="event-sidebar-type">{event.eventType}</p>
+                        <p className="event-sidebar-date">
+                          {new Date(event.startDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column - Event Details */}
+              <div className="events-main">
+                {selectedEvent ? (
+                  <div className="event-details-panel">
+                    <div className="event-details-header">
+                      <div className="event-title-section">
+                        <h2>{selectedEvent.title}</h2>
+                        <div className="event-actions">
+                          <IonButton 
+                            fill="outline" 
+                            size="small" 
+                            onClick={() => handleSetActiveEvent(selectedEvent.id)}
+                            color={selectedEvent.id === activeEventId ? 'success' : 'primary'}
+                          >
+                            {selectedEvent.id === activeEventId ? 'Active Event' : 'Set as Active'}
+                          </IonButton>
+                          <IonButton fill="clear" size="small" onClick={() => handleEditEvent(selectedEvent)}>
+                            Edit
+                          </IonButton>
                         </div>
-                        {event.featuredArtists.length > 0 && (
-                          <div className="event-artists">
-                            <strong>Featured Artists:</strong>
-                            <div className="artist-tags">
-                              {event.featuredArtists.slice(0, 3).map((artist, index) => (
-                                <IonBadge key={index} color="secondary" className="tag">
-                                  {artist}
-                                </IonBadge>
-                              ))}
-                              {event.featuredArtists.length > 3 && (
-                                <IonBadge color="light" className="tag">
-                                  +{event.featuredArtists.length - 3} more
-                                </IonBadge>
-                              )}
-                            </div>
+                      </div>
+                      <IonBadge color={
+                        selectedEvent.status === 'Active' ? 'success' :
+                        selectedEvent.status === 'Published' ? 'primary' :
+                        selectedEvent.status === 'Draft' ? 'medium' :
+                        selectedEvent.status === 'Completed' ? 'dark' :
+                        'warning'
+                      }>
+                        {selectedEvent.status}
+                      </IonBadge>
+                    </div>
+
+                    <div className="event-details-content">
+                      <p className="event-description">{selectedEvent.description}</p>
+                      
+                      <div className="event-info-grid">
+                        <div className="event-info-item">
+                          <strong>Type:</strong> {selectedEvent.eventType}
+                        </div>
+                        <div className="event-info-item">
+                          <strong>Location:</strong> {selectedEvent.location}
+                        </div>
+                        <div className="event-info-item">
+                          <strong>Date:</strong> {new Date(selectedEvent.startDate).toLocaleDateString()} - {new Date(selectedEvent.endDate).toLocaleDateString()}
+                        </div>
+                        <div className="event-info-item">
+                          <strong>Time:</strong> {selectedEvent.startTime} - {selectedEvent.endTime}
+                        </div>
+                        <div className="event-info-item">
+                          <strong>Attendees:</strong> {selectedEvent.currentAttendees}{selectedEvent.maxAttendees ? ` / ${selectedEvent.maxAttendees}` : ''}
+                        </div>
+                        {selectedEvent.isTicketed && selectedEvent.ticketPrice && (
+                          <div className="event-info-item">
+                            <strong>Price:</strong> £{selectedEvent.ticketPrice}
                           </div>
                         )}
-                        {event.tags.length > 0 && (
+                      </div>
+
+                      {selectedEvent.featuredArtists.length > 0 && (
+                        <div className="event-section">
+                          <h4>Featured Artists</h4>
                           <div className="event-tags">
-                            {event.tags.slice(0, 4).map((tag, index) => (
+                            {selectedEvent.featuredArtists.map((artist, index) => (
+                              <IonBadge key={index} color="secondary" className="tag">
+                                {artist}
+                              </IonBadge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedEvent.featuredArtworks.length > 0 && (
+                        <div className="event-section">
+                          <h4>Featured Artworks</h4>
+                          <div className="event-tags">
+                            {selectedEvent.featuredArtworks.map((artwork, index) => (
                               <IonBadge key={index} color="tertiary" className="tag">
+                                {artwork}
+                              </IonBadge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedEvent.tags.length > 0 && (
+                        <div className="event-section">
+                          <h4>Tags</h4>
+                          <div className="event-tags">
+                            {selectedEvent.tags.map((tag, index) => (
+                              <IonBadge key={index} color="medium" className="tag">
                                 {tag}
                               </IonBadge>
                             ))}
-                            {event.tags.length > 4 && (
-                              <IonBadge color="light" className="tag">
-                                +{event.tags.length - 4} more
-                              </IonBadge>
-                            )}
                           </div>
-                        )}
-                        <div className="event-footer">
-                          <p className="event-date">
-                            Created: {new Date(event.createdAt).toLocaleDateString()}
-                          </p>
-                          {!event.isPublic && (
-                            <IonBadge color="warning">Private</IonBadge>
-                          )}
                         </div>
-                      </div>
-                    </IonCardContent>
-                  </IonCard>
-                ))
-              )}
-            </div>
+                      )}
 
-            <IonFab vertical="bottom" horizontal="end" slot="fixed">
-              <IonFabButton onClick={handleAddEvent}>
-                <IonIcon icon={add} />
-              </IonFabButton>
-            </IonFab>
+                      {selectedEvent.specialInstructions && (
+                        <div className="event-section">
+                          <h4>Special Instructions</h4>
+                          <p>{selectedEvent.specialInstructions}</p>
+                        </div>
+                      )}
+
+                      <div className="event-contact">
+                        <h4>Contact Information</h4>
+                        <p><strong>Email:</strong> {selectedEvent.contactEmail}</p>
+                        {selectedEvent.contactPhone && (
+                          <p><strong>Phone:</strong> {selectedEvent.contactPhone}</p>
+                        )}
+                      </div>
+
+                      <div className="event-meta">
+                        <p><strong>Created:</strong> {new Date(selectedEvent.createdAt).toLocaleDateString()}</p>
+                        <p><strong>Updated:</strong> {new Date(selectedEvent.updatedAt).toLocaleDateString()}</p>
+                        <p><strong>Visibility:</strong> {selectedEvent.isPublic ? 'Public' : 'Private'}</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="no-event-selected">
+                    <div className="event-stats">
+                      <IonBadge color="primary">{eventStats.totalEvents} Total</IonBadge>
+                      <IonBadge color="success">{eventStats.activeEvents} Active</IonBadge>
+                      <IonBadge color="warning">{eventStats.upcomingEvents} Upcoming</IonBadge>
+                      <IonBadge color="medium">{eventStats.completedEvents} Completed</IonBadge>
+                    </div>
+                    <h3>Select an event to view details</h3>
+                    <p>Choose an event from the list on the left to see its full details and manage its settings.</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         );
       case 'clients':
@@ -700,13 +795,6 @@ const AdminDashboard: React.FC = () => {
             </IonFab>
           </div>
         );
-      case 'settings':
-        return (
-          <div className="section-content">
-            <h2>Settings</h2>
-            <p>Configure your gallery settings here. (Coming soon)</p>
-          </div>
-        );
       default:
         return renderDashboard();
     }
@@ -748,7 +836,13 @@ const AdminDashboard: React.FC = () => {
                   key={item.id}
                   button
                   className={selectedSection === item.id ? 'selected' : ''}
-                  onClick={() => setSelectedSection(item.id)}
+                  onClick={() => {
+                    if (item.id === 'settings') {
+                      history.push('/admin/settings');
+                    } else {
+                      setSelectedSection(item.id);
+                    }
+                  }}
                 >
                   <IonIcon icon={item.icon} slot="start" />
                   <IonLabel>{item.label}</IonLabel>

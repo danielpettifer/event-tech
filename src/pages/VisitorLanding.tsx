@@ -28,6 +28,9 @@ import { close, chevronForward, lockClosed, person, heart, star } from 'ionicons
 import { useHistory } from 'react-router-dom';
 import { ItemService } from '../services/ItemService';
 import { Item } from '../types/Item';
+import { GallerySettingsService } from '../services/GallerySettingsService';
+import { EventService } from '../services/EventService';
+import { Event } from '../types/Event';
 import './VisitorLanding.css';
 
 const VisitorLanding: React.FC = () => {
@@ -39,6 +42,8 @@ const VisitorLanding: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [backgroundImages, setBackgroundImages] = useState<string[]>([]);
   const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
+  const [showItemCards, setShowItemCards] = useState(true);
+  const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [visitorForm, setVisitorForm] = useState({
     name: '',
     email: '',
@@ -54,6 +59,18 @@ const VisitorLanding: React.FC = () => {
   useEffect(() => {
     // Initialize sample data if needed
     ItemService.initializeSampleData();
+    EventService.initializeSampleData();
+    
+    // Load gallery settings
+    const showCards = GallerySettingsService.getShowItemCards();
+    setShowItemCards(showCards);
+    
+    // Load active event
+    const activeEventId = GallerySettingsService.getActiveEventId();
+    if (activeEventId) {
+      const event = EventService.getEventById(activeEventId);
+      setActiveEvent(event);
+    }
     
     // Load public items
     const publicItems = ItemService.getPublicItems();
@@ -153,45 +170,60 @@ const VisitorLanding: React.FC = () => {
           )}
         </div>
 
-        {/* Items Display */}
-        <div className="items-container">
-          <IonGrid>
-            <IonRow>
-              {items.map((item) => (
-                <IonCol size="12" sizeMd="6" sizeLg="4" key={item.id}>
-                  <IonCard 
-                    className="item-card" 
-                    button 
-                    onClick={() => handleItemClick(item)}
-                  >
-                    <img src={item.thumbnailImage || item.images[0]} alt={item.title} />
-                    <IonCardHeader>
-                      <IonCardTitle>{item.title}</IonCardTitle>
-                      {item.isFeatured && (
-                        <IonChip color="warning" style={{ marginTop: '4px' }}>
-                          <IonIcon icon={star} />
-                          <IonLabel>Featured</IonLabel>
+        {/* Active Event Banner */}
+        {activeEvent && (
+          <div className="active-event-banner">
+            <IonCard className="event-banner-card">
+              <IonCardContent>
+                <div className="event-banner-content">
+                  <div className="event-banner-info">
+                    <h2>{activeEvent.title}</h2>
+                    <p>{activeEvent.description}</p>
+                    <div className="event-banner-details">
+                      <IonChip color="primary">
+                        <IonLabel>{activeEvent.eventType}</IonLabel>
+                      </IonChip>
+                      <IonChip color="secondary">
+                        <IonLabel>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
+                      </IonChip>
+                      {activeEvent.isTicketed && activeEvent.ticketPrice && (
+                        <IonChip color="success">
+                          <IonLabel>£{activeEvent.ticketPrice}</IonLabel>
                         </IonChip>
                       )}
-                    </IonCardHeader>
-                    <IonCardContent>
-                      <p><strong>{item.artist}</strong>, {item.year}</p>
-                      <p><strong>Medium:</strong> {item.medium}</p>
-                      <p><strong>Price:</strong> {formatPrice(item.price, item.currency)}</p>
-                      <div style={{ marginTop: '8px' }}>
-                        {item.tags.slice(0, 3).map((tag, index) => (
-                          <IonChip key={index} color="primary" style={{ marginRight: '4px', fontSize: '0.8rem' }}>
-                            <IonLabel>{tag}</IonLabel>
-                          </IonChip>
-                        ))}
-                      </div>
-                    </IonCardContent>
-                  </IonCard>
-                </IonCol>
+                    </div>
+                  </div>
+                  <IonBadge color="success" className="active-badge">
+                    Active Event
+                  </IonBadge>
+                </div>
+              </IonCardContent>
+            </IonCard>
+          </div>
+        )}
+
+        {/* Items Display */}
+        {showItemCards && (
+          <div className="items-container">
+            {/* Mobile: Vertical stack, Desktop: Horizontal scroll container */}
+            <div className="items-scroll-container">
+              {items.map((item) => (
+                <div 
+                  key={item.id}
+                  className="item-card" 
+                  onClick={() => handleItemClick(item)}
+                >
+                  <img src={item.thumbnailImage || item.images[0]} alt={item.title} />
+                  <div className="item-card-overlay"></div>
+                  <div className="item-card-content">
+                    <h3 className="item-card-title">{item.title}</h3>
+                    <p className="item-card-artist">{item.artist}</p>
+                  </div>
+                </div>
               ))}
-            </IonRow>
-          </IonGrid>
-        </div>
+            </div>
+          </div>
+        )}
 
         {/* Visitor Form */}
         <div className="visitor-form-container">

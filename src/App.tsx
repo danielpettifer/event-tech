@@ -4,6 +4,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import VisitorLanding from './pages/VisitorLanding';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
+import Settings from './pages/Settings';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -44,7 +45,10 @@ const App: React.FC = () => (
         <Route exact path="/admin/login">
           <AdminLogin />
         </Route>
-        <Route path="/admin">
+        <Route exact path="/admin/settings">
+          <Settings />
+        </Route>
+        <Route exact path="/admin">
           <AdminDashboard />
         </Route>
         <Route exact path="/">

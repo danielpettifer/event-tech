@@ -1,0 +1,289 @@
+.settings-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.logo-item {
+  border: 1px solid var(--ion-color-light);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--ion-color-light-tint);
+  position: relative;
+}
+
+.logo-preview {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.logo-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.active-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--ion-color-success);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.logo-info {
+  margin-bottom: 12px;
+}
+
+.logo-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.logo-info p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ion-color-medium);
+}
+
+.logo-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.logo-actions ion-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --height: 32px;
+  font-size: 12px;
+}
+
+/* Business Hours Styling */
+.business-hours-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ion-color-light);
+}
+
+.business-hours-item:last-child {
+  border-bottom: none;
+}
+
+.business-hours-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-inputs ion-input {
+  width: 80px;
+}
+
+.time-separator {
+  color: var(--ion-color-medium);
+  font-size: 14px;
+}
+
+/* Modal Styling */
+.settings-modal .modal-content {
+  padding: 20px;
+}
+
+.settings-modal ion-item {
+  margin-bottom: 16px;
+}
+
+/* Card Styling */
+.settings-container ion-card {
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-container ion-card-header {
+  padding-bottom: 8px;
+}
+
+.settings-container ion-card-title {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}
+
+.settings-container ion-card-content {
+  padding-top: 16px;
+}
+
+/* Form Styling */
+.settings-container ion-item {
+  margin-bottom: 12px;
+  --border-radius: 8px;
+  --background: var(--ion-color-light-tint);
+}
+
+.settings-container ion-input,
+.settings-container ion-select,
+.settings-container ion-textarea {
+  --padding-start: 12px;
+  --padding-end: 12px;
+}
+
+.settings-container ion-button {
+  --border-radius: 8px;
+  margin-top: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 16px;
+  }
+  
+  .logo-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .logo-actions {
+    justify-content: center;
+  }
+  
+  .business-hours-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .time-inputs {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Loading State */
+.settings-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: var(--ion-color-medium);
+}
+
+/* Empty State */
+.settings-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ion-color-medium);
+}
+
+.settings-empty ion-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+/* Success/Error States */
+.settings-success {
+  color: var(--ion-color-success);
+}
+
+.settings-error {
+  color: var(--ion-color-danger);
+}
+
+/* Animation for logo preview */
+.logo-preview img {
+  transition: transform 0.2s ease;
+}
+
+.logo-preview:hover img {
+  transform: scale(1.05);
+}
+
+/* Custom toggle styling for business hours */
+.business-hours-toggle {
+  --handle-width: 20px;
+  --handle-height: 20px;
+  --track-width: 40px;
+  --track-height: 24px;
+}
+
+/* Social media input icons */
+.social-media-input {
+  position: relative;
+}
+
+.social-media-input::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+/* Location list styling */
+.location-list ion-item {
+  --background: white;
+  --border-radius: 8px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.location-list ion-label h3 {
+  color: var(--ion-color-primary);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.location-list ion-label p {
+  color: var(--ion-color-medium);
+  font-size: 14px;
+  margin: 2px 0;
+}
+
+/* Reset button styling */
+.reset-button {
+  --color: var(--ion-color-warning);
+}
+
+.reset-button:hover {
+  --color: var(--ion-color-warning-shade);
+}
