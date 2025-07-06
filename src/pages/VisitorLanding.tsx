@@ -65,19 +65,42 @@ const VisitorLanding: React.FC = () => {
     const showCards = GallerySettingsService.getShowItemCards();
     setShowItemCards(showCards);
     
-    // Load active event
+    // Load active event and items
     const activeEventId = GallerySettingsService.getActiveEventId();
+    let currentEvent: Event | null = null;
+    let currentItems: Item[] = [];
+    
     if (activeEventId) {
-      const event = EventService.getEventById(activeEventId);
-      setActiveEvent(event);
+      currentEvent = EventService.getEventById(activeEventId);
+      setActiveEvent(currentEvent);
+      
+      if (currentEvent && currentEvent.featuredItems && currentEvent.featuredItems.length > 0) {
+        // Load featured items for the active event
+        const featuredItems = currentEvent.featuredItems
+          .map(itemId => ItemService.getItemById(itemId))
+          .filter(item => item !== null) as Item[];
+        currentItems = featuredItems;
+        setItems(featuredItems);
+      } else {
+        // No featured items - will show event default image instead
+        currentItems = [];
+        setItems([]);
+      }
+    } else {
+      // No active event, show all public items
+      const publicItems = ItemService.getPublicItems();
+      currentItems = publicItems;
+      setItems(publicItems);
     }
     
-    // Load public items
-    const publicItems = ItemService.getPublicItems();
-    setItems(publicItems);
+    // Load background images - use event default image if no carousel items
+    let bgImages = ItemService.getLandingPageBackgroundImages();
     
-    // Load background images
-    const bgImages = ItemService.getLandingPageBackgroundImages();
+    // If there's an active event with no featured items but has an image, use that as background
+    if (activeEventId && currentEvent && currentItems.length === 0 && currentEvent.imageUrl) {
+      bgImages = [currentEvent.imageUrl];
+    }
+    
     setBackgroundImages(bgImages);
   }, []);
 
@@ -202,10 +225,10 @@ const VisitorLanding: React.FC = () => {
           </div>
         )}
 
-        {/* Items Display */}
-        {showItemCards && (
+        {/* Items Display or Event Default Image */}
+        {showItemCards && items.length > 0 && (
+          // Show carousel if there are featured items
           <div className="items-container">
-            {/* Mobile: Vertical stack, Desktop: Horizontal scroll container */}
             <div className="items-scroll-container">
               {items.map((item) => (
                 <div 
@@ -221,6 +244,23 @@ const VisitorLanding: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Event Default Image - shown when no featured items but event has image */}
+        {showItemCards && items.length === 0 && activeEvent && activeEvent.imageUrl && (
+          <div className="items-container">
+            <div className="event-default-image-container">
+              <img 
+                src={activeEvent.imageUrl} 
+                alt={activeEvent.title}
+                className="event-default-image"
+              />
+              <div className="event-default-overlay">
+                <h3>{activeEvent.title}</h3>
+                <p>{activeEvent.description}</p>
+              </div>
             </div>
           </div>
         )}

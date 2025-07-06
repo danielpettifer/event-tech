@@ -48,6 +48,9 @@ const App: React.FC = () => (
         <Route exact path="/admin/settings">
           <Settings />
         </Route>
+        <Route exact path="/admin/dashboard">
+          <AdminDashboard />
+        </Route>
         <Route exact path="/admin">
           <AdminDashboard />
         </Route>

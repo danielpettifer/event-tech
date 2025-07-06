@@ -267,10 +267,23 @@ export class EventService {
         isTicketed: false,
         featuredArtists: ["Maria Rodriguez", "James Chen", "Aisha Patel"],
         featuredArtworks: ["Urban Dreams", "Digital Landscapes", "Abstract Emotions"],
+        featuredItems: [], // Will be populated when items are selected for this event
         tags: ["Contemporary Art", "New Acquisitions", "Mixed Media", "International Artists"],
         contactEmail: "events@gallery.com",
         contactPhone: "+44 20 7123 4567",
-        isPublic: true
+        isPublic: true,
+        imageUrl: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop",
+        images: [
+          "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=800&h=600&fit=crop"
+        ],
+        backgroundImages: [
+          "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop",
+          "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=1920&h=1080&fit=crop",
+          "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1920&h=1080&fit=crop",
+          "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=1920&h=1080&fit=crop"
+        ]
       },
       {
         title: "Opening Reception: Contemporary Visions",
@@ -288,6 +301,7 @@ export class EventService {
         isTicketed: true,
         featuredArtists: ["Maria Rodriguez", "James Chen"],
         featuredArtworks: [],
+        featuredItems: [],
         tags: ["Opening Reception", "Wine", "Artist Talk", "Networking"],
         contactEmail: "events@gallery.com",
         contactPhone: "+44 20 7123 4567",
@@ -310,6 +324,7 @@ export class EventService {
         isTicketed: true,
         featuredArtists: ["Maria Rodriguez"],
         featuredArtworks: [],
+        featuredItems: [],
         tags: ["Workshop", "Abstract", "Painting", "Educational", "Hands-on"],
         contactEmail: "education@gallery.com",
         contactPhone: "+44 20 7123 4568",
@@ -332,6 +347,7 @@ export class EventService {
         isTicketed: false,
         featuredArtists: [],
         featuredArtworks: [],
+        featuredItems: [],
         tags: ["VIP Event", "Private", "Collectors", "Exclusive"],
         contactEmail: "vip@gallery.com",
         specialInstructions: "Invitation only. Formal dress code.",
@@ -353,6 +369,7 @@ export class EventService {
         isTicketed: true,
         featuredArtists: ["Vincent van Gogh", "Katsushika Hokusai", "Johannes Vermeer", "Claude Monet", "Sandro Botticelli", "Grant Wood"],
         featuredArtworks: ["The Starry Night", "The Great Wave off Kanagawa", "Girl with a Pearl Earring", "Water Lilies", "The Birth of Venus", "American Gothic"],
+        featuredItems: [],
         tags: ["Masterpieces", "Historical", "Multi-Period", "Featured Exhibition", "International Artists", "Classical Art"],
         contactEmail: "exhibitions@gallery.com",
         contactPhone: "+44 20 7123 4567",
@@ -385,5 +402,87 @@ export class EventService {
 
   static completeEvent(eventId: string): boolean {
     return this.updateEventStatus(eventId, 'Completed');
+  }
+
+  // Featured Items Management
+  static addFeaturedItem(eventId: string, itemId: string): boolean {
+    const event = this.getEventById(eventId);
+    if (!event) return false;
+
+    if (!event.featuredItems.includes(itemId)) {
+      const updatedFeaturedItems = [...event.featuredItems, itemId];
+      this.updateEvent(eventId, { featuredItems: updatedFeaturedItems });
+      return true;
+    }
+    return false;
+  }
+
+  static removeFeaturedItem(eventId: string, itemId: string): boolean {
+    const event = this.getEventById(eventId);
+    if (!event) return false;
+
+    const updatedFeaturedItems = event.featuredItems.filter(id => id !== itemId);
+    this.updateEvent(eventId, { featuredItems: updatedFeaturedItems });
+    return true;
+  }
+
+  static setFeaturedItems(eventId: string, itemIds: string[]): boolean {
+    const event = this.getEventById(eventId);
+    if (!event) return false;
+
+    this.updateEvent(eventId, { featuredItems: itemIds });
+    return true;
+  }
+
+  // Event Publishing Validation
+  static canPublishEvent(eventId: string): { canPublish: boolean; reasons: string[] } {
+    const event = this.getEventById(eventId);
+    if (!event) return { canPublish: false, reasons: ['Event not found'] };
+
+    const reasons: string[] = [];
+
+    // Check if event has an image
+    if (!event.imageUrl || event.imageUrl.trim() === '') {
+      reasons.push('Event must have an image before it can be published');
+    }
+
+    // Check if event has basic required information
+    if (!event.title || event.title.trim() === '') {
+      reasons.push('Event must have a title');
+    }
+
+    if (!event.description || event.description.trim() === '') {
+      reasons.push('Event must have a description');
+    }
+
+    if (!event.startDate || !event.endDate) {
+      reasons.push('Event must have start and end dates');
+    }
+
+    if (!event.location || event.location.trim() === '') {
+      reasons.push('Event must have a location');
+    }
+
+    return {
+      canPublish: reasons.length === 0,
+      reasons
+    };
+  }
+
+  static publishEventWithValidation(eventId: string): { success: boolean; message: string } {
+    const validation = this.canPublishEvent(eventId);
+    
+    if (!validation.canPublish) {
+      return {
+        success: false,
+        message: `Cannot publish event: ${validation.reasons.join(', ')}`
+      };
+    }
+
+    const success = this.publishEvent(eventId);
+    return {
+      success,
+      message: success ? 'Event published successfully' : 'Failed to publish event'
+    };
   }
 }

@@ -29,6 +29,7 @@ import {
 import { close, save, add, remove } from 'ionicons/icons';
 import { Item } from '../types/Item';
 import { ItemService } from '../services/ItemService';
+import ImageUpload from './ImageUpload';
 
 interface ItemFormProps {
   isOpen: boolean;
@@ -510,111 +511,40 @@ const ItemForm: React.FC<ItemFormProps> = ({ isOpen, onDidDismiss, item, onSave 
               <IonCardTitle>Images</IonCardTitle>
             </IonCardHeader>
             <IonCardContent>
-              <IonItem>
-                <IonInput
-                  value={newImage}
-                  onIonInput={(e) => setNewImage(e.detail.value!)}
-                  placeholder="Enter image URL or upload path"
-                  onKeyPress={(e) => e.key === 'Enter' && addImage()}
-                />
-                <IonButton fill="clear" onClick={addImage}>
-                  <IonIcon icon={add} />
-                </IonButton>
-              </IonItem>
+              <ImageUpload
+                value={formData.thumbnailImage}
+                onImageChange={(thumbnail) => {
+                  setFormData({
+                    ...formData,
+                    thumbnailImage: thumbnail
+                  });
+                }}
+                images={formData.images || []}
+                onImagesChange={(images) => {
+                  setFormData({
+                    ...formData,
+                    images,
+                    thumbnailImage: formData.thumbnailImage || images[0] || ''
+                  });
+                }}
+                allowMultiple={true}
+                maxImages={10}
+                label="Artwork Images"
+                placeholder="Upload artwork images or enter URLs"
+              />
               
-              {formData.images && formData.images.length > 0 && (
-                <div style={{ marginTop: '16px' }}>
-                  <IonLabel><strong>Current Images:</strong></IonLabel>
-                  <div style={{ marginTop: '8px' }}>
-                    {formData.images.map((image, index) => (
-                      <div key={index} style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        marginBottom: '8px',
-                        padding: '8px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px'
-                      }}>
-                        <div style={{ 
-                          width: '60px', 
-                          height: '60px', 
-                          marginRight: '12px',
-                          border: '1px solid #ccc',
-                          borderRadius: '4px',
-                          overflow: 'hidden',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: '#f5f5f5'
-                        }}>
-                          {image ? (
-                            <img 
-                              src={image} 
-                              alt={`Item ${index + 1}`}
-                              style={{ 
-                                width: '100%', 
-                                height: '100%', 
-                                objectFit: 'cover' 
-                              }}
-                              onError={(e) => {
-                                const img = e.target as HTMLImageElement;
-                                img.style.display = 'none';
-                                const fallback = img.parentElement?.querySelector('div') as HTMLDivElement;
-                                if (fallback) {
-                                  fallback.style.display = 'block';
-                                }
-                              }}
-                            />
-                          ) : null}
-                          <div style={{ display: 'none', fontSize: '12px', color: '#666' }}>
-                            No Image
-                          </div>
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '14px', marginBottom: '4px' }}>
-                            Image {index + 1}
-                            {formData.thumbnailImage === image && (
-                              <IonChip color="success" style={{ marginLeft: '8px' }}>
-                                <IonLabel>Thumbnail</IonLabel>
-                              </IonChip>
-                            )}
-                          </div>
-                          <div style={{ fontSize: '12px', color: '#666', wordBreak: 'break-all' }}>
-                            {image}
-                          </div>
-                          <div style={{ marginTop: '4px' }}>
-                            {formData.thumbnailImage !== image && (
-                              <IonButton 
-                                size="small" 
-                                fill="clear" 
-                                onClick={() => setFormData({...formData, thumbnailImage: image})}
-                              >
-                                Set as Thumbnail
-                              </IonButton>
-                            )}
-                          </div>
-                        </div>
-                        <IonButton 
-                          fill="clear" 
-                          color="danger" 
-                          onClick={() => removeImage(image)}
-                        >
-                          <IonIcon icon={remove} />
-                        </IonButton>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              <div style={{ marginTop: '16px', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
-                <IonLabel style={{ fontSize: '14px', color: '#666' }}>
-                  <strong>Image Upload Options:</strong><br/>
-                  • Enter image URLs directly<br/>
-                  • Upload to a cloud service (Cloudinary, AWS S3, etc.) and paste the URL<br/>
-                  • Use relative paths for local development<br/>
-                  • The first image will be used as the thumbnail by default
-                </IonLabel>
+              <div style={{ marginTop: '16px' }}>
+                <IonItem>
+                  <IonInput
+                    value={newImage}
+                    onIonInput={(e) => setNewImage(e.detail.value!)}
+                    placeholder="Or enter image URL directly"
+                    onKeyPress={(e) => e.key === 'Enter' && addImage()}
+                  />
+                  <IonButton fill="clear" onClick={addImage}>
+                    <IonIcon icon={add} />
+                  </IonButton>
+                </IonItem>
               </div>
             </IonCardContent>
           </IonCard>

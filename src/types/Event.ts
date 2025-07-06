@@ -15,8 +15,11 @@ export interface Event {
   isTicketed: boolean;
   featuredArtists: string[];
   featuredArtworks: string[];
+  featuredItems: string[]; // Item IDs to display in the landing page carousel
   tags: string[];
   imageUrl?: string;
+  images?: string[];
+  backgroundImages?: string[];
   contactEmail: string;
   contactPhone?: string;
   specialInstructions?: string;

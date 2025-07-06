@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   IonModal,
   IonHeader,
@@ -22,11 +22,15 @@ import {
   IonCol,
   IonToast,
   IonChip,
-  IonToggle
+  IonToggle,
+  IonFooter
 } from '@ionic/react';
-import { close, save, calendar, add, remove } from 'ionicons/icons';
+import { close, save, calendar, add, remove, checkmark } from 'ionicons/icons';
 import { Event, EVENT_TYPES, EVENT_STATUSES, EVENT_TAGS } from '../types/Event';
 import { EventService } from '../services/EventService';
+import { ItemService } from '../services/ItemService';
+import { Item } from '../types/Item';
+import ImageUpload from './ImageUpload';
 
 interface EventFormProps {
   isOpen: boolean;
@@ -54,6 +58,7 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
     featuredArtworks: [],
     tags: [],
     imageUrl: '',
+    images: [],
     contactEmail: '',
     contactPhone: '',
     specialInstructions: '',
@@ -65,8 +70,13 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [newArtist, setNewArtist] = useState('');
   const [newArtwork, setNewArtwork] = useState('');
+  const [availableItems, setAvailableItems] = useState<Item[]>([]);
 
   useEffect(() => {
+    // Load available items
+    const items = ItemService.getAllItems();
+    setAvailableItems(items);
+
     if (event) {
       // Editing existing event
       setFormData(event);
@@ -89,6 +99,7 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
         isTicketed: false,
         featuredArtists: [],
         featuredArtworks: [],
+        featuredItems: [],
         tags: [],
         imageUrl: '',
         contactEmail: 'events@gallery.com',
@@ -172,8 +183,10 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
         isTicketed: formData.isTicketed || false,
         featuredArtists: formData.featuredArtists || [],
         featuredArtworks: formData.featuredArtworks || [],
+        featuredItems: formData.featuredItems || [],
         tags: formData.tags || [],
         imageUrl: formData.imageUrl,
+        images: formData.images || [],
         contactEmail: formData.contactEmail!,
         contactPhone: formData.contactPhone,
         specialInstructions: formData.specialInstructions,
@@ -216,6 +229,7 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
       isTicketed: false,
       featuredArtists: [],
       featuredArtworks: [],
+      featuredItems: [],
       tags: [],
       imageUrl: '',
       contactEmail: '',
@@ -272,13 +286,19 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
       <IonModal isOpen={isOpen} onDidDismiss={handleClose}>
         <IonHeader>
           <IonToolbar>
+            <IonButtons slot="start">
+              <IonButton onClick={handleClose}>
+                <IonIcon icon={close} />
+              </IonButton>
+            </IonButtons>
             <IonTitle>
               <IonIcon icon={calendar} style={{ marginRight: '8px' }} />
               {event ? 'Edit Event' : 'Add New Event'}
             </IonTitle>
             <IonButtons slot="end">
-              <IonButton onClick={handleClose}>
-                <IonIcon icon={close} />
+              <IonButton onClick={handleSave} color="primary">
+                <IonIcon icon={save} slot="start" />
+                Save
               </IonButton>
             </IonButtons>
           </IonToolbar>
@@ -622,6 +642,69 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
                     </IonCol>
                   </IonRow>
 
+                  {/* Event Image */}
+                  <IonRow>
+                    <IonCol size="12">
+                      <h3 style={{ margin: '24px 0 16px 0', color: 'var(--ion-color-primary)' }}>
+                        Event Image
+                      </h3>
+                    </IonCol>
+                  </IonRow>
+
+                  <IonRow>
+                    <IonCol size="12">
+                      <ImageUpload
+                        value={formData.imageUrl}
+                        onImageChange={(imageUrl) => setFormData({...formData, imageUrl})}
+                        images={formData.images}
+                        onImagesChange={(images) => setFormData({...formData, images})}
+                        label="Event Images"
+                        placeholder="Enter image URL or upload files"
+                        required={true}
+                        maxSizeMB={10}
+                        showPreview={true}
+                        previewHeight="250px"
+                        allowMultiple={true}
+                        maxImages={5}
+                      />
+                      <p style={{ fontSize: '0.8rem', color: 'var(--ion-color-medium)', margin: '8px 0 0 0' }}>
+                        Note: Upload multiple images and select one as the primary image. The primary image is required to publish the event and will be used as the background when no featured items are selected.
+                      </p>
+                    </IonCol>
+                  </IonRow>
+
+                  {/* Featured Items */}
+                  <IonRow>
+                    <IonCol size="12">
+                      <h3 style={{ margin: '24px 0 16px 0', color: 'var(--ion-color-primary)' }}>
+                        Featured Items
+                      </h3>
+                    </IonCol>
+                  </IonRow>
+
+                  <IonRow>
+                    <IonCol size="12">
+                      <IonItem>
+                        <IonLabel position="stacked">Select Items to Feature</IonLabel>
+                        <IonSelect
+                          multiple={true}
+                          value={formData.featuredItems}
+                          onIonChange={(e) => setFormData({...formData, featuredItems: e.detail.value})}
+                          placeholder="Choose items to display in the landing page carousel"
+                        >
+                          {availableItems.map((item) => (
+                            <IonSelectOption key={item.id} value={item.id}>
+                              {item.title} - {item.artist}
+                            </IonSelectOption>
+                          ))}
+                        </IonSelect>
+                      </IonItem>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--ion-color-medium)', margin: '4px 0 0 16px' }}>
+                        These items will be displayed in the carousel on the visitor landing page
+                      </p>
+                    </IonCol>
+                  </IonRow>
+
                   {/* Additional Information */}
                   <IonRow>
                     <IonCol size="12">
@@ -657,20 +740,6 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
                     </IonCol>
                   </IonRow>
 
-                  {/* Action Buttons */}
-                  <IonRow>
-                    <IonCol size="12">
-                      <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-                        <IonButton expand="block" onClick={handleSave}>
-                          <IonIcon icon={save} slot="start" />
-                          {event ? 'Update Event' : 'Create Event'}
-                        </IonButton>
-                        <IonButton expand="block" fill="outline" onClick={handleClose}>
-                          Cancel
-                        </IonButton>
-                      </div>
-                    </IonCol>
-                  </IonRow>
                 </IonGrid>
               </IonCardContent>
             </IonCard>
