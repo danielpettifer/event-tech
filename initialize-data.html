@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initialize Gallery Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .container {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Initialize Gallery Data</h1>
+    
+    <div class="container">
+        <h2>Gallery Settings</h2>
+        <button id="initSettings">Initialize Gallery Settings</button>
+        <div id="settingsOutput"></div>
+    </div>
+    
+    <div class="container">
+        <h2>Events</h2>
+        <button id="initEvents">Initialize Events</button>
+        <div id="eventsOutput"></div>
+    </div>
+    
+    <div class="container">
+        <h2>Items</h2>
+        <button id="initItems">Initialize Items</button>
+        <div id="itemsOutput"></div>
+    </div>
+    
+    <div class="container">
+        <h2>Set Active Event</h2>
+        <button id="setActiveEvent">Set Active Event</button>
+        <div id="activeEventOutput"></div>
+    </div>
+    
+    <div class="container">
+        <h2>Current LocalStorage</h2>
+        <button id="viewStorage">View LocalStorage</button>
+        <div id="storageOutput"></div>
+    </div>
+
+    <script>
+        // Gallery Settings
+        document.getElementById('initSettings').addEventListener('click', function() {
+            try {
+                const defaultSettings = {
+                    id: 'settings_1',
+                    galleryName: 'Demo Gallery',
+                    primaryLocation: {
+                        id: 'loc_1',
+                        name: 'Main Gallery',
+                        addressLine1: '123 Art Street',
+                        addressLine2: '',
+                        city: 'London',
+                        state: '',
+                        postalCode: 'W1A 1AA',
+                        country: 'United Kingdom',
+                        phone: '+44 20 7946 0958',
+                        email: 'main@demogallery.com',
+                        isPrimary: true
+                    },
+                    secondaryLocations: [],
+                    logoUrls: [{
+                        id: 'logo_1',
+                        url: 'BBFA_Logo_black_stacked.png',
+                        name: 'Default Logo',
+                        uploadDate: new Date().toISOString(),
+                        isActive: true
+                    }],
+                    activeLogoId: 'logo_1',
+                    socialMedia: {
+                        website: 'https://demogallery.com',
+                        instagram: '',
+                        facebook: '',
+                        twitter: '',
+                        linkedin: '',
+                        pinterest: '',
+                        youtube: '',
+                        tiktok: ''
+                    },
+                    contactInfo: {
+                        email: 'info@demogallery.com',
+                        phone: '+44 20 7946 0958',
+                        website: 'https://demogallery.com'
+                    },
+                    businessHours: [
+                        { day: 'Monday', open: false, openTime: '10:00', closeTime: '18:00' },
+                        { day: 'Tuesday', open: true, openTime: '10:00', closeTime: '18:00' },
+                        { day: 'Wednesday', open: true, openTime: '10:00', closeTime: '18:00' },
+                        { day: 'Thursday', open: true, openTime: '10:00', closeTime: '18:00' },
+                        { day: 'Friday', open: true, openTime: '10:00', closeTime: '18:00' },
+                        { day: 'Saturday', open: true, openTime: '11:00', closeTime: '16:00' },
+                        { day: 'Sunday', open: false, openTime: '10:00', closeTime: '18:00' }
+                    ],
+                    showItemCards: true,
+                    defaultItemId: undefined,
+                    defaultImageUrl: undefined,
+                    activeEventId: undefined,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                localStorage.setItem('gallery_settings', JSON.stringify(defaultSettings));
+                localStorage.setItem('gallery_show_items_preference', 'true');
+                
+                document.getElementById('settingsOutput').innerHTML = 
+                    '<p class="success">Gallery settings initialized successfully!</p>' +
+                    '<pre>' + JSON.stringify(defaultSettings, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('settingsOutput').innerHTML = 
+                    '<p class="error">Error initializing gallery settings: ' + error.message + '</p>';
+            }
+        });
+        
+        // Events
+        document.getElementById('initEvents').addEventListener('click', function() {
+            try {
+                const showItemsDefault = localStorage.getItem('gallery_show_items_preference') === 'true';
+                
+                const sampleEvents = [
+                    {
+                        id: 'event_1',
+                        title: "Contemporary Visions: New Acquisitions",
+                        description: "Explore our latest contemporary art acquisitions featuring works by emerging and established artists from around the world.",
+                        startDate: "2025-01-15",
+                        endDate: "2025-03-15",
+                        startTime: "10:00",
+                        endTime: "18:00",
+                        location: "Main Gallery - Ground Floor",
+                        eventType: "Exhibition",
+                        status: "Active",
+                        maxAttendees: 200,
+                        currentAttendees: 45,
+                        ticketPrice: 0,
+                        isTicketed: false,
+                        featuredArtists: ["Maria Rodriguez", "James Chen", "Aisha Patel"],
+                        featuredArtworks: ["Urban Dreams", "Digital Landscapes", "Abstract Emotions"],
+                        featuredItems: ["item_1", "item_2", "item_3", "item_4"],
+                        showItems: showItemsDefault,
+                        tags: ["Contemporary Art", "New Acquisitions", "Mixed Media", "International Artists"],
+                        contactEmail: "events@gallery.com",
+                        contactPhone: "+44 20 7123 4567",
+                        isPublic: true,
+                        imageUrl: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop",
+                        images: [
+                            "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop",
+                            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
+                            "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=800&h=600&fit=crop"
+                        ],
+                        backgroundImages: [
+                            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop",
+                            "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=1920&h=1080&fit=crop",
+                            "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1920&h=1080&fit=crop",
+                            "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=1920&h=1080&fit=crop"
+                        ],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'event_2',
+                        title: "Masterpieces Through Time",
+                        description: "A comprehensive exhibition showcasing iconic artworks from different periods, featuring Van Gogh, Hokusai, Vermeer, and other masters.",
+                        startDate: "2025-02-15",
+                        endDate: "2025-05-15",
+                        startTime: "10:00",
+                        endTime: "18:00",
+                        location: "Main Gallery - All Floors",
+                        eventType: "Exhibition",
+                        status: "Published",
+                        maxAttendees: 300,
+                        currentAttendees: 127,
+                        ticketPrice: 15,
+                        isTicketed: true,
+                        featuredArtists: ["Vincent van Gogh", "Katsushika Hokusai", "Johannes Vermeer", "Claude Monet", "Sandro Botticelli", "Grant Wood"],
+                        featuredArtworks: ["The Starry Night", "The Great Wave off Kanagawa", "Girl with a Pearl Earring", "Water Lilies", "The Birth of Venus", "American Gothic"],
+                        featuredItems: [],
+                        tags: ["Masterpieces", "Historical", "Multi-Period", "Featured Exhibition", "International Artists", "Classical Art"],
+                        contactEmail: "exhibitions@gallery.com",
+                        contactPhone: "+44 20 7123 4567",
+                        specialInstructions: "Audio guides available in multiple languages. Photography permitted without flash.",
+                        isPublic: true,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    }
+                ];
+                
+                localStorage.setItem('gallery_events', JSON.stringify(sampleEvents));
+                
+                document.getElementById('eventsOutput').innerHTML = 
+                    '<p class="success">Events initialized successfully!</p>' +
+                    '<pre>' + JSON.stringify(sampleEvents, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('eventsOutput').innerHTML = 
+                    '<p class="error">Error initializing events: ' + error.message + '</p>';
+            }
+        });
+        
+        // Items
+        document.getElementById('initItems').addEventListener('click', function() {
+            try {
+                const sampleItems = [
+                    {
+                        id: "item_1",
+                        title: "The Starry Night",
+                        artist: "Vincent van Gogh",
+                        year: "1889",
+                        medium: "Oil on canvas",
+                        dimensions: "73.7 cm × 92.1 cm",
+                        description: "The Starry Night is an oil on canvas painting by Dutch Post-Impressionist painter Vincent van Gogh. Painted in June 1889, it depicts the view from the east-facing window of his asylum room at Saint-Rémy-de-Provence, just before sunrise, with the addition of an idealized village.",
+                        price: 0,
+                        forSale: false,
+                        isPublic: true,
+                        images: [
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1200px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"
+                        ],
+                        thumbnailImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/300px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+                        tags: ["Post-Impressionism", "Landscape", "Night Scene", "Masterpiece"],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: "item_2",
+                        title: "The Great Wave off Kanagawa",
+                        artist: "Katsushika Hokusai",
+                        year: "1831",
+                        medium: "Woodblock print",
+                        dimensions: "25.7 cm × 37.8 cm",
+                        description: "The Great Wave off Kanagawa is a woodblock print by the Japanese ukiyo-e artist Hokusai. It was published sometime between 1829 and 1833 in the late Edo period as the first print in Hokusai's series Thirty-six Views of Mount Fuji.",
+                        price: 0,
+                        forSale: false,
+                        isPublic: true,
+                        images: [
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/1200px-Tsunami_by_hokusai_19th_century.jpg"
+                        ],
+                        thumbnailImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/300px-Tsunami_by_hokusai_19th_century.jpg",
+                        tags: ["Ukiyo-e", "Woodblock Print", "Japanese Art", "Masterpiece"],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: "item_3",
+                        title: "Girl with a Pearl Earring",
+                        artist: "Johannes Vermeer",
+                        year: "1665",
+                        medium: "Oil on canvas",
+                        dimensions: "44.5 cm × 39 cm",
+                        description: "Girl with a Pearl Earring is an oil painting by Dutch Golden Age painter Johannes Vermeer, dated c. 1665. Going by various names over the centuries, it became known by its present title towards the end of the 20th century after the large pearl earring worn by the girl portrayed there.",
+                        price: 0,
+                        forSale: false,
+                        isPublic: true,
+                        images: [
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/800px-1665_Girl_with_a_Pearl_Earring.jpg"
+                        ],
+                        thumbnailImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/300px-1665_Girl_with_a_Pearl_Earring.jpg",
+                        tags: ["Dutch Golden Age", "Portrait", "Masterpiece"],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: "item_4",
+                        title: "Water Lilies",
+                        artist: "Claude Monet",
+                        year: "1919",
+                        medium: "Oil on canvas",
+                        dimensions: "100 cm × 200 cm",
+                        description: "Water Lilies is a series of approximately 250 oil paintings by French Impressionist Claude Monet. The paintings depict his flower garden at his home in Giverny and were the main focus of his artistic production during the last thirty years of his life.",
+                        price: 0,
+                        forSale: false,
+                        isPublic: true,
+                        images: [
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg/1200px-Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg"
+                        ],
+                        thumbnailImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg/300px-Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg",
+                        tags: ["Impressionism", "Landscape", "Series", "Masterpiece"],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    }
+                ];
+                
+                localStorage.setItem('gallery_items', JSON.stringify(sampleItems));
+                
+                document.getElementById('itemsOutput').innerHTML = 
+                    '<p class="success">Items initialized successfully!</p>' +
+                    '<pre>' + JSON.stringify(sampleItems, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('itemsOutput').innerHTML = 
+                    '<p class="error">Error initializing items: ' + error.message + '</p>';
+            }
+        });
+        
+        // Set Active Event
+        document.getElementById('setActiveEvent').addEventListener('click', function() {
+            try {
+                // Get settings
+                const settingsStr = localStorage.getItem('gallery_settings');
+                if (!settingsStr) {
+                    throw new Error('Gallery settings not found. Initialize settings first.');
+                }
+                
+                const settings = JSON.parse(settingsStr);
+                
+                // Get events
+                const eventsStr = localStorage.getItem('gallery_events');
+                if (!eventsStr) {
+                    throw new Error('Events not found. Initialize events first.');
+                }
+                
+                const events = JSON.parse(eventsStr);
+                
+                // Find active event
+                const activeEvent = events.find(event => event.status === 'Active');
+                
+                if (!activeEvent) {
+                    throw new Error('No active event found.');
+                }
+                
+                // Update settings
+                settings.activeEventId = activeEvent.id;
+                settings.updatedAt = new Date().toISOString();
+                
+                localStorage.setItem('gallery_settings', JSON.stringify(settings));
+                
+                document.getElementById('activeEventOutput').innerHTML = 
+                    '<p class="success">Active event set successfully!</p>' +
+                    '<p>Active Event ID: ' + activeEvent.id + '</p>' +
+                    '<p>Active Event Title: ' + activeEvent.title + '</p>';
+            } catch (error) {
+                document.getElementById('activeEventOutput').innerHTML = 
+                    '<p class="error">Error setting active event: ' + error.message + '</p>';
+            }
+        });
+        
+        // View LocalStorage
+        document.getElementById('viewStorage').addEventListener('click', function() {
+            const output = document.getElementById('storageOutput');
+            output.innerHTML = '';
+            
+            if (localStorage.length === 0) {
+                output.innerHTML = '<p>LocalStorage is empty</p>';
+            } else {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    const value = localStorage.getItem(key);
+                    
+                    try {
+                        // Try to parse as JSON for better formatting
+                        const parsedValue = JSON.parse(value);
+                        const formattedValue = JSON.stringify(parsedValue, null, 2);
+                        
+                        output.innerHTML += `<h3>${key}:</h3><pre>${formattedValue}</pre>`;
+                    } catch (e) {
+                        // If not valid JSON, display as is
+                        output.innerHTML += `<h3>${key}:</h3><pre>${value}</pre>`;
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
