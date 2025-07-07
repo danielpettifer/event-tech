@@ -30,16 +30,27 @@ ion-footer {
   z-index: 100;
 }
 
-/* Gradient Overlay */
-.gradient-overlay {
+/* Bottom Content Overlay with Gradient */
+.bottom-content-overlay {
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to top, var(--dynamic-dark-color) 0%, rgba(0,0,0,0.15) 100%);
-  z-index: 2;
-  pointer-events: none;
+  right: 0;
+  background: linear-gradient(to top, 
+    var(--dynamic-dark-color) 0%, 
+    var(--dynamic-dark-color, rgba(0,0,0,0.8)) 40%,
+    rgba(0,0,0,0.4) 70%,
+    transparent 100%
+  );
+  z-index: 50;
+  padding: 20px;
+  padding-bottom: 56px; /* Space for footer */
+  pointer-events: none; /* Allow clicks to pass through to elements underneath */
+}
+
+/* Make all direct children of the overlay clickable */
+.bottom-content-overlay > * {
+  pointer-events: auto;
 }
 
 .gallery-logo {
@@ -140,9 +151,7 @@ ion-footer {
     height: 300px;
     margin: 0;
     padding: 20px;
-    background: var(--dynamic-dark-color, rgba(0, 0, 0, 0.01));
-    backdrop-filter: blur(40px);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
     z-index: 50;
     border: 0 !important;
   }
@@ -336,13 +345,6 @@ ion-footer {
   flex: 1;
 }
 
-.bottom-content-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-bottom: 56px; /* Space for footer */
-}
-
 /* Active Event Banner */
 .active-event-banner {
   width: 100%;
@@ -352,7 +354,7 @@ ion-footer {
 }
 
 .event-banner-card {
-  background: var(--dynamic-dark-color, transparent) !important;
+  background: transparent !important;
   box-shadow: none;
   border: none;
   margin-top: auto;
@@ -517,8 +519,9 @@ ion-footer {
     width: auto;
   }
   
-  .items-container {
-    margin-top: 280px; /* Make room for the visitor form */
+  .bottom-content-overlay {
+    padding: 16px;
+    padding-bottom: 56px;
   }
 }
 
@@ -531,9 +534,12 @@ ion-footer {
   }
   
   .items-container {
-    padding: 40px;
-    margin-top: 80px;
+    padding: 20px 40px;
     margin-right: 380px; /* Make room for the visitor form */
+  }
+  
+  .bottom-content-overlay {
+    padding: 20px 20px 56px 20px;
   }
 }
 
