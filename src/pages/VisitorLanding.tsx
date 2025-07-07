@@ -305,18 +305,18 @@ const VisitorLanding: React.FC = () => {
                         </div>
                         <div className="event-description-container">
                           <p>{activeEvent.description}</p>
-                          <IonButton 
-                            className="read-more-button" 
-                            size="small"
-                            fill="clear"
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent card click from triggering
-                              setIsDescriptionModalOpen(true);
-                            }}
-                          >
-                            Read More
-                          </IonButton>
                         </div>
+                        <IonButton 
+                          className="read-more-button" 
+                          size="small"
+                          fill="clear"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card click from triggering
+                            setIsDescriptionModalOpen(true);
+                          }}
+                        >
+                          Read More
+                        </IonButton>
                       </div>
                       <IonBadge color="success" className="active-badge">
                         Active Event

@@ -400,10 +400,8 @@ ion-footer {
 }
 
 .read-more-button {
-  position: absolute;
-  bottom: 10px;
-  left: 16px;
-  z-index: 10;
+  margin-top: 8px;
+  margin-left: 16px;
   --background: rgba(255, 255, 255, 0.2);
   --color: white;
   font-size: 0.9rem;
