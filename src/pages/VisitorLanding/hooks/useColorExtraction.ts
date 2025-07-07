@@ -258,9 +258,23 @@ const useColorExtraction = (imageUrl: string | null) => {
         console.log('Contrast ratio with white text:', contrastRatio.toFixed(2), 
                     contrastRatio >= 4.5 ? '(WCAG AA Pass)' : '(WCAG AA Fail)');
         
-        // Apply to CSS custom properties - both with transparency and without
-        document.documentElement.style.setProperty('--dynamic-dark-color', color);
-        document.documentElement.style.setProperty('--dynamic-dark-color-solid', `rgb(${r}, ${g}, ${b})`);
+        // Apply to CSS custom properties with smooth transitions
+        // First get the current colors to check if they're changing
+        const currentColor = getComputedStyle(document.documentElement).getPropertyValue('--dynamic-dark-color').trim();
+        const currentSolidColor = getComputedStyle(document.documentElement).getPropertyValue('--dynamic-dark-color-solid').trim();
+        
+        // Only apply transition class if colors are actually changing
+        if (currentColor !== color || currentSolidColor !== `rgb(${r}, ${g}, ${b})`) {
+          console.log('Color changing, applying transition');
+          
+          // Apply the new colors with transitions
+          document.documentElement.style.setProperty('--dynamic-dark-color', color);
+          document.documentElement.style.setProperty('--dynamic-dark-color-solid', `rgb(${r}, ${g}, ${b})`);
+        } else {
+          // If colors aren't changing, just set them without transition
+          document.documentElement.style.setProperty('--dynamic-dark-color', color);
+          document.documentElement.style.setProperty('--dynamic-dark-color-solid', `rgb(${r}, ${g}, ${b})`);
+        }
       } else {
         // Fallback if regex fails
         document.documentElement.style.setProperty('--dynamic-dark-color', color);

@@ -76,7 +76,12 @@ ion-footer {
   );
   z-index: 20;
   pointer-events: none;
-  transition: height 0.3s ease, bottom 0.3s ease; /* Smooth transitions */
+  /* Smooth transitions for both position and color */
+  transition: 
+    height 0.3s ease, 
+    bottom 0.3s ease,
+    background-color 2s ease-in-out, /* Match the solid color transition property */
+    background 2s ease-in-out; /* Smooth color transition */
 }
 
 /* Add a separate solid color layer to ensure complete opacity */
@@ -90,7 +95,10 @@ ion-footer {
   background-color: var(--dynamic-dark-color-solid, rgb(0,0,0));
   z-index: 19; /* Just below the gradient layer */
   pointer-events: none;
-  transition: height 0.3s ease; /* Smooth transitions */
+  /* Smooth transitions for both height and color */
+  transition: 
+    height 0.3s ease,
+    background-color 2s ease-in-out; /* Smooth color transition */
 }
 
 /* Ensure content is above the background */
@@ -292,6 +300,7 @@ ion-footer {
   background: linear-gradient(to top, var(--dynamic-dark-color) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
   z-index: 2;
   border-radius: 0 0 12px 12px;
+  transition: background 2s ease-in-out; /* Match the transition timing */
 }
 
 .item-card-content {
@@ -377,6 +386,7 @@ ion-footer {
   width: 50px;
   height: 50px;
   margin-right: 10px;
+  transition: --background 2s ease-in-out; /* Add transition for dynamic color */
 }
 
 .admin-login-button:hover {
@@ -466,6 +476,7 @@ ion-footer {
   --background: white;
   font-size: 0.9rem;
   text-transform: uppercase;
+  transition: --color 2s ease-in-out; /* Add transition for dynamic color */
 }
 
 .event-banner-details {
@@ -486,6 +497,7 @@ ion-footer {
 .event-description-modal ion-content {
   --background: var(--dynamic-dark-color, rgba(0, 0, 0, 0.9));
   --color: white;
+  transition: --background 2s ease-in-out; /* Add transition for dynamic color */
 }
 
 .event-description-modal-content {
