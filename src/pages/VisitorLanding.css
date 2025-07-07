@@ -393,6 +393,21 @@ ion-footer {
   --background: var(--dynamic-dark-color, rgba(255, 255, 255, 0.3));
 }
 
+/* TouchID Admin Login Fab Button */
+.admin-login-fab {
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-login-fab:hover {
+  transform: scale(1.05);
+  --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.admin-login-fab:active {
+  transform: scale(0.95);
+}
+
 /* Main Content Container */
 .main-content-container {
   display: flex;

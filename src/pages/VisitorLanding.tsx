@@ -23,7 +23,8 @@ import {
   IonToast,
   IonChip,
   IonBadge,
-  IonFooter
+  IonFooter,
+  IonFabButton
 } from '@ionic/react';
 import { close, chevronForward, lockClosed, person, heart, star, image } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
@@ -326,6 +327,28 @@ const VisitorLanding: React.FC = () => {
     <IonPage>
       {/* Fixed Header */}
       <IonHeader className="ion-no-border">
+        <IonFabButton 
+          className="admin-login-fab"
+          onClick={handleAdminLogin}
+          style={{
+            '--background': 'var(--dynamic-dark-color-solid)',
+            position: 'absolute',
+            right: '20px',
+            top: '20px',
+            zIndex: 100,
+            transition: 'background-color 2s ease-in-out'
+          }}
+        >
+          <img 
+            src="/touchid.svg" 
+            alt="Admin Login" 
+            style={{ 
+              filter: 'invert(1)', 
+              width: '60%', 
+              height: '60%' 
+            }} 
+          />
+        </IonFabButton>
         <IonToolbar className="transparent-toolbar">
           {galleryLogo && (
             <div className="gallery-logo" slot="start">
