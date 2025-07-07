@@ -391,17 +391,17 @@ const VisitorLanding: React.FC = () => {
                     <div className="event-banner-info">
                       <h2>{activeEvent.title}</h2>
                       <div className="event-banner-details">
-                        <IonChip color="primary">
+                        <IonChip color="light">
                           <IonLabel>{activeEvent.eventType}</IonLabel>
                         </IonChip>
-                        <IonChip color="secondary">
+                        <IonChip color="light">
                           <IonLabel>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
                         </IonChip>
-                        {activeEvent.isTicketed && activeEvent.ticketPrice && (
+                        {/* {activeEvent.isTicketed && activeEvent.ticketPrice && (
                           <IonChip color="success">
                             <IonLabel>£{activeEvent.ticketPrice}</IonLabel>
                           </IonChip>
-                        )}
+                        )} */}
                       </div>
                       <div className="event-description-container">
                         <p>{activeEvent.description}</p>
@@ -419,9 +419,9 @@ const VisitorLanding: React.FC = () => {
                         Read More
                       </IonButton>
                     </div>
-                    <IonBadge color="success" className="active-badge">
+                    {/* <IonBadge color="success" className="active-badge">
                       Active Event
-                    </IonBadge>
+                    </IonBadge> */}
                   </div>
                 </IonCardContent>
               </IonCard>
@@ -700,7 +700,7 @@ const VisitorLanding: React.FC = () => {
       </IonContent>
       
       {/* Fixed Footer */}
-      <IonFooter className="ion-no-border">
+      {/* <IonFooter className="ion-no-border">
         <IonToolbar className="transparent-toolbar">
           <IonButtons slot="end">
             <IonButton
@@ -712,7 +712,7 @@ const VisitorLanding: React.FC = () => {
             </IonButton>
           </IonButtons>
         </IonToolbar>
-      </IonFooter>
+      </IonFooter> */}
     </IonPage>
   );
 };

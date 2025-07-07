@@ -436,7 +436,7 @@ ion-footer {
 
 .event-banner-info h2 {
   margin: 0 0 12px 0;
-  font-size: 2.2rem;
+  font-size: 1.9rem;
   font-weight: 400;
   line-height: 1.2;
   text-transform: uppercase;
@@ -464,7 +464,7 @@ ion-footer {
 
 .event-banner-info p {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 500;
   line-height: 1.5;
   opacity: 0.8;
