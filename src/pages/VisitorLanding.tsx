@@ -237,7 +237,8 @@ const VisitorLanding: React.FC = () => {
               <img src={galleryLogo.url} alt={galleryName} />
             </div>
           )}
-          <h1 className="gallery-name">{galleryName}</h1>
+          {!galleryLogo && (
+          <h1 className="gallery-name">{galleryName}</h1>)}
         </div>
         
         {/* Background Image Container */}
