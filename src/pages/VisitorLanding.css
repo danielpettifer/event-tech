@@ -424,17 +424,17 @@ ion-footer {
 
 .event-description-container {
   position: relative;
-  max-height: 27vh;
+  max-height: 10vh; /* Reduced from 27vh to 10vh */
   overflow: hidden;
   margin-top: 16px;
   mask-image: linear-gradient(to bottom, 
     rgba(0,0,0,1) 0%, 
-    rgba(0,0,0,1) 63%, /* 17vh/27vh = ~63% */
+    rgba(0,0,0,1) 70%, /* 7vh/10vh = 70% - adjusted for new height */
     rgba(0,0,0,0) 100%
   );
   -webkit-mask-image: linear-gradient(to bottom, 
     rgba(0,0,0,1) 0%, 
-    rgba(0,0,0,1) 63%, 
+    rgba(0,0,0,1) 70%, 
     rgba(0,0,0,0) 100%
   );
   z-index: 80; /* Ensure description is above the gradient and title */
@@ -518,7 +518,7 @@ ion-footer {
   }
   
   .event-description-container {
-    max-height: 20vh;
+    max-height: 8vh; /* Reduced from 20vh to 8vh for mobile */
   }
   
   .event-description-modal-content h2 {
