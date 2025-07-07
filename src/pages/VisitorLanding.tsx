@@ -264,10 +264,27 @@ const VisitorLanding: React.FC = () => {
   useEffect(() => {
     // Set up background image rotation if there are multiple images
     if (backgroundImages.length > 1) {
+      // Pre-load all images to ensure smooth transitions
+      backgroundImages.forEach(imgSrc => {
+        const img = new Image();
+        img.src = imgSrc;
+      });
+      
       const interval = setInterval(() => {
+        // Log when rotation is about to happen for debugging
+        console.log('Background image rotation triggered');
+        
+        // Update the background image index
         setCurrentBackgroundIndex(prevIndex => 
           prevIndex === backgroundImages.length - 1 ? 0 : prevIndex + 1
         );
+        
+        // The color extraction will happen with a 1-second delay (in useColorExtraction hook)
+        // This creates a coordinated sequence:
+        // 1. Background image starts fading in (0s)
+        // 2. Color extraction begins (1s)
+        // 3. Background image completes fade (2s)
+        // 4. Colors complete transition (3s)
       }, 20000); // 20 seconds per image
       
       return () => clearInterval(interval);

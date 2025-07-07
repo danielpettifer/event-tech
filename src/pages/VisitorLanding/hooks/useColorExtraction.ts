@@ -288,10 +288,17 @@ const useColorExtraction = (imageUrl: string | null) => {
     }
   }, []);
 
-  // Extract color when imageUrl changes
+  // Extract color when imageUrl changes, with a delay to sync with background image transition
   useEffect(() => {
     if (imageUrl) {
-      extractColor(imageUrl);
+      // Add a 1-second delay before extracting color
+      // This allows the background image to start fading in before colors begin transitioning
+      const extractionTimer = setTimeout(() => {
+        console.log('Starting color extraction with delay for transition sync');
+        extractColor(imageUrl);
+      }, 1000); // 1-second delay to coordinate with background fade
+      
+      return () => clearTimeout(extractionTimer);
     }
   }, [imageUrl, extractColor]);
 
