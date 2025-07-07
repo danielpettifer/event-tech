@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   IonContent,
   IonPage,
@@ -33,6 +33,7 @@ import { GallerySettingsService } from '../services/GallerySettingsService';
 import { EventService } from '../services/EventService';
 import { Event } from '../types/Event';
 import { LogoImage } from '../types/GallerySettings';
+import useColorExtraction from './VisitorLanding/hooks/useColorExtraction';
 import './VisitorLanding.css';
 
 const VisitorLanding: React.FC = () => {
@@ -166,6 +167,17 @@ const VisitorLanding: React.FC = () => {
     
     setBackgroundImages(bgImages);
   }, [showItemCards]);
+
+  // Get the current background image URL
+  const currentBackgroundImage = useMemo(() => {
+    if (backgroundImages.length > 0) {
+      return backgroundImages[currentBackgroundIndex];
+    }
+    return null;
+  }, [backgroundImages, currentBackgroundIndex]);
+
+  // Extract dominant dark color from current background image
+  const { dominantColor } = useColorExtraction(currentBackgroundImage);
 
   useEffect(() => {
     // Set up background image rotation if there are multiple images
