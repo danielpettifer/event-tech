@@ -1,8 +1,5 @@
 .visitor-landing {
   --background: transparent;
-  display: flex;
-  align-items: start;
-  justify-content: end;
   min-height: 100vh !important;
 }
 
@@ -36,7 +33,7 @@ ion-footer {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.15) 100%);
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 100%);
   z-index: 2;
   pointer-events: none;
 }
@@ -135,10 +132,6 @@ ion-footer {
 /* Desktop and Landscape: Horizontal scroll at bottom */
 @media (min-width: 768px) {
   .items-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
     width: 100%;
     height: 300px;
     margin: 0;
@@ -325,18 +318,39 @@ ion-footer {
   --background: rgba(255, 255, 255, 0.3);
 }
 
-/* Active Event Banner */
-.active-event-banner {
+/* Main Content Container */
+.main-content-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
   position: relative;
   z-index: 10;
 }
 
+.flex-spacer {
+  flex: 1;
+}
+
+.bottom-content-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 56px; /* Space for footer */
+}
+
+/* Active Event Banner */
+.active-event-banner {
+  width: 100%;
+  padding: 0 20px;
+  margin-bottom: 20px;
+  z-index: 60; /* Higher than the items-container z-index (50) */
+}
+
 .event-banner-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  box-shadow: none;
+  border: none;
   margin-top: auto;
 }
 
@@ -349,21 +363,23 @@ ion-footer {
 
 .event-banner-info {
   flex: 1;
+  color: white !important;
 }
 
 .event-banner-info h2 {
   margin: 0 0 12px 0;
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--ion-color-primary);
+  font-size: 2.2rem;
+  font-weight: 400;
   line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .event-banner-info p {
   margin: 0 0 16px 0;
-  font-size: 1.1rem;
-  color: var(--ion-color-dark);
+  font-size: 1.5rem;
+  font-weight: 500;
   line-height: 1.5;
+  opacity: 0.8;
 }
 
 .event-banner-details {
@@ -382,7 +398,6 @@ ion-footer {
 @media (max-width: 768px) {
   .active-event-banner {
     padding: 16px;
-    margin-top: 60px;
   }
   
   .event-banner-content {

@@ -274,77 +274,86 @@ const VisitorLanding: React.FC = () => {
         {/* Gradient Overlay */}
         <div className="gradient-overlay"></div>
 
-        {/* Active Event Banner */}
-        {activeEvent && (
-          <div className="active-event-banner">
-            <IonCard className="event-banner-card">
-              <IonCardContent>
-                <div className="event-banner-content">
-                  <div className="event-banner-info">
-                    <h2>{activeEvent.title}</h2>
-                    <p>{activeEvent.description}</p>
-                    <div className="event-banner-details">
-                      <IonChip color="primary">
-                        <IonLabel>{activeEvent.eventType}</IonLabel>
-                      </IonChip>
-                      <IonChip color="secondary">
-                        <IonLabel>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
-                      </IonChip>
-                      {activeEvent.isTicketed && activeEvent.ticketPrice && (
-                        <IonChip color="success">
-                          <IonLabel>£{activeEvent.ticketPrice}</IonLabel>
-                        </IonChip>
-                      )}
+        {/* Main Content Flex Container */}
+        <div className="main-content-container">
+          {/* Spacer to push content to bottom */}
+          <div className="flex-spacer"></div>
+          
+          {/* Bottom Content Container */}
+          <div className="bottom-content-container">
+            {/* Active Event Banner */}
+            {activeEvent && (
+              <div className="active-event-banner">
+                <IonCard className="event-banner-card">
+                  <IonCardContent>
+                    <div className="event-banner-content">
+                      <div className="event-banner-info">
+                        <h2>{activeEvent.title}</h2>
+                        <p>{activeEvent.description}</p>
+                        <div className="event-banner-details">
+                          <IonChip color="primary">
+                            <IonLabel>{activeEvent.eventType}</IonLabel>
+                          </IonChip>
+                          <IonChip color="secondary">
+                            <IonLabel>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
+                          </IonChip>
+                          {activeEvent.isTicketed && activeEvent.ticketPrice && (
+                            <IonChip color="success">
+                              <IonLabel>£{activeEvent.ticketPrice}</IonLabel>
+                            </IonChip>
+                          )}
+                        </div>
+                      </div>
+                      <IonBadge color="success" className="active-badge">
+                        Active Event
+                      </IonBadge>
                     </div>
-                  </div>
-                  <IonBadge color="success" className="active-badge">
-                    Active Event
-                  </IonBadge>
-                </div>
-              </IonCardContent>
-            </IonCard>
-          </div>
-        )}
-
-        {/* Items Display or Event Default Image - Conditional Rendering */}
-        {showItemCards && items.length > 0 && (
-          // Show carousel if there are featured items
-          <div className="items-container">
-            <div className="items-scroll-container">
-              {items.map((item) => (
-                <div 
-                  key={item.id}
-                  className="item-card" 
-                  onClick={() => handleItemClick(item)}
-                >
-                  <img src={item.thumbnailImage || item.images[0]} alt={item.title} />
-                  <div className="item-card-overlay"></div>
-                  <div className="item-card-content">
-                    <h3 className="item-card-title">{item.title}</h3>
-                    <p className="item-card-artist">{item.artist}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Event Default Image - shown when no featured items but event has image */}
-        {showItemCards && items.length === 0 && activeEvent && activeEvent.imageUrl && (
-          <div className="items-container">
-            <div className="event-default-image-container">
-              <img 
-                src={activeEvent.imageUrl} 
-                alt={activeEvent.title}
-                className="event-default-image"
-              />
-              <div className="event-default-overlay">
-                <h3>{activeEvent.title}</h3>
-                <p>{activeEvent.description}</p>
+                  </IonCardContent>
+                </IonCard>
               </div>
-            </div>
+            )}
+
+            {/* Items Display or Event Default Image - Conditional Rendering */}
+            {showItemCards && items.length > 0 && (
+              // Show carousel if there are featured items
+              <div className="items-container">
+                <div className="items-scroll-container">
+                  {items.map((item) => (
+                    <div 
+                      key={item.id}
+                      className="item-card" 
+                      onClick={() => handleItemClick(item)}
+                    >
+                      <img src={item.thumbnailImage || item.images[0]} alt={item.title} />
+                      <div className="item-card-overlay"></div>
+                      <div className="item-card-content">
+                        <h3 className="item-card-title">{item.title}</h3>
+                        <p className="item-card-artist">{item.artist}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Event Default Image - shown when no featured items but event has image */}
+            {showItemCards && items.length === 0 && activeEvent && activeEvent.imageUrl && (
+              <div className="items-container">
+                <div className="event-default-image-container">
+                  <img 
+                    src={activeEvent.imageUrl} 
+                    alt={activeEvent.title}
+                    className="event-default-image"
+                  />
+                  <div className="event-default-overlay">
+                    <h3>{activeEvent.title}</h3>
+                    <p>{activeEvent.description}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Visitor Form */}
         <div className="visitor-form-container">
