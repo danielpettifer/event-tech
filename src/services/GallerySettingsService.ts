@@ -54,7 +54,7 @@ export class GallerySettingsService {
       secondaryLocations: [],
       logoUrls: [{
         id: 'logo_1',
-        url: 'BBFA_Logo_black_stacked.png',
+        url: '/BBFA_Logo_black_stacked.png',
         name: 'Default Logo',
         uploadDate: new Date().toISOString(),
         isActive: true

@@ -71,11 +71,7 @@ const VisitorLanding: React.FC = () => {
             <div className="logo-container">
               {galleryLogo && (
                 <img 
-                  src={
-                    galleryLogo.url.startsWith('data:') || galleryLogo.url.startsWith('http')
-                      ? galleryLogo.url
-                      : `${window.location.origin}/${galleryLogo.url.replace(/^\//, '')}`
-                  } 
+                  src={galleryLogo.url} 
                   alt={galleryName || 'Gallery Logo'} 
                   className="gallery-logo"
                 />

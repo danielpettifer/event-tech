@@ -235,6 +235,7 @@ const VisitorLanding: React.FC = () => {
         <IonToolbar className="transparent-toolbar">
           {galleryLogo && (
             <div className="gallery-logo" slot="start">
+
               <img src={galleryLogo.url} alt={galleryName} />
             </div>
           )}
@@ -537,6 +538,7 @@ const VisitorLanding: React.FC = () => {
               className="admin-login-button"
               onClick={handleAdminLogin}
             >
+              helloooo
               <IonIcon icon={chevronForward} />
             </IonButton>
           </IonButtons>

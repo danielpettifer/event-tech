@@ -1,5 +1,9 @@
 .visitor-landing {
   --background: transparent;
+  display: flex;
+  align-items: start;
+  justify-content: end;
+  min-height: 100vh !important;
 }
 
 /* Transparent Toolbar */
@@ -35,8 +39,10 @@ ion-header, ion-footer {
 
 .gallery-logo img {
   height: 100%;
+  max-height: 82px;
   /* max-width: 150px; */
   object-fit: contain;
+  filter: invert(1);
 }
 
 .gallery-name {
@@ -312,8 +318,6 @@ ion-header, ion-footer {
 .active-event-banner {
   position: relative;
   z-index: 10;
-  padding: 20px;
-  margin-top: 80px;
 }
 
 .event-banner-card {
@@ -322,7 +326,7 @@ ion-header, ion-footer {
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  margin: 0;
+  margin-top: auto;
 }
 
 .event-banner-content {
