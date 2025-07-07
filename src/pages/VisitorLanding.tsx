@@ -538,7 +538,6 @@ const VisitorLanding: React.FC = () => {
               className="admin-login-button"
               onClick={handleAdminLogin}
             >
-              helloooo
               <IonIcon icon={chevronForward} />
             </IonButton>
           </IonButtons>
