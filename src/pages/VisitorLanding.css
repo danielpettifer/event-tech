@@ -114,8 +114,9 @@ ion-footer {
 }
 
 .gallery-logo {
-  height: 50px;
-  margin-left: 15px;
+  height: 72px;
+  margin-left: 16px;
+  margin-top: -14px;
   display: flex;
   align-items: center;
 }
@@ -391,6 +392,20 @@ ion-footer {
 
 .admin-login-button:hover {
   --background: var(--dynamic-dark-color, rgba(255, 255, 255, 0.3));
+}
+
+.visitor-services-button {
+  --background: white !important;
+  opacity: 1 !important;
+  --color: var(--dynamic-dark-color, rgba(0, 0, 0, 0.8)) !important;
+  margin: 28px !important;
+}
+
+.visitor-sevices-button-content {
+ display: flex;
+  padding: 18px 16px 16px 16px;
+  justify-content: center;
+  align-items: center;
 }
 
 /* TouchID Admin Login Fab Button */

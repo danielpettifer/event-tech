@@ -26,7 +26,7 @@ import {
   IonFooter,
   IonFabButton
 } from '@ionic/react';
-import { close, chevronForward, lockClosed, person, heart, star, image } from 'ionicons/icons';
+import { close, chevronForward, lockClosed, person, heart, star, image, chevronDown } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { ItemService } from '../services/ItemService';
 import { Item } from '../types/Item';
@@ -327,38 +327,48 @@ const VisitorLanding: React.FC = () => {
     <IonPage>
       {/* Fixed Header */}
       <IonHeader className="ion-no-border">
-        <IonFabButton 
-          className="admin-login-fab"
-          onClick={handleAdminLogin}
-          style={{
-            '--background': 'var(--dynamic-dark-color-solid)',
-            position: 'absolute',
-            right: '20px',
-            top: '20px',
-            zIndex: 100,
-            transition: 'background-color 2s ease-in-out'
-          }}
-        >
-          <img 
-            src="/touchid.svg" 
-            alt="Admin Login" 
-            style={{ 
-              filter: 'invert(1)', 
-              width: '60%', 
-              height: '60%' 
-            }} 
-          />
-        </IonFabButton>
         <IonToolbar className="transparent-toolbar">
+          <IonButtons slot="start" style={{marginTop: -28}}>
+            <IonFabButton 
+              className="admin-login-fab"
+              onClick={handleAdminLogin}
+              style={{
+                '--background': 'var(--dynamic-dark-color-solid)',
+                transition: 'background-color 2s ease-in-out',
+                margin: '16px 0 0 16px'
+              }}
+            >
+              <img 
+                src="/touchid.svg" 
+                alt="Admin Login" 
+                style={{ 
+                  filter: 'invert(1)', 
+                  width: '60%', 
+                  height: '60%' 
+                }} 
+              />
+            </IonFabButton>
+          </IonButtons>
+          
           {galleryLogo && (
             <div className="gallery-logo" slot="start">
-
               <img src={galleryLogo.url} alt={galleryName} />
             </div>
           )}
           {!galleryLogo && (
             <IonTitle className="gallery-name">{galleryName}</IonTitle>
           )}
+          <IonButtons slot="end">
+            <IonButton
+            shape="round"
+            className='visitor-services-button'
+            >
+              <div className='visitor-sevices-button-content'>
+              Visitor services
+              <IonIcon icon={chevronDown} slot="end"/>
+              </div>
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
       
