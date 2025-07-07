@@ -288,8 +288,9 @@ const VisitorLanding: React.FC = () => {
                   <IonCardContent>
                     <div className="event-banner-content">
                       <div className="event-banner-info">
+                        
                         <h2>{activeEvent.title}</h2>
-                        <p>{activeEvent.description}</p>
+                    
                         <div className="event-banner-details">
                           <IonChip color="primary">
                             <IonLabel>{activeEvent.eventType}</IonLabel>
@@ -303,6 +304,7 @@ const VisitorLanding: React.FC = () => {
                             </IonChip>
                           )}
                         </div>
+                        <p>{activeEvent.description}</p>
                       </div>
                       <IonBadge color="success" className="active-badge">
                         Active Event
