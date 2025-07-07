@@ -24,13 +24,14 @@ import {
   IonChip,
   IonBadge
 } from '@ionic/react';
-import { close, chevronForward, lockClosed, person, heart, star } from 'ionicons/icons';
+import { close, chevronForward, lockClosed, person, heart, star, image } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { ItemService } from '../services/ItemService';
 import { Item } from '../types/Item';
 import { GallerySettingsService } from '../services/GallerySettingsService';
 import { EventService } from '../services/EventService';
 import { Event } from '../types/Event';
+import { LogoImage } from '../types/GallerySettings';
 import './VisitorLanding.css';
 
 const VisitorLanding: React.FC = () => {
@@ -44,6 +45,8 @@ const VisitorLanding: React.FC = () => {
   const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
   const [showItemCards, setShowItemCards] = useState(true);
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
+  const [galleryLogo, setGalleryLogo] = useState<LogoImage | null>(null);
+  const [galleryName, setGalleryName] = useState<string>('');
   const [visitorForm, setVisitorForm] = useState({
     name: '',
     email: '',
@@ -65,6 +68,14 @@ const VisitorLanding: React.FC = () => {
     // Load gallery settings - this is the global preference
     const showCards = GallerySettingsService.getShowItemCards();
     setShowItemCards(showCards);
+    
+    // Load gallery logo and name
+    const activeLogo = GallerySettingsService.getActiveLogo();
+    setGalleryLogo(activeLogo);
+    
+    const settings = GallerySettingsService.getOrInitializeSettings();
+    setGalleryName(settings.galleryName);
+    
     console.log('Show items carousel:', showCards);
   };
   useEffect(() => {
@@ -219,6 +230,16 @@ const VisitorLanding: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen className="visitor-landing">
+        {/* Gallery Header with Logo */}
+        <div className="gallery-header">
+          {galleryLogo && (
+            <div className="gallery-logo">
+              <img src={galleryLogo.url} alt={galleryName} />
+            </div>
+          )}
+          <h1 className="gallery-name">{galleryName}</h1>
+        </div>
+        
         {/* Background Image Container */}
         <div className="background-container">
           {backgroundImages.length > 0 ? (

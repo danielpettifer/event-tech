@@ -82,8 +82,18 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       for (let i = 0; i < filesToProcess.length; i++) {
         const file = filesToProcess[i];
         
-        // Validate file type
-        if (!acceptedTypes.includes(file.type)) {
+        console.log('Processing file:', file.name, 'type:', file.type, 'size:', file.size);
+        
+        // Validate file type - be more lenient with types
+        const isAcceptedType = acceptedTypes.some(type => {
+          // Check if file type matches directly or by category (e.g., image/*)
+          if (file.type === type) return true;
+          if (type.endsWith('*') && file.type.startsWith(type.replace('*', ''))) return true;
+          return false;
+        });
+        
+        if (!isAcceptedType) {
+          console.warn(`File type ${file.type} not in accepted types:`, acceptedTypes);
           setToastMessage(`Please select valid image files (${acceptedTypes.join(', ')})`);
           setShowToast(true);
           continue;
@@ -98,8 +108,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         }
 
         // Convert file to data URL
-        const dataUrl = await fileToDataUrl(file);
-        newImages.push(dataUrl);
+        try {
+          const dataUrl = await fileToDataUrl(file);
+          console.log('File converted to data URL successfully');
+          newImages.push(dataUrl);
+        } catch (fileError) {
+          console.error('Error converting file to data URL:', fileError);
+          setToastMessage(`Error processing file "${file.name}". Please try again.`);
+          setShowToast(true);
+          continue;
+        }
         
         // Update progress
         setUploadProgress(((i + 1) / filesToProcess.length) * 90);
@@ -108,6 +126,15 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       // Complete the upload
       setTimeout(() => {
         setUploadProgress(100);
+        
+        if (newImages.length === 0) {
+          setIsUploading(false);
+          setToastMessage('No valid images were uploaded. Please try again.');
+          setShowToast(true);
+          return;
+        }
+        
+        console.log('Processed images:', newImages);
         
         if (allowMultiple && onImagesChange) {
           const updatedImages = [...images, ...newImages];
@@ -132,6 +159,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       }, 500);
 
     } catch (error) {
+      console.error('Error in file upload process:', error);
       setIsUploading(false);
       setUploadProgress(0);
       setToastMessage('Failed to upload images. Please try again.');

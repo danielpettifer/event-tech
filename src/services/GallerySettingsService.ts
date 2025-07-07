@@ -17,6 +17,13 @@ export class GallerySettingsService {
     try {
       settings.updatedAt = new Date().toISOString();
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(settings));
+      
+      // Dispatch a custom event to notify other components of the change
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('gallerySettingsChanged', {
+          detail: { type: 'settings', settings }
+        }));
+      }
     } catch (error) {
       console.error('Error saving gallery settings:', error);
       throw new Error('Failed to save gallery settings');
@@ -167,8 +174,18 @@ export class GallerySettingsService {
       isActive: false
     };
     
+    console.log('Adding new logo:', newLogo);
+    
     settings.logoUrls.push(newLogo);
     this.saveSettings(settings);
+    
+    // Explicitly dispatch a logo added event
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('gallerySettingsChanged', {
+        detail: { type: 'logoAdded', logo: newLogo }
+      }));
+    }
+    
     return settings;
   }
 
@@ -185,9 +202,20 @@ export class GallerySettingsService {
     if (selectedLogo) {
       selectedLogo.isActive = true;
       settings.activeLogoId = logoId;
+      
+      // Log the active logo for debugging
+      console.log('Setting active logo:', selectedLogo);
     }
     
     this.saveSettings(settings);
+    
+    // Explicitly dispatch a logo change event
+    if (typeof window !== 'undefined' && selectedLogo) {
+      window.dispatchEvent(new CustomEvent('gallerySettingsChanged', {
+        detail: { type: 'logo', logoUrl: selectedLogo.url, logoId }
+      }));
+    }
+    
     return settings;
   }
 

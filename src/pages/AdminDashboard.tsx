@@ -121,6 +121,10 @@ const AdminDashboard: React.FC = () => {
   // Active event state
   const [activeEventId, setActiveEventId] = useState<string | undefined>(undefined);
   
+  // Gallery settings state
+  const [galleryName, setGalleryName] = useState('Demo Gallery');
+  const [galleryLogo, setGalleryLogo] = useState<string | null>(null);
+  
   // Edit mode state
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
@@ -157,7 +161,42 @@ const AdminDashboard: React.FC = () => {
     loadItems();
     loadItemStats();
     loadActiveEvent();
+    loadGallerySettings();
+    
+    // Add a storage event listener to detect changes to localStorage
+    // This will allow the component to update when settings are changed in another tab/window
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'gallery_settings') {
+        console.log('Settings changed in another window, reloading gallery settings');
+        loadGallerySettings();
+      }
+    };
+    
+    // Add a custom event listener for same-tab changes
+    const handleCustomStorageChange = (event: CustomEvent) => {
+      console.log('Settings changed in same tab, reloading gallery settings');
+      loadGallerySettings();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('gallerySettingsChanged', handleCustomStorageChange as EventListener);
+    
+    // Clean up event listeners
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('gallerySettingsChanged', handleCustomStorageChange as EventListener);
+    };
   }, [history]);
+  
+  const loadGallerySettings = () => {
+    const settings = GallerySettingsService.getOrInitializeSettings();
+    setGalleryName(settings.galleryName);
+    
+    const activeLogo = GallerySettingsService.getActiveLogo();
+    if (activeLogo) {
+      setGalleryLogo(activeLogo.url);
+    }
+  };
 
   const loadClients = () => {
     const allClients = ClientService.getAllClients();
@@ -1074,13 +1113,19 @@ const AdminDashboard: React.FC = () => {
               <IonCard>
                 <IonCardContent>
                   <div className="company-info">
-                    <IonAvatar className="company-logo">
-                      <div className="logo-placeholder">
-                        <IonIcon icon={business} />
+                    {galleryLogo ? (
+                      <div className="company-logo">
+                        <img src={galleryLogo} alt={galleryName} />
                       </div>
-                    </IonAvatar>
+                    ) : (
+                      <IonAvatar className="company-logo">
+                        <div className="logo-placeholder">
+                          <IonIcon icon={business} />
+                        </div>
+                      </IonAvatar>
+                    )}
                     <div>
-                      <h3>Demo Gallery</h3>
+                      <h3>{galleryName}</h3>
                       <p>123 Art Street, London</p>
                     </div>
                   </div>

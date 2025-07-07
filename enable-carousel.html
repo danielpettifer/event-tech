@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enable Items Carousel</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Items Carousel Settings</h1>
+        <p>Click the button below to enable the items carousel for the example event. This will update the gallery settings to show the items carousel on the visitor landing page.</p>
+        
+        <button id="enableCarousel">Enable Items Carousel</button>
+        <button id="disableCarousel">Disable Items Carousel</button>
+        
+        <div id="status" class="status"></div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check current carousel status
+            const showItemCards = localStorage.getItem('gallery_show_items_preference') === 'true';
+            updateStatusDisplay(showItemCards);
+            
+            // Enable carousel button
+            document.getElementById('enableCarousel').addEventListener('click', function() {
+                try {
+                    // Get current settings
+                    const settingsKey = 'gallery_settings';
+                    const storedSettings = localStorage.getItem(settingsKey);
+                    let settings = storedSettings ? JSON.parse(storedSettings) : null;
+                    
+                    if (!settings) {
+                        showStatus('Error: Gallery settings not found', 'error');
+                        return;
+                    }
+                    
+                    // Update showItemCards to true
+                    settings.showItemCards = true;
+                    settings.updatedAt = new Date().toISOString();
+                    
+                    // Save updated settings
+                    localStorage.setItem(settingsKey, JSON.stringify(settings));
+                    
+                    // Also save preference to localStorage
+                    localStorage.setItem('gallery_show_items_preference', 'true');
+                    
+                    // Dispatch event to notify other components
+                    window.dispatchEvent(new CustomEvent('gallerySettingsChanged', {
+                        detail: { showItemCards: true }
+                    }));
+                    
+                    showStatus('Items carousel has been enabled successfully!', 'success');
+                    updateStatusDisplay(true);
+                } catch (error) {
+                    console.error('Error enabling carousel:', error);
+                    showStatus('Error enabling carousel: ' + error.message, 'error');
+                }
+            });
+            
+            // Disable carousel button
+            document.getElementById('disableCarousel').addEventListener('click', function() {
+                try {
+                    // Get current settings
+                    const settingsKey = 'gallery_settings';
+                    const storedSettings = localStorage.getItem(settingsKey);
+                    let settings = storedSettings ? JSON.parse(storedSettings) : null;
+                    
+                    if (!settings) {
+                        showStatus('Error: Gallery settings not found', 'error');
+                        return;
+                    }
+                    
+                    // Update showItemCards to false
+                    settings.showItemCards = false;
+                    settings.updatedAt = new Date().toISOString();
+                    
+                    // Save updated settings
+                    localStorage.setItem(settingsKey, JSON.stringify(settings));
+                    
+                    // Also save preference to localStorage
+                    localStorage.setItem('gallery_show_items_preference', 'false');
+                    
+                    // Dispatch event to notify other components
+                    window.dispatchEvent(new CustomEvent('gallerySettingsChanged', {
+                        detail: { showItemCards: false }
+                    }));
+                    
+                    showStatus('Items carousel has been disabled successfully!', 'success');
+                    updateStatusDisplay(false);
+                } catch (error) {
+                    console.error('Error disabling carousel:', error);
+                    showStatus('Error disabling carousel: ' + error.message, 'error');
+                }
+            });
+        });
+        
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = 'block';
+            
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 5000);
+        }
+        
+        function updateStatusDisplay(isEnabled) {
+            const enableBtn = document.getElementById('enableCarousel');
+            const disableBtn = document.getElementById('disableCarousel');
+            
+            if (isEnabled) {
+                enableBtn.disabled = true;
+                enableBtn.style.opacity = '0.5';
+                disableBtn.disabled = false;
+                disableBtn.style.opacity = '1';
+                showStatus('Items carousel is currently ENABLED', 'success');
+            } else {
+                enableBtn.disabled = false;
+                enableBtn.style.opacity = '1';
+                disableBtn.disabled = true;
+                disableBtn.style.opacity = '0.5';
+                showStatus('Items carousel is currently DISABLED', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
