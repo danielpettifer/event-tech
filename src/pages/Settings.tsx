@@ -16,11 +16,13 @@ import {
   IonInput,
   IonButton,
   IonIcon,
-  IonToast
+  IonToast,
+  IonToggle
 } from '@ionic/react';
 import {
   save,
-  business
+  business,
+  images
 } from 'ionicons/icons';
 import { GallerySettings } from '../types/GallerySettings';
 import { GallerySettingsService } from '../services/GallerySettingsService';
@@ -155,6 +157,43 @@ const Settings: React.FC = () => {
                 <IonIcon icon={save} slot="start" />
                 Save Basic Information
               </IonButton>
+            </IonCardContent>
+          </IonCard>
+
+          {/* Display Settings */}
+          <IonCard>
+            <IonCardHeader>
+              <IonCardTitle>
+                <IonIcon icon={images} style={{ marginRight: '8px' }} />
+                Display Settings
+              </IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent>
+              <IonItem>
+                <IonLabel>Show Items Carousel</IonLabel>
+                <IonToggle
+                  checked={gallerySettings.showItemCards}
+                  onIonChange={(e) => {
+                    const newValue = e.detail.checked;
+                    setGallerySettings({
+                      ...gallerySettings,
+                      showItemCards: newValue
+                    });
+                    GallerySettingsService.updateShowItemCards(newValue);
+                    
+                    // Dispatch custom event to notify other tabs/components
+                    window.dispatchEvent(new CustomEvent('gallerySettingsChanged', {
+                      detail: { showItemCards: newValue }
+                    }));
+                    
+                    setToastMessage(`Items carousel ${newValue ? 'enabled' : 'disabled'}`);
+                    setShowToast(true);
+                  }}
+                />
+              </IonItem>
+              <p className="setting-description">
+                When enabled, artwork items will be displayed in a carousel at the bottom of the visitor landing page.
+              </p>
             </IonCardContent>
           </IonCard>
 

@@ -56,15 +56,51 @@ const VisitorLanding: React.FC = () => {
   });
   const history = useHistory();
 
-  useEffect(() => {
+  // Add a function to load all data that can be called when needed
+  const loadData = () => {
     // Initialize sample data if needed
     ItemService.initializeSampleData();
     EventService.initializeSampleData();
     
-    // Load gallery settings
+    // Load gallery settings - this is the global preference
     const showCards = GallerySettingsService.getShowItemCards();
     setShowItemCards(showCards);
+    console.log('Show items carousel:', showCards);
+  };
+  useEffect(() => {
+    // Load all data when component mounts
+    loadData();
     
+    // Add event listener for focus to reload data when user returns to this page
+    window.addEventListener('focus', loadData);
+    
+    // Add a storage event listener to detect changes to localStorage
+    // This will allow the component to update when settings are changed in another tab/window
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'gallery_settings' || event.key === 'gallery_show_items_preference') {
+        console.log('Settings changed in another window, reloading data');
+        loadData();
+      }
+    };
+    
+    // Add a custom event listener for same-tab changes
+    const handleCustomStorageChange = (event: CustomEvent) => {
+      console.log('Settings changed in same tab, reloading data');
+      loadData();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('gallerySettingsChanged', handleCustomStorageChange as EventListener);
+    
+    // Clean up event listeners
+    return () => {
+      window.removeEventListener('focus', loadData);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('gallerySettingsChanged', handleCustomStorageChange as EventListener);
+    };
+  }, []);
+
+  useEffect(() => {
     // Load active event and items
     const activeEventId = GallerySettingsService.getActiveEventId();
     let currentEvent: Event | null = null;
@@ -74,13 +110,27 @@ const VisitorLanding: React.FC = () => {
       currentEvent = EventService.getEventById(activeEventId);
       setActiveEvent(currentEvent);
       
-      if (currentEvent && currentEvent.featuredItems && currentEvent.featuredItems.length > 0) {
-        // Load featured items for the active event
+      // First check the global setting - if it's false, don't show items regardless
+      if (!showItemCards) {
+        currentItems = [];
+        setItems([]);
+        // Global setting takes precedence
+        setShowItemCards(false);
+      }
+      // Then check if event-specific showItems is explicitly set to false
+      else if (currentEvent?.showItems === false) {
+        // If showItems is false, don't show items regardless of whether there are featured items
+        currentItems = [];
+        setItems([]);
+        setShowItemCards(false);
+      } else if (currentEvent && currentEvent.featuredItems && currentEvent.featuredItems.length > 0) {
+        // If global and event settings allow showing items, and there are featured items, show them
         const featuredItems = currentEvent.featuredItems
           .map(itemId => ItemService.getItemById(itemId))
           .filter(item => item !== null) as Item[];
         currentItems = featuredItems;
         setItems(featuredItems);
+        setShowItemCards(true);
       } else {
         // No featured items - will show event default image instead
         currentItems = [];
@@ -102,7 +152,7 @@ const VisitorLanding: React.FC = () => {
     }
     
     setBackgroundImages(bgImages);
-  }, []);
+  }, [showItemCards]);
 
   useEffect(() => {
     // Set up background image rotation if there are multiple images
@@ -225,7 +275,7 @@ const VisitorLanding: React.FC = () => {
           </div>
         )}
 
-        {/* Items Display or Event Default Image */}
+        {/* Items Display or Event Default Image - Conditional Rendering */}
         {showItemCards && items.length > 0 && (
           // Show carousel if there are featured items
           <div className="items-container">

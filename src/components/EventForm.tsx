@@ -705,6 +705,22 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
                     </IonCol>
                   </IonRow>
 
+                  <IonRow>
+                    <IonCol size="12">
+                      <IonItem>
+                        <IonLabel>Show Items Carousel</IonLabel>
+                        <IonToggle
+                          checked={formData.showItems !== false} // Default to true if undefined
+                          onIonChange={(e) => setFormData({...formData, showItems: e.detail.checked})}
+                        />
+                      </IonItem>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--ion-color-medium)', margin: '4px 0 0 16px' }}>
+                        When enabled, selected items will be displayed in a carousel on the visitor landing page. 
+                        When disabled, only the event background image will be shown.
+                      </p>
+                    </IonCol>
+                  </IonRow>
+
                   {/* Additional Information */}
                   <IonRow>
                     <IonCol size="12">

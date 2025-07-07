@@ -858,6 +858,20 @@ ion-header {
   width: 100%;
 }
 
+/* Event Toggle Control */
+.event-toggle-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-toggle-description {
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+  margin: 0;
+  line-height: 1.4;
+}
+
 /* Responsive adjustments for background images */
 @media (max-width: 768px) {
   .event-info-row {

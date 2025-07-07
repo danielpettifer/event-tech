@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disable Items Carousel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .warning {
+      background-color: #fff3cd;
+      border: 1px solid #ffeeba;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      color: #856404;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    pre {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      overflow: auto;
+      margin-top: 20px;
+    }
+    .success {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .error {
+      color: #dc3545;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Disable Items Carousel</h1>
+  
+  <div class="warning">
+    <strong>Warning:</strong> This will set the global preference to hide the items carousel, clear all gallery data from localStorage, and reinitialize the sample data.
+  </div>
+  
+  <button id="disableButton">Disable Items Carousel</button>
+  
+  <pre id="results">Results will appear here...</pre>
+  
+  <script>
+    document.getElementById('disableButton').addEventListener('click', function() {
+      const resultsElement = document.getElementById('results');
+      resultsElement.innerHTML = 'Processing...\n';
+      
+      try {
+        // First, set the global preference to false
+        localStorage.setItem('gallery_show_items_preference', 'false');
+        resultsElement.innerHTML += 'Set gallery_show_items_preference to false\n';
+        
+        // Clear all gallery data
+        const keysToRemove = [
+          'gallery_events',
+          'gallery_items',
+          'gallery_clients',
+          'gallery_settings',
+          'gallery_event_attendees',
+          'visitor_submissions'
+        ];
+        
+        resultsElement.innerHTML += '\nCurrent localStorage keys:\n';
+        for (let i = 0; i < localStorage.length; i++) {
+          resultsElement.innerHTML += `- ${localStorage.key(i)}\n`;
+        }
+        
+        resultsElement.innerHTML += '\nClearing gallery data...\n';
+        keysToRemove.forEach(key => {
+          if (localStorage.getItem(key) !== null) {
+            localStorage.removeItem(key);
+            resultsElement.innerHTML += `Not found: ${key}\n`;
+          } else {
+            resultsElement.innerHTML += `Not found: ${key}\n`;
+          }
+        });
+        
+        resultsElement.innerHTML += '\n<span class="success">✓ Data reset successful!</span>\n';
+        resultsElement.innerHTML += '\nPlease refresh the application to reinitialize sample data.\n';
+        resultsElement.innerHTML += 'The items carousel should now be hidden on the visitor landing page.';
+      } catch (error) {
+        resultsElement.innerHTML += `\n<span class="error">Error: ${error.message}</span>`;
+      }
+    });
+  </script>
+</body>
+</html>

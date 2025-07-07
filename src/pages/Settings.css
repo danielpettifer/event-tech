@@ -287,3 +287,11 @@
 .reset-button:hover {
   --color: var(--ion-color-warning-shade);
 }
+
+/* Setting description */
+.setting-description {
+  margin-top: 8px;
+  margin-left: 16px;
+  font-size: 0.9rem;
+  color: #666;
+}

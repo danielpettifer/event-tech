@@ -24,6 +24,10 @@ export class GallerySettingsService {
   }
 
   static initializeDefaultSettings(): GallerySettings {
+    // Check if we have a saved showItems preference in localStorage
+    const savedShowItemsPreference = localStorage.getItem('gallery_show_items_preference');
+    const showItemsDefault = savedShowItemsPreference ? savedShowItemsPreference === 'true' : true;
+    
     const defaultSettings: GallerySettings = {
       id: 'settings_1',
       galleryName: 'Demo Gallery',
@@ -73,8 +77,8 @@ export class GallerySettingsService {
         { day: 'Saturday', open: true, openTime: '11:00', closeTime: '16:00' },
         { day: 'Sunday', open: false, openTime: '10:00', closeTime: '18:00' }
       ],
-      // Frontend display settings
-      showItemCards: true,
+      // Frontend display settings - use the saved preference or default to true
+      showItemCards: showItemsDefault,
       defaultItemId: undefined,
       defaultImageUrl: undefined,
       activeEventId: undefined,
@@ -320,6 +324,10 @@ export class GallerySettingsService {
     const settings = this.getOrInitializeSettings();
     settings.showItemCards = showItemCards;
     this.saveSettings(settings);
+    
+    // Also save this preference to localStorage for EventService to use
+    localStorage.setItem('gallery_show_items_preference', showItemCards.toString());
+    
     return settings;
   }
 

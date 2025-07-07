@@ -328,6 +328,13 @@ const AdminDashboard: React.FC = () => {
       // Update the selected event and events list
       setSelectedEvent(updatedEvent);
       loadEvents();
+      
+      // If showItems was changed, save the preference to localStorage
+      if (tempEventChanges.showItems !== undefined && 
+          tempEventChanges.showItems !== editingEvent.showItems && 
+          editingEvent.id === activeEventId) {
+        localStorage.setItem('gallery_show_items_preference', tempEventChanges.showItems.toString());
+      }
     }
     
     setIsEditMode(false);
@@ -619,6 +626,66 @@ const AdminDashboard: React.FC = () => {
                           </div>
                         </div>
                       )}
+
+                      {/* Show Items Toggle */}
+                      <div className="event-section">
+                        <div className="event-info-row">
+                          <div className="event-info-label">
+                            <strong>Show Items Carousel:</strong>
+                          </div>
+                          <div className="event-toggle-control">
+                            <IonButton 
+                              fill={selectedEvent.showItems ? "solid" : "outline"} 
+                              color={selectedEvent.showItems ? "success" : "medium"}
+                              size="small"
+                              onClick={() => {
+                                if (!isEditMode) {
+                                  // Start edit mode if not already in it
+                                  handleStartEdit(selectedEvent);
+                                  const newShowItemsValue = !selectedEvent.showItems;
+                                  setTempEventChanges(prev => ({
+                                    ...prev,
+                                    showItems: newShowItemsValue
+                                  }));
+                                  
+                                  // Also update the global setting if this is the active event
+                                  if (selectedEvent.id === activeEventId) {
+                                    GallerySettingsService.updateShowItemCards(newShowItemsValue);
+                                  }
+                                } else {
+                                  // Already in edit mode, just update the temp changes
+                                  const newShowItemsValue = !tempEventChanges.showItems && !selectedEvent.showItems;
+                                  setTempEventChanges(prev => ({
+                                    ...prev,
+                                    showItems: newShowItemsValue
+                                  }));
+                                  
+                                  // Also update the global setting if this is the active event
+                                  if (selectedEvent.id === activeEventId) {
+                                    GallerySettingsService.updateShowItemCards(newShowItemsValue);
+                                  }
+                                }
+                              }}
+                            >
+                              {isEditMode 
+                                ? (tempEventChanges.showItems !== undefined 
+                                  ? tempEventChanges.showItems 
+                                  : selectedEvent.showItems) 
+                                  ? "Enabled" 
+                                  : "Disabled"
+                                : selectedEvent.showItems 
+                                  ? "Enabled" 
+                                  : "Disabled"
+                              }
+                            </IonButton>
+                            <p className="event-toggle-description">
+                              {selectedEvent.featuredItems && selectedEvent.featuredItems.length > 0 
+                                ? `Controls visibility of ${selectedEvent.featuredItems.length} items in the visitor landing carousel.`
+                                : "No items currently attached to this event. Add items to display in the carousel."}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
 
                       {selectedEvent.tags.length > 0 && (
                         <div className="event-section">

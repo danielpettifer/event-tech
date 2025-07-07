@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Carousel Toggle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .info {
+      background-color: #d1ecf1;
+      border: 1px solid #bee5eb;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      color: #0c5460;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      border: none;
+    }
+    .enable-btn {
+      background-color: #28a745;
+      color: white;
+    }
+    .enable-btn:hover {
+      background-color: #218838;
+    }
+    .disable-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    .disable-btn:hover {
+      background-color: #c82333;
+    }
+    .check-btn {
+      background-color: #007bff;
+      color: white;
+    }
+    .check-btn:hover {
+      background-color: #0069d9;
+    }
+    pre {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      overflow: auto;
+      margin-top: 20px;
+    }
+    .success {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .error {
+      color: #dc3545;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Carousel Toggle</h1>
+  
+  <div class="info">
+    <strong>Info:</strong> This utility helps test the carousel toggle functionality without clearing all data.
+    It directly updates the localStorage settings and dispatches a storage event to notify other tabs.
+  </div>
+  
+  <div class="buttons">
+    <button id="enableButton" class="enable-btn">Enable Carousel</button>
+    <button id="disableButton" class="disable-btn">Disable Carousel</button>
+    <button id="checkButton" class="check-btn">Check Current Setting</button>
+  </div>
+  
+  <pre id="results">Results will appear here...</pre>
+  
+  <script>
+    const resultsElement = document.getElementById('results');
+    
+    // Function to check the current setting
+    function checkSetting() {
+      resultsElement.innerHTML = 'Checking current settings...\n';
+      
+      try {
+        // Check the global preference
+        const globalPreference = localStorage.getItem('gallery_show_items_preference');
+        resultsElement.innerHTML += `Global preference (gallery_show_items_preference): ${globalPreference || 'not set'}\n`;
+        
+        // Check the gallery settings
+        const gallerySettings = JSON.parse(localStorage.getItem('gallery_settings') || 'null');
+        if (gallerySettings) {
+          resultsElement.innerHTML += `Gallery settings (showItemCards): ${gallerySettings.showItemCards}\n`;
+        } else {
+          resultsElement.innerHTML += 'Gallery settings: not found\n';
+        }
+        
+        // Determine the effective setting based on how GallerySettingsService.getShowItemCards() works
+        // It only checks the settings object, not the separate preference
+        const effectiveSetting = gallerySettings ? gallerySettings.showItemCards : true;
+        resultsElement.innerHTML += `\n<span class="${effectiveSetting ? 'success' : 'error'}">Carousel is currently ${effectiveSetting ? 'ENABLED' : 'DISABLED'}</span>\n`;
+      } catch (error) {
+        resultsElement.innerHTML += `\n<span class="error">Error: ${error.message}</span>`;
+      }
+    }
+    
+    // Function to enable the carousel
+    document.getElementById('enableButton').addEventListener('click', function() {
+      resultsElement.innerHTML = 'Enabling carousel...\n';
+      
+      try {
+        // Set the global preference to true
+        localStorage.setItem('gallery_show_items_preference', 'true');
+        resultsElement.innerHTML += 'Set gallery_show_items_preference to true\n';
+        
+        // Update gallery settings if they exist
+        const gallerySettings = JSON.parse(localStorage.getItem('gallery_settings') || 'null');
+        if (gallerySettings) {
+          gallerySettings.showItemCards = true;
+          gallerySettings.updatedAt = new Date().toISOString();
+          localStorage.setItem('gallery_settings', JSON.stringify(gallerySettings));
+          resultsElement.innerHTML += 'Updated gallery_settings.showItemCards to true\n';
+        } else {
+          // Create default settings with carousel enabled
+          const defaultSettings = {
+            id: 'settings_1',
+            galleryName: 'Demo Gallery',
+            contactInfo: {
+              email: 'info@demogallery.com',
+              phone: '+44 20 7946 0958',
+              website: 'https://demogallery.com'
+            },
+            businessHours: [
+              { day: 'Monday', open: false, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Tuesday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Wednesday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Thursday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Friday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Saturday', open: true, openTime: '11:00', closeTime: '16:00' },
+              { day: 'Sunday', open: false, openTime: '10:00', closeTime: '18:00' }
+            ],
+            showItemCards: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          localStorage.setItem('gallery_settings', JSON.stringify(defaultSettings));
+          resultsElement.innerHTML += 'Created new gallery_settings with showItemCards set to true\n';
+        }
+        
+        // Dispatch a storage event to notify other tabs
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'gallery_settings',
+          newValue: JSON.stringify(gallerySettings),
+          url: window.location.href
+        }));
+        
+        // Dispatch a custom event to notify the same tab
+        window.dispatchEvent(new CustomEvent('gallerySettingsChanged', {
+          detail: { showItemCards: true }
+        }));
+        
+        resultsElement.innerHTML += '\n<span class="success">✓ Carousel enabled successfully!</span>\n';
+        resultsElement.innerHTML += '\nRefresh the visitor landing page to see the changes.\n';
+      } catch (error) {
+        resultsElement.innerHTML += `\n<span class="error">Error: ${error.message}</span>`;
+      }
+    });
+    
+    // Function to disable the carousel
+    document.getElementById('disableButton').addEventListener('click', function() {
+      resultsElement.innerHTML = 'Disabling carousel...\n';
+      
+      try {
+        // Set the global preference to false
+        localStorage.setItem('gallery_show_items_preference', 'false');
+        resultsElement.innerHTML += 'Set gallery_show_items_preference to false\n';
+        
+        // Update gallery settings if they exist
+        const gallerySettings = JSON.parse(localStorage.getItem('gallery_settings') || 'null');
+        if (gallerySettings) {
+          gallerySettings.showItemCards = false;
+          gallerySettings.updatedAt = new Date().toISOString();
+          localStorage.setItem('gallery_settings', JSON.stringify(gallerySettings));
+          resultsElement.innerHTML += 'Updated gallery_settings.showItemCards to false\n';
+        } else {
+          // Create default settings with carousel disabled
+          const defaultSettings = {
+            id: 'settings_1',
+            galleryName: 'Demo Gallery',
+            contactInfo: {
+              email: 'info@demogallery.com',
+              phone: '+44 20 7946 0958',
+              website: 'https://demogallery.com'
+            },
+            businessHours: [
+              { day: 'Monday', open: false, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Tuesday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Wednesday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Thursday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Friday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Saturday', open: true, openTime: '11:00', closeTime: '16:00' },
+              { day: 'Sunday', open: false, openTime: '10:00', closeTime: '18:00' }
+            ],
+            showItemCards: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          localStorage.setItem('gallery_settings', JSON.stringify(defaultSettings));
+          resultsElement.innerHTML += 'Created new gallery_settings with showItemCards set to false\n';
+        }
+        
+        // Dispatch a storage event to notify other tabs
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'gallery_settings',
+          newValue: JSON.stringify(gallerySettings),
+          url: window.location.href
+        }));
+        
+        // Dispatch a custom event to notify the same tab
+        window.dispatchEvent(new CustomEvent('gallerySettingsChanged', {
+          detail: { showItemCards: false }
+        }));
+        
+        resultsElement.innerHTML += '\n<span class="success">✓ Carousel disabled successfully!</span>\n';
+        resultsElement.innerHTML += '\nRefresh the visitor landing page to see the changes.\n';
+      } catch (error) {
+        resultsElement.innerHTML += `\n<span class="error">Error: ${error.message}</span>`;
+      }
+    });
+    
+    // Check button event listener
+    document.getElementById('checkButton').addEventListener('click', checkSetting);
+    
+    // Check the setting on page load
+    checkSetting();
+  </script>
+</body>
+</html>

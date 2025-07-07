@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enable Items Carousel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .info {
+      background-color: #d1ecf1;
+      border: 1px solid #bee5eb;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      color: #0c5460;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0069d9;
+    }
+    pre {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      overflow: auto;
+      margin-top: 20px;
+    }
+    .success {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .error {
+      color: #dc3545;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Enable Items Carousel</h1>
+  
+  <div class="info">
+    <strong>Info:</strong> This will set the global preference to show the items carousel and update the gallery settings.
+  </div>
+  
+  <button id="enableButton">Enable Items Carousel</button>
+  
+  <pre id="results">Results will appear here...</pre>
+  
+  <script>
+    document.getElementById('enableButton').addEventListener('click', function() {
+      const resultsElement = document.getElementById('results');
+      resultsElement.innerHTML = 'Processing...\n';
+      
+      try {
+        // Set the global preference to true
+        localStorage.setItem('gallery_show_items_preference', 'true');
+        resultsElement.innerHTML += 'Set gallery_show_items_preference to true\n';
+        
+        // Update gallery settings if they exist
+        const gallerySettings = JSON.parse(localStorage.getItem('gallery_settings') || 'null');
+        if (gallerySettings) {
+          gallerySettings.showItemCards = true;
+          gallerySettings.updatedAt = new Date().toISOString();
+          localStorage.setItem('gallery_settings', JSON.stringify(gallerySettings));
+          resultsElement.innerHTML += 'Updated gallery_settings.showItemCards to true\n';
+        } else {
+          resultsElement.innerHTML += 'No existing gallery_settings found\n';
+        }
+        
+        resultsElement.innerHTML += '\n<span class="success">✓ Items carousel enabled successfully!</span>\n';
+        resultsElement.innerHTML += '\nPlease refresh the application to see the changes.\n';
+        resultsElement.innerHTML += 'The items carousel should now be visible on the visitor landing page.';
+      } catch (error) {
+        resultsElement.innerHTML += `\n<span class="error">Error: ${error.message}</span>`;
+      }
+    });
+  </script>
+</body>
+</html>

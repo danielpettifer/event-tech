@@ -16,6 +16,7 @@ export interface Event {
   featuredArtists: string[];
   featuredArtworks: string[];
   featuredItems: string[]; // Item IDs to display in the landing page carousel
+  showItems?: boolean; // Toggle to control whether to show items carousel on visitor landing
   tags: string[];
   imageUrl?: string;
   images?: string[];

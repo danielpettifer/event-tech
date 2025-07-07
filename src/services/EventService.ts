@@ -250,6 +250,10 @@ export class EventService {
     const existingEvents = this.getAllEvents();
     if (existingEvents.length > 0) return;
 
+    // Check if we have a saved showItems preference in localStorage
+    const savedShowItemsPreference = localStorage.getItem('gallery_show_items_preference');
+    const showItemsDefault = savedShowItemsPreference ? savedShowItemsPreference === 'true' : true;
+
     const sampleEvents: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>[] = [
       {
         title: "Contemporary Visions: New Acquisitions",
@@ -267,7 +271,8 @@ export class EventService {
         isTicketed: false,
         featuredArtists: ["Maria Rodriguez", "James Chen", "Aisha Patel"],
         featuredArtworks: ["Urban Dreams", "Digital Landscapes", "Abstract Emotions"],
-        featuredItems: [], // Will be populated when items are selected for this event
+        featuredItems: [], // Will be populated in the saveEvent method below
+        showItems: showItemsDefault, // Use saved preference or default to true
         tags: ["Contemporary Art", "New Acquisitions", "Mixed Media", "International Artists"],
         contactEmail: "events@gallery.com",
         contactPhone: "+44 20 7123 4567",
@@ -378,8 +383,40 @@ export class EventService {
       }
     ];
 
-    sampleEvents.forEach(eventData => {
-      this.saveEvent(eventData);
+    // Save all events first
+    const savedEvents = sampleEvents.map(eventData => this.saveEvent(eventData));
+    
+    // Now let's add featured items to the Contemporary Visions event
+    // We need to do this after saving because we need the item IDs from ItemService
+    import('../services/ItemService').then(module => {
+      const ItemService = module.ItemService;
+      
+      // Initialize items if needed
+      ItemService.initializeSampleData();
+      
+      // Get all items
+      const items = ItemService.getAllItems();
+      
+      // Find the Contemporary Visions event
+      const contemporaryEvent = savedEvents.find(event => event.title === "Contemporary Visions: New Acquisitions");
+      
+      if (contemporaryEvent) {
+        // Get IDs of specific items
+        const featuredItemIds = items
+          .filter(item => 
+            ["The Starry Night", "The Great Wave off Kanagawa", "Girl with a Pearl Earring", "Water Lilies"]
+            .includes(item.title)
+          )
+          .map(item => item.id);
+        
+        // Update the event with featured items
+        if (featuredItemIds.length > 0) {
+          this.updateEvent(contemporaryEvent.id, { featuredItems: featuredItemIds });
+          console.log(`Added ${featuredItemIds.length} featured items to Contemporary Visions event`);
+        }
+      }
+    }).catch(error => {
+      console.error("Error setting up featured items:", error);
     });
   }
 

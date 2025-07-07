@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Carousel Functionality Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .test-section {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #495057;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      border: none;
+    }
+    .enable-btn {
+      background-color: #28a745;
+      color: white;
+    }
+    .disable-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    .check-btn {
+      background-color: #007bff;
+      color: white;
+    }
+    .clear-btn {
+      background-color: #6c757d;
+      color: white;
+    }
+    .open-btn {
+      background-color: #17a2b8;
+      color: white;
+    }
+    pre {
+      background-color: #ffffff;
+      padding: 15px;
+      border-radius: 4px;
+      overflow: auto;
+      margin-top: 10px;
+      border: 1px solid #dee2e6;
+      max-height: 300px;
+    }
+    .success {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .error {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    .warning {
+      color: #ffc107;
+      font-weight: bold;
+    }
+    .info {
+      color: #17a2b8;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Complete Carousel Functionality Test</h1>
+  
+  <!-- Current State Section -->
+  <div class="test-section">
+    <h2>Current State</h2>
+    <div class="buttons">
+      <button id="checkCurrentState" class="check-btn">Check Current State</button>
+      <button id="clearAllData" class="clear-btn">Clear All Data</button>
+    </div>
+    <pre id="currentStateResults">Click "Check Current State" to see the current localStorage state...</pre>
+  </div>
+
+  <!-- Toggle Controls Section -->
+  <div class="test-section">
+    <h2>Toggle Controls</h2>
+    <div class="buttons">
+      <button id="enableCarousel" class="enable-btn">Enable Carousel</button>
+      <button id="disableCarousel" class="disable-btn">Disable Carousel</button>
+    </div>
+    <pre id="toggleResults">Use the buttons above to toggle the carousel state...</pre>
+  </div>
+
+  <!-- Test Links Section -->
+  <div class="test-section">
+    <h2>Test Links</h2>
+    <div class="buttons">
+      <button id="openVisitorPage" class="open-btn">Open Visitor Landing Page</button>
+      <button id="openAdminSettings" class="open-btn">Open Admin Settings</button>
+    </div>
+    <p>Use these links to test the carousel functionality in the actual application.</p>
+  </div>
+
+  <!-- Instructions Section -->
+  <div class="test-section">
+    <h2>Testing Instructions</h2>
+    <ol>
+      <li><strong>Check Current State:</strong> Click "Check Current State" to see what's currently stored in localStorage</li>
+      <li><strong>Toggle Carousel:</strong> Use "Enable Carousel" or "Disable Carousel" to change the setting</li>
+      <li><strong>Test in App:</strong> Open the Visitor Landing Page to see if the carousel appears/disappears</li>
+      <li><strong>Admin Settings:</strong> Open Admin Settings to use the official toggle in the Settings page</li>
+      <li><strong>Clear Data:</strong> Use "Clear All Data" to reset everything if needed</li>
+    </ol>
+  </div>
+
+  <script>
+    const currentStateResults = document.getElementById('currentStateResults');
+    const toggleResults = document.getElementById('toggleResults');
+
+    // Function to check current state
+    function checkCurrentState() {
+      currentStateResults.innerHTML = 'Checking current state...\n\n';
+      
+      try {
+        // Check all relevant localStorage keys
+        const gallerySettings = JSON.parse(localStorage.getItem('gallery_settings') || 'null');
+        const showItemsPreference = localStorage.getItem('gallery_show_items_preference');
+        const events = JSON.parse(localStorage.getItem('events') || '[]');
+        const items = JSON.parse(localStorage.getItem('items') || '[]');
+        
+        currentStateResults.innerHTML += '=== GALLERY SETTINGS ===\n';
+        if (gallerySettings) {
+          currentStateResults.innerHTML += `Gallery Name: ${gallerySettings.galleryName}\n`;
+          currentStateResults.innerHTML += `Show Item Cards: ${gallerySettings.showItemCards}\n`;
+          currentStateResults.innerHTML += `Active Event ID: ${gallerySettings.activeEventId || 'none'}\n`;
+          currentStateResults.innerHTML += `Updated At: ${gallerySettings.updatedAt}\n`;
+        } else {
+          currentStateResults.innerHTML += '<span class="warning">No gallery settings found</span>\n';
+        }
+        
+        currentStateResults.innerHTML += '\n=== SHOW ITEMS PREFERENCE ===\n';
+        currentStateResults.innerHTML += `Preference: ${showItemsPreference || 'not set'}\n`;
+        
+        currentStateResults.innerHTML += '\n=== EVENTS ===\n';
+        currentStateResults.innerHTML += `Total Events: ${events.length}\n`;
+        const activeEvent = events.find(e => e.id === gallerySettings?.activeEventId);
+        if (activeEvent) {
+          currentStateResults.innerHTML += `Active Event: ${activeEvent.title}\n`;
+          currentStateResults.innerHTML += `Featured Items: ${activeEvent.featuredItems?.length || 0}\n`;
+          currentStateResults.innerHTML += `Show Items: ${activeEvent.showItems !== false ? 'true' : 'false'}\n`;
+        }
+        
+        currentStateResults.innerHTML += '\n=== ITEMS ===\n';
+        currentStateResults.innerHTML += `Total Items: ${items.length}\n`;
+        
+        // Determine effective carousel state
+        currentStateResults.innerHTML += '\n=== EFFECTIVE STATE ===\n';
+        const effectiveState = gallerySettings ? gallerySettings.showItemCards : true;
+        currentStateResults.innerHTML += `<span class="${effectiveState ? 'success' : 'error'}">Carousel is ${effectiveState ? 'ENABLED' : 'DISABLED'}</span>\n`;
+        
+      } catch (error) {
+        currentStateResults.innerHTML += `\n<span class="error">Error: ${error.message}</span>`;
+      }
+    }
+
+    // Function to enable carousel
+    function enableCarousel() {
+      toggleResults.innerHTML = 'Enabling carousel...\n';
+      
+      try {
+        // Set the global preference
+        localStorage.setItem('gallery_show_items_preference', 'true');
+        toggleResults.innerHTML += 'Set gallery_show_items_preference to true\n';
+        
+        // Update or create gallery settings
+        let gallerySettings = JSON.parse(localStorage.getItem('gallery_settings') || 'null');
+        if (!gallerySettings) {
+          gallerySettings = {
+            id: 'settings_1',
+            galleryName: 'Demo Gallery',
+            primaryLocation: {
+              id: 'loc_1',
+              name: 'Main Gallery',
+              addressLine1: '123 Art Street',
+              city: 'London',
+              postalCode: 'W1A 1AA',
+              country: 'United Kingdom',
+              phone: '+44 20 7946 0958',
+              email: 'main@demogallery.com',
+              isPrimary: true
+            },
+            secondaryLocations: [],
+            logoUrls: [],
+            socialMedia: {
+              website: 'https://demogallery.com',
+              instagram: '', facebook: '', twitter: '', linkedin: '', pinterest: '', youtube: '', tiktok: ''
+            },
+            contactInfo: {
+              email: 'info@demogallery.com',
+              phone: '+44 20 7946 0958',
+              website: 'https://demogallery.com'
+            },
+            businessHours: [
+              { day: 'Monday', open: false, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Tuesday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Wednesday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Thursday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Friday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Saturday', open: true, openTime: '11:00', closeTime: '16:00' },
+              { day: 'Sunday', open: false, openTime: '10:00', closeTime: '18:00' }
+            ],
+            createdAt: new Date().toISOString()
+          };
+          toggleResults.innerHTML += 'Created new gallery settings\n';
+        }
+        
+        gallerySettings.showItemCards = true;
+        gallerySettings.updatedAt = new Date().toISOString();
+        localStorage.setItem('gallery_settings', JSON.stringify(gallerySettings));
+        toggleResults.innerHTML += 'Updated gallery_settings.showItemCards to true\n';
+        
+        // Dispatch events
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'gallery_settings',
+          newValue: JSON.stringify(gallerySettings),
+          url: window.location.href
+        }));
+        
+        window.dispatchEvent(new CustomEvent('gallerySettingsChanged', {
+          detail: { showItemCards: true }
+        }));
+        
+        toggleResults.innerHTML += '\n<span class="success">✓ Carousel enabled successfully!</span>\n';
+        toggleResults.innerHTML += 'Events dispatched to notify other tabs/components.\n';
+        
+      } catch (error) {
+        toggleResults.innerHTML += `\n<span class="error">Error: ${error.message}</span>`;
+      }
+    }
+
+    // Function to disable carousel
+    function disableCarousel() {
+      toggleResults.innerHTML = 'Disabling carousel...\n';
+      
+      try {
+        // Set the global preference
+        localStorage.setItem('gallery_show_items_preference', 'false');
+        toggleResults.innerHTML += 'Set gallery_show_items_preference to false\n';
+        
+        // Update or create gallery settings
+        let gallerySettings = JSON.parse(localStorage.getItem('gallery_settings') || 'null');
+        if (!gallerySettings) {
+          gallerySettings = {
+            id: 'settings_1',
+            galleryName: 'Demo Gallery',
+            primaryLocation: {
+              id: 'loc_1',
+              name: 'Main Gallery',
+              addressLine1: '123 Art Street',
+              city: 'London',
+              postalCode: 'W1A 1AA',
+              country: 'United Kingdom',
+              phone: '+44 20 7946 0958',
+              email: 'main@demogallery.com',
+              isPrimary: true
+            },
+            secondaryLocations: [],
+            logoUrls: [],
+            socialMedia: {
+              website: 'https://demogallery.com',
+              instagram: '', facebook: '', twitter: '', linkedin: '', pinterest: '', youtube: '', tiktok: ''
+            },
+            contactInfo: {
+              email: 'info@demogallery.com',
+              phone: '+44 20 7946 0958',
+              website: 'https://demogallery.com'
+            },
+            businessHours: [
+              { day: 'Monday', open: false, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Tuesday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Wednesday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Thursday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Friday', open: true, openTime: '10:00', closeTime: '18:00' },
+              { day: 'Saturday', open: true, openTime: '11:00', closeTime: '16:00' },
+              { day: 'Sunday', open: false, openTime: '10:00', closeTime: '18:00' }
+            ],
+            createdAt: new Date().toISOString()
+          };
+          toggleResults.innerHTML += 'Created new gallery settings\n';
+        }
+        
+        gallerySettings.showItemCards = false;
+        gallerySettings.updatedAt = new Date().toISOString();
+        localStorage.setItem('gallery_settings', JSON.stringify(gallerySettings));
+        toggleResults.innerHTML += 'Updated gallery_settings.showItemCards to false\n';
+        
+        // Dispatch events
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'gallery_settings',
+          newValue: JSON.stringify(gallerySettings),
+          url: window.location.href
+        }));
+        
+        window.dispatchEvent(new CustomEvent('gallerySettingsChanged', {
+          detail: { showItemCards: false }
+        }));
+        
+        toggleResults.innerHTML += '\n<span class="success">✓ Carousel disabled successfully!</span>\n';
+        toggleResults.innerHTML += 'Events dispatched to notify other tabs/components.\n';
+        
+      } catch (error) {
+        toggleResults.innerHTML += `\n<span class="error">Error: ${error.message}</span>`;
+      }
+    }
+
+    // Function to clear all data
+    function clearAllData() {
+      if (confirm('Are you sure you want to clear all localStorage data? This will reset the entire application.')) {
+        localStorage.clear();
+        currentStateResults.innerHTML = '<span class="warning">All localStorage data cleared!</span>\n';
+        toggleResults.innerHTML = 'Data cleared. The application will reinitialize with default settings.\n';
+      }
+    }
+
+    // Event listeners
+    document.getElementById('checkCurrentState').addEventListener('click', checkCurrentState);
+    document.getElementById('enableCarousel').addEventListener('click', enableCarousel);
+    document.getElementById('disableCarousel').addEventListener('click', disableCarousel);
+    document.getElementById('clearAllData').addEventListener('click', clearAllData);
+    
+    document.getElementById('openVisitorPage').addEventListener('click', () => {
+      window.open('http://localhost:5173/', '_blank');
+    });
+    
+    document.getElementById('openAdminSettings').addEventListener('click', () => {
+      window.open('http://localhost:5173/settings', '_blank');
+    });
+
+    // Check state on page load
+    checkCurrentState();
+  </script>
+</body>
+</html>
