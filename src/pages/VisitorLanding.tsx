@@ -327,8 +327,9 @@ const VisitorLanding: React.FC = () => {
                       </div>
                       <IonButton 
                         className="read-more-button" 
-                        size="small"
+                        size="default"
                         fill="clear"
+                        shape='round'
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent card click from triggering
                           setIsDescriptionModalOpen(true);

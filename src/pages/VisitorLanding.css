@@ -449,13 +449,11 @@ ion-footer {
 }
 
 .read-more-button {
-  margin-top: 8px;
-  margin-left: 16px;
-  --background: var(--dynamic-dark-color, rgba(255, 255, 255, 0.2));
-  --color: white;
+  margin-top: 32px;
+  --color: var(--dynamic-dark-color, rgba(255, 255, 255, 0.2));
+  --background: white;
   font-size: 0.9rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .event-banner-details {
