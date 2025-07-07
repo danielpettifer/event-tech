@@ -374,12 +374,41 @@ ion-footer {
   text-transform: uppercase;
 }
 
+.event-description-container {
+  position: relative;
+  max-height: 27vh;
+  overflow: hidden;
+  margin-top: 16px;
+  mask-image: linear-gradient(to bottom, 
+    rgba(0,0,0,1) 0%, 
+    rgba(0,0,0,1) 63%, /* 17vh/27vh = ~63% */
+    rgba(0,0,0,0) 100%
+  );
+  -webkit-mask-image: linear-gradient(to bottom, 
+    rgba(0,0,0,1) 0%, 
+    rgba(0,0,0,1) 63%, 
+    rgba(0,0,0,0) 100%
+  );
+}
+
 .event-banner-info p {
-  margin: 0 0 16px 0;
+  margin: 0;
   font-size: 1.5rem;
   font-weight: 500;
   line-height: 1.5;
   opacity: 0.8;
+}
+
+.read-more-button {
+  position: absolute;
+  bottom: 10px;
+  left: 16px;
+  z-index: 10;
+  --background: rgba(255, 255, 255, 0.2);
+  --color: white;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .event-banner-details {
@@ -392,6 +421,30 @@ ion-footer {
   flex-shrink: 0;
   font-size: 0.9rem;
   padding: 8px 12px;
+}
+
+/* Event Description Modal */
+.event-description-modal ion-content {
+  --background: rgba(0, 0, 0, 0.9);
+  --color: white;
+}
+
+.event-description-modal-content {
+  padding: 20px;
+  color: white;
+}
+
+.event-description-modal-content h2 {
+  font-size: 2rem;
+  font-weight: 400;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.event-description-modal-content p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
 }
 
 /* Responsive Design for Event Banner */
@@ -415,6 +468,18 @@ ion-footer {
   
   .active-badge {
     align-self: flex-start;
+  }
+  
+  .event-description-container {
+    max-height: 20vh;
+  }
+  
+  .event-description-modal-content h2 {
+    font-size: 1.6rem;
+  }
+  
+  .event-description-modal-content p {
+    font-size: 1rem;
   }
 }
 

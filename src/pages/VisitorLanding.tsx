@@ -58,6 +58,7 @@ const VisitorLanding: React.FC = () => {
     email: 'admin@gallery.com',
     password: ''
   });
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const history = useHistory();
 
   // Add a function to load all data that can be called when needed
@@ -284,13 +285,11 @@ const VisitorLanding: React.FC = () => {
             {/* Active Event Banner */}
             {activeEvent && (
               <div className="active-event-banner">
-                <IonCard className="event-banner-card">
+                <IonCard className="event-banner-card" button onClick={() => setIsDescriptionModalOpen(true)}>
                   <IonCardContent>
                     <div className="event-banner-content">
                       <div className="event-banner-info">
-                        
                         <h2>{activeEvent.title}</h2>
-                    
                         <div className="event-banner-details">
                           <IonChip color="primary">
                             <IonLabel>{activeEvent.eventType}</IonLabel>
@@ -304,7 +303,20 @@ const VisitorLanding: React.FC = () => {
                             </IonChip>
                           )}
                         </div>
-                        <p>{activeEvent.description}</p>
+                        <div className="event-description-container">
+                          <p>{activeEvent.description}</p>
+                          <IonButton 
+                            className="read-more-button" 
+                            size="small"
+                            fill="clear"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent card click from triggering
+                              setIsDescriptionModalOpen(true);
+                            }}
+                          >
+                            Read More
+                          </IonButton>
+                        </div>
                       </div>
                       <IonBadge color="success" className="active-badge">
                         Active Event
@@ -469,6 +481,53 @@ const VisitorLanding: React.FC = () => {
                 </IonCard>
               </div>
             )}
+          </IonContent>
+        </IonModal>
+
+        {/* Event Description Modal */}
+        <IonModal 
+          isOpen={isDescriptionModalOpen} 
+          onDidDismiss={() => setIsDescriptionModalOpen(false)}
+          className="event-description-modal"
+        >
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>{activeEvent?.title}</IonTitle>
+              <IonButtons slot="end">
+                <IonButton onClick={() => setIsDescriptionModalOpen(false)}>
+                  <IonIcon icon={close} />
+                </IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent>
+            <div className="event-description-modal-content">
+              <h2>{activeEvent?.title}</h2>
+              <div className="event-banner-details" style={{ marginBottom: '20px' }}>
+                {activeEvent && (
+                  <>
+                    <IonChip color="primary">
+                      <IonLabel>{activeEvent.eventType}</IonLabel>
+                    </IonChip>
+                    <IonChip color="secondary">
+                      <IonLabel>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
+                    </IonChip>
+                    {activeEvent.isTicketed && activeEvent.ticketPrice && (
+                      <IonChip color="success">
+                        <IonLabel>£{activeEvent.ticketPrice}</IonLabel>
+                      </IonChip>
+                    )}
+                  </>
+                )}
+              </div>
+              <p>{activeEvent?.description}</p>
+              <IonButton 
+                expand="block" 
+                onClick={() => setIsDescriptionModalOpen(false)}
+              >
+                Close
+              </IonButton>
+            </div>
           </IonContent>
         </IonModal>
 
