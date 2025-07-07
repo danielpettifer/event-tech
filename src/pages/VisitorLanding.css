@@ -50,10 +50,10 @@ ion-footer {
 /* Level 3: Dynamic Bottom Gradient - Fade Effect */
 .dynamic-bottom-gradient {
   position: fixed;
-  bottom: 20vh; /* Start from the top of the solid area */
+  bottom: 35vh; /* Position to fade through the event title */
   left: 0;
   right: 0;
-  height: 10vh; /* Just the fade area */
+  height: 20vh; /* Taller fade area to cover the title */
   /* Use the dynamic color for the gradient fade */
   background: linear-gradient(to top,
     var(--dynamic-dark-color-solid) 0%,  /* Fully opaque at bottom */
@@ -69,7 +69,7 @@ ion-footer {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 20vh; /* Solid color area */
+  height: 35vh; /* Taller solid area to reach event description start */
   /* Use the fully opaque version of the dynamic color */
   background-color: var(--dynamic-dark-color-solid, rgb(0,0,0));
   z-index: 19; /* Just below the gradient layer */
@@ -418,6 +418,8 @@ ion-footer {
   font-weight: 400;
   line-height: 1.2;
   text-transform: uppercase;
+  position: relative;
+  z-index: 75; /* Ensure title is above the gradient */
 }
 
 .event-description-container {
@@ -435,6 +437,7 @@ ion-footer {
     rgba(0,0,0,1) 63%, 
     rgba(0,0,0,0) 100%
   );
+  z-index: 80; /* Ensure description is above the gradient and title */
 }
 
 .event-banner-info p {
@@ -459,6 +462,8 @@ ion-footer {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  position: relative;
+  z-index: 75; /* Ensure details are above the gradient */
 }
 
 .active-badge {
