@@ -47,13 +47,28 @@ ion-footer {
   pointer-events: none;
 }
 
-/* Level 3: Dynamic Bottom Gradient - Fade Effect */
-.dynamic-bottom-gradient {
+/* Level 4: Content Layer - Bottom Positioned with Adaptive Background */
+.bottom-content-overlay {
   position: fixed;
-  bottom: 35vh; /* Position to fade through the event title */
+  bottom: 0;
   left: 0;
   right: 0;
-  height: 20vh; /* Taller fade area to cover the title */
+  z-index: 60; /* Above all background layers */
+  padding: 20px;
+  padding-top: 20px; /* Ensure content is visible above the gradient */
+  padding-bottom: 56px; /* Space for footer */
+  pointer-events: none; /* Allow clicks to pass through to elements underneath */
+  max-height: 80vh; /* Limit maximum height */
+  overflow-y: auto; /* Allow scrolling if content is too tall */
+}
+
+/* Level 3: Dynamic Bottom Gradient - Fade Effect */
+.dynamic-bottom-gradient {
+  position: fixed; /* Fixed to the viewport */
+  bottom: 60px; /* Position above the solid area */
+  left: 0;
+  right: 0;
+  height: 120px; /* Height to fade through the title area */
   /* Use the dynamic color for the gradient fade */
   background: linear-gradient(to top,
     var(--dynamic-dark-color-solid) 0%,  /* Fully opaque at bottom */
@@ -65,27 +80,22 @@ ion-footer {
 
 /* Add a separate solid color layer to ensure complete opacity */
 .dynamic-bottom-solid {
-  position: fixed;
+  position: fixed; /* Fixed to the viewport */
+  height: 60px; /* Height to cover the description area */
   bottom: 0;
   left: 0;
   right: 0;
-  height: 35vh; /* Taller solid area to reach event description start */
   /* Use the fully opaque version of the dynamic color */
   background-color: var(--dynamic-dark-color-solid, rgb(0,0,0));
   z-index: 19; /* Just below the gradient layer */
   pointer-events: none;
 }
 
-/* Level 4: Content Layer - Bottom Positioned */
-.bottom-content-overlay {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 60; /* Above all background layers */
-  padding: 20px;
-  padding-bottom: 56px; /* Space for footer */
-  pointer-events: none; /* Allow clicks to pass through to elements underneath */
+/* Ensure content is above the background */
+.active-event-banner,
+.items-container {
+  position: relative;
+  z-index: 25; /* Above both gradient and solid layers */
 }
 
 /* Make all direct children of the overlay clickable */
