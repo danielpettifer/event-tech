@@ -65,10 +65,10 @@ ion-footer {
 /* Level 3: Dynamic Bottom Gradient - Fade Effect */
 .dynamic-bottom-gradient {
   position: fixed; /* Fixed to the viewport */
-  bottom: 60px; /* Position above the solid area */
+  bottom: 0; /* Will be adjusted by JavaScript */
   left: 0;
   right: 0;
-  height: 120px; /* Height to fade through the title area */
+  height: 0; /* Will be set by JavaScript */
   /* Use the dynamic color for the gradient fade */
   background: linear-gradient(to top,
     var(--dynamic-dark-color-solid) 0%,  /* Fully opaque at bottom */
@@ -76,12 +76,13 @@ ion-footer {
   );
   z-index: 20;
   pointer-events: none;
+  transition: height 0.3s ease, bottom 0.3s ease; /* Smooth transitions */
 }
 
 /* Add a separate solid color layer to ensure complete opacity */
 .dynamic-bottom-solid {
   position: fixed; /* Fixed to the viewport */
-  height: 60px; /* Height to cover the description area */
+  height: 0; /* Will be set by JavaScript */
   bottom: 0;
   left: 0;
   right: 0;
@@ -89,6 +90,7 @@ ion-footer {
   background-color: var(--dynamic-dark-color-solid, rgb(0,0,0));
   z-index: 19; /* Just below the gradient layer */
   pointer-events: none;
+  transition: height 0.3s ease; /* Smooth transitions */
 }
 
 /* Ensure content is above the background */

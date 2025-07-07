@@ -179,6 +179,87 @@ const VisitorLanding: React.FC = () => {
   // Extract dominant dark color from current background image
   const { dominantColor } = useColorExtraction(currentBackgroundImage);
 
+  // Function to update gradient heights based on content position
+  const updateGradientHeights = () => {
+    // Find the event description container
+    const descriptionContainer = document.querySelector('.event-description-container');
+    const eventTitle = document.querySelector('.event-banner-info h2');
+    
+    if (descriptionContainer && eventTitle) {
+      // Get the position of the description container relative to the viewport
+      const descRect = descriptionContainer.getBoundingClientRect();
+      const titleRect = eventTitle.getBoundingClientRect();
+      
+      // Calculate the distance from the bottom of the viewport to the top of the description
+      const solidHeight = window.innerHeight - descRect.top;
+      
+      // Calculate the height for the gradient (from description to above title)
+      const gradientHeight = descRect.top - titleRect.top + 20; // Add 20px to extend slightly above title
+      
+      // Set the heights of the gradient elements
+      const solidElement = document.querySelector('.dynamic-bottom-solid') as HTMLElement;
+      const gradientElement = document.querySelector('.dynamic-bottom-gradient') as HTMLElement;
+      
+      if (solidElement && gradientElement) {
+        // Set the solid color height
+        solidElement.style.height = `${solidHeight}px`;
+        
+        // Set the gradient height and position
+        gradientElement.style.height = `${gradientHeight}px`;
+        gradientElement.style.bottom = `${solidHeight}px`;
+        
+        console.log('Updated gradient heights:', { solidHeight, gradientHeight });
+      }
+    }
+  };
+
+  // Update gradient heights when content changes or window resizes
+  useEffect(() => {
+    // Initial update with a slight delay to ensure DOM is fully rendered
+    const initialUpdateTimer = setTimeout(() => {
+      updateGradientHeights();
+      console.log('Initial gradient height update');
+    }, 300);
+    
+    // Set up event listeners for window resize
+    window.addEventListener('resize', updateGradientHeights);
+    
+    // Set up a mutation observer to detect DOM changes
+    const observer = new MutationObserver(() => {
+      // Add a small delay to let the DOM settle after changes
+      setTimeout(updateGradientHeights, 100);
+    });
+    
+    const contentContainer = document.querySelector('.bottom-content-overlay');
+    
+    if (contentContainer) {
+      observer.observe(contentContainer, { 
+        childList: true, 
+        subtree: true,
+        attributes: true,
+        characterData: true
+      });
+    }
+    
+    // Clean up
+    return () => {
+      clearTimeout(initialUpdateTimer);
+      window.removeEventListener('resize', updateGradientHeights);
+      observer.disconnect();
+    };
+  }, [activeEvent, items]); // Re-run when content changes
+  
+  // Additional effect to update gradient heights when the component mounts
+  useEffect(() => {
+    // Update gradient heights after component has fully mounted
+    const mountTimer = setTimeout(() => {
+      updateGradientHeights();
+      console.log('Mount gradient height update');
+    }, 500);
+    
+    return () => clearTimeout(mountTimer);
+  }, []); // Empty dependency array means this runs once on mount
+
   useEffect(() => {
     // Set up background image rotation if there are multiple images
     if (backgroundImages.length > 1) {
