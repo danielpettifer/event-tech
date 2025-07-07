@@ -1,5 +1,6 @@
 :root {
-  --dynamic-dark-color: rgba(0,0,0,0.8); /* fallback */
+  --dynamic-dark-color: rgba(0,0,0,0.8); /* Default fallback - will be dynamically updated */
+  --dynamic-dark-color-solid: rgb(0,0,0); /* Solid version for bottom area */
 }
 
 .visitor-landing {
@@ -30,19 +31,58 @@ ion-footer {
   z-index: 100;
 }
 
-/* Bottom Content Overlay with Gradient */
+/* Level 2: Black Gradient Overlay - Full Height Fixed */
+.black-gradient-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, 
+    rgba(0,0,0,0.2) 0%,
+    rgba(0,0,0,0.4) 50%,
+    rgba(0,0,0,0.6) 100%
+  );
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Level 3: Dynamic Bottom Gradient - Fade Effect */
+.dynamic-bottom-gradient {
+  position: fixed;
+  bottom: 20vh; /* Start from the top of the solid area */
+  left: 0;
+  right: 0;
+  height: 10vh; /* Just the fade area */
+  /* Use the dynamic color for the gradient fade */
+  background: linear-gradient(to top,
+    var(--dynamic-dark-color-solid) 0%,  /* Fully opaque at bottom */
+    transparent 100%                     /* Fade to transparent at top */
+  );
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* Add a separate solid color layer to ensure complete opacity */
+.dynamic-bottom-solid {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20vh; /* Solid color area */
+  /* Use the fully opaque version of the dynamic color */
+  background-color: var(--dynamic-dark-color-solid, rgb(0,0,0));
+  z-index: 19; /* Just below the gradient layer */
+  pointer-events: none;
+}
+
+/* Level 4: Content Layer - Bottom Positioned */
 .bottom-content-overlay {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, 
-    var(--dynamic-dark-color) 0%, 
-    var(--dynamic-dark-color, rgba(0,0,0,0.8)) 40%,
-    rgba(0,0,0,0.4) 70%,
-    transparent 100%
-  );
-  z-index: 50;
+  z-index: 60; /* Above all background layers */
   padding: 20px;
   padding-bottom: 56px; /* Space for footer */
   pointer-events: none; /* Allow clicks to pass through to elements underneath */
@@ -146,15 +186,15 @@ ion-footer {
 
 /* Desktop and Landscape: Horizontal scroll at bottom */
 @media (min-width: 768px) {
-  .items-container {
-    width: 100%;
-    height: 300px;
-    margin: 0;
-    padding: 20px;
-    background: transparent;
-    z-index: 50;
-    border: 0 !important;
-  }
+.items-container {
+  width: 100%;
+  height: 300px;
+  margin: 0;
+  padding: 20px;
+  background: transparent;
+  z-index: 60;
+  border: 0 !important;
+}
   
   .items-scroll-container {
     display: flex;
@@ -350,7 +390,7 @@ ion-footer {
   width: 100%;
   padding: 0 20px;
   margin-bottom: 20px;
-  z-index: 60; /* Higher than the items-container z-index (50) */
+  z-index: 70; /* Higher than the items-container z-index (60) */
 }
 
 .event-banner-card {

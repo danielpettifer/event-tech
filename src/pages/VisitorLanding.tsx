@@ -290,7 +290,16 @@ const VisitorLanding: React.FC = () => {
           <div className="flex-spacer"></div>
         </div>
         
-        {/* Bottom Content Overlay with Gradient */}
+        {/* Level 2: Black Gradient Overlay */}
+        <div className="black-gradient-overlay"></div>
+        
+        {/* Level 3: Dynamic Bottom Solid Color */}
+        <div className="dynamic-bottom-solid"></div>
+        
+        {/* Level 3: Dynamic Bottom Gradient */}
+        <div className="dynamic-bottom-gradient"></div>
+        
+        {/* Bottom Content Overlay */}
         <div className="bottom-content-overlay">
           {/* Active Event Banner */}
           {activeEvent && (
@@ -379,7 +388,7 @@ const VisitorLanding: React.FC = () => {
         </div>
 
         {/* Visitor Form */}
-        <div className="visitor-form-container">
+        {/* <div className="visitor-form-container">
           <IonCard>
             <IonCardHeader>
               <IonCardTitle>Welcome to Our Gallery</IonCardTitle>
@@ -420,7 +429,7 @@ const VisitorLanding: React.FC = () => {
               </IonButton>
             </IonCardContent>
           </IonCard>
-        </div>
+        </div> */}
 
         {/* Item Detail Modal */}
         <IonModal isOpen={isItemModalOpen} onDidDismiss={() => setIsItemModalOpen(false)}>

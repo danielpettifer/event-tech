@@ -49,6 +49,7 @@ const useColorExtraction = (imageUrl: string | null) => {
       }
     });
     
+    // Return with 0.8 opacity for UI elements that need transparency
     return `rgba(${dominantColorKey}, 0.8)`;
   };
 
@@ -101,8 +102,26 @@ const useColorExtraction = (imageUrl: string | null) => {
       const color = await colorPromise;
       setDominantColor(color);
       
-      // Apply to CSS custom properties
-      document.documentElement.style.setProperty('--dynamic-dark-color', color);
+      // Extract RGB components from the color
+      const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      
+      if (rgbMatch) {
+        const r = rgbMatch[1];
+        const g = rgbMatch[2];
+        const b = rgbMatch[3];
+        
+        // Log the extracted color for debugging
+        console.log('Extracted color:', color);
+        console.log('RGB components:', r, g, b);
+        
+        // Apply to CSS custom properties - both with transparency and without
+        document.documentElement.style.setProperty('--dynamic-dark-color', color);
+        document.documentElement.style.setProperty('--dynamic-dark-color-solid', `rgb(${r}, ${g}, ${b})`);
+      } else {
+        // Fallback if regex fails
+        document.documentElement.style.setProperty('--dynamic-dark-color', color);
+        document.documentElement.style.setProperty('--dynamic-dark-color-solid', 'rgb(0, 0, 0)');
+      }
       
     } catch (error) {
       console.warn('Color extraction failed:', error);
