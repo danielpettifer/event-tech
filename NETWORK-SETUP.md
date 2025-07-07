@@ -4,15 +4,19 @@ This guide explains how to serve your Ionic app so that other devices on your lo
 
 ## Configuration
 
-The `vite.config.ts` file has been updated to include server configuration that binds to all network interfaces (`0.0.0.0`). This allows other devices on your network to access the app.
+The `vite.config.ts` file has been updated to include server configuration that enables network access. This allows other devices on your network to access the app.
 
 ```typescript
 server: {
-  host: '0.0.0.0',
+  host: true, // Use true to automatically detect and use the network IP
   port: 8100,
+  strictPort: false, // Allow fallback to another port if 8100 is taken
   open: true,
+  cors: true, // Enable CORS for all origins
 }
 ```
+
+Setting `host: true` tells Vite to listen on all network interfaces and automatically determine the correct IP address to use for HMR (Hot Module Replacement) connections.
 
 ## Running the App for Network Access
 
@@ -52,6 +56,17 @@ Where:
 - `PORT` is the port number shown in the terminal (typically 8100, but may be different if that port is already in use)
 
 The exact Network URL will be displayed in the terminal when you run the server, so you can simply copy and share that URL.
+
+### Important Note About 0.0.0.0
+
+When you see a Network URL in the terminal, make sure to use the actual IP address (like 192.168.x.x), not 0.0.0.0. 
+
+```
+❌ DO NOT use: http://0.0.0.0:8100/
+✅ DO use:     http://192.168.50.230:8100/ (or whatever your actual IP is)
+```
+
+The address 0.0.0.0 is a special address that tells the server to listen on all network interfaces, but it's not a valid address for clients to connect to. Clients must use the actual IP address of your machine.
 
 ## Security Considerations
 

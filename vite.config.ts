@@ -11,17 +11,13 @@ export default defineConfig({
     legacy()
   ],
   server: {
-    host: '0.0.0.0', // Explicitly use 0.0.0.0 to listen on all interfaces
+    host: true, // Use true to automatically detect and use the network IP
     port: 8100,
     strictPort: false, // Allow fallback to another port if 8100 is taken
     open: true,
     cors: true, // Enable CORS for all origins
-    hmr: {
-      // Explicitly configure HMR to use the network IP
-      host: '0.0.0.0',
-      port: 8100,
-      protocol: 'ws',
-    },
+    // Let Vite automatically determine the correct HMR endpoint
+    // Don't explicitly set the HMR host to 0.0.0.0 as it causes connection issues
   },
   preview: {
     host: '0.0.0.0',
