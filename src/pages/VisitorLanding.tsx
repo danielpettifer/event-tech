@@ -22,7 +22,8 @@ import {
   IonCol,
   IonToast,
   IonChip,
-  IonBadge
+  IonBadge,
+  IonFooter
 } from '@ionic/react';
 import { close, chevronForward, lockClosed, person, heart, star, image } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
@@ -229,17 +230,21 @@ const VisitorLanding: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent fullscreen className="visitor-landing">
-        {/* Gallery Header with Logo */}
-        <div className="gallery-header">
+      {/* Fixed Header */}
+      <IonHeader className="ion-no-border">
+        <IonToolbar className="transparent-toolbar">
           {galleryLogo && (
-            <div className="gallery-logo">
+            <div className="gallery-logo" slot="start">
               <img src={galleryLogo.url} alt={galleryName} />
             </div>
           )}
           {!galleryLogo && (
-          <h1 className="gallery-name">{galleryName}</h1>)}
-        </div>
+            <IonTitle className="gallery-name">{galleryName}</IonTitle>
+          )}
+        </IonToolbar>
+      </IonHeader>
+      
+      <IonContent fullscreen scrollY={false} className="visitor-landing">
         
         {/* Background Image Container */}
         <div className="background-container">
@@ -264,6 +269,9 @@ const VisitorLanding: React.FC = () => {
             ></div>
           )}
         </div>
+        
+        {/* Gradient Overlay */}
+        <div className="gradient-overlay"></div>
 
         {/* Active Event Banner */}
         {activeEvent && (
@@ -380,15 +388,6 @@ const VisitorLanding: React.FC = () => {
             </IonCardContent>
           </IonCard>
         </div>
-
-        {/* Admin Login Button */}
-        <IonButton
-          fill="clear"
-          className="admin-login-button"
-          onClick={handleAdminLogin}
-        >
-          <IonIcon icon={chevronForward} />
-        </IonButton>
 
         {/* Item Detail Modal */}
         <IonModal isOpen={isItemModalOpen} onDidDismiss={() => setIsItemModalOpen(false)}>
@@ -528,6 +527,21 @@ const VisitorLanding: React.FC = () => {
           position="top"
         />
       </IonContent>
+      
+      {/* Fixed Footer */}
+      <IonFooter className="ion-no-border">
+        <IonToolbar className="transparent-toolbar">
+          <IonButtons slot="end">
+            <IonButton
+              fill="clear"
+              className="admin-login-button"
+              onClick={handleAdminLogin}
+            >
+              <IonIcon icon={chevronForward} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+      </IonFooter>
     </IonPage>
   );
 };

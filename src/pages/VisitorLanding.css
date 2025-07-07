@@ -2,21 +2,33 @@
   --background: transparent;
 }
 
-/* Gallery Header with Logo */
-.gallery-header {
+/* Transparent Toolbar */
+.transparent-toolbar {
+  --background: transparent;
+  --border-color: transparent;
+  --color: white;
+}
+
+ion-header, ion-footer {
+  position: fixed;
+  z-index: 100;
+}
+
+/* Gradient Overlay */
+.gradient-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  z-index: 100;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.15) 100%);
+  z-index: 2;
+  pointer-events: none;
 }
 
 .gallery-logo {
   height: 50px;
-  margin-right: 15px;
+  margin-left: 15px;
   display: flex;
   align-items: center;
 }
@@ -31,14 +43,11 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--ion-color-dark);
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 767px) {
-  .gallery-header {
-    padding: 10px 15px;
-  }
-  
   .gallery-logo {
     height: 40px;
   }
@@ -54,7 +63,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: 1;
 }
 
 .background-image {
@@ -286,16 +295,13 @@
 }
 
 .admin-login-button {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
   --background: rgba(255, 255, 255, 0.2);
   --color: white;
   backdrop-filter: blur(10px);
   border-radius: 50%;
   width: 50px;
   height: 50px;
+  margin-right: 10px;
 }
 
 .admin-login-button:hover {
@@ -448,27 +454,13 @@
   overflow-y: auto;
 }
 
-/* Fixed headers and footers */
-.visitor-landing ion-header,
-.visitor-landing .gallery-header,
-.visitor-landing .visitor-form-container,
-.visitor-landing .admin-login-button {
+/* Fixed positioning for visitor form */
+.visitor-landing .visitor-form-container {
   position: fixed;
 }
 
-/* Adjust top margin for content to account for the header */
-.background-container {
-  margin-top: 60px;
-}
-
-.items-container {
-  margin-top: 80px;
-}
-
+/* Adjust for event default image */
 @media (max-width: 767px) {
-  .items-container {
-    margin-top: 70px;
-  }
   .event-default-overlay p {
     font-size: 1rem;
   }
@@ -480,4 +472,10 @@
     max-width: 800px;
     margin: 20px auto;
   }
+}
+
+/* Ensure content is visible with fixed header/footer */
+ion-content {
+  --offset-top: 56px;
+  --offset-bottom: 56px;
 }
