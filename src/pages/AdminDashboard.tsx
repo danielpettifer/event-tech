@@ -1041,12 +1041,13 @@ const AdminDashboard: React.FC = () => {
                           <p className="item-year"><strong>Year:</strong> {item.year}</p>
                           <div className="item-pricing">
                             <p><strong>Price:</strong> {item.currency} {item.price.toLocaleString()}</p>
-                            <p><strong>Estimated Value:</strong> {item.currency} {item.estimatedValue.toLocaleString()}
+                            <p>
+                              <strong>Estimated Value:</strong> {item.currency} {item.estimatedValue.toLocaleString()}
                             </p>
                           </div>
                           <div className="item-location">
                             <p><strong>Location:</strong> {item.location}</p>
-                            <p><strong>Category:</strong> {item.category}</p>
+                            <p><strong>Category:</strong> {item.category.name}</p>
                           </div>
                           {item.tags.length > 0 && (
                             <div className="item-tags">
