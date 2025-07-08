@@ -74,8 +74,11 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
 
   useEffect(() => {
     // Load available items
-    const items = ItemService.getAllItems();
-    setAvailableItems(items);
+    ItemService.getAllItems().then(items => {
+      setAvailableItems(items);
+    })
+    // const items = ItemService.getAllItems();
+    // setAvailableItems(items);
 
     if (event) {
       // Editing existing event
