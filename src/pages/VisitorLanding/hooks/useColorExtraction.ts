@@ -267,9 +267,13 @@ const useColorExtraction = (imageUrl: string | null) => {
         if (currentColor !== color || currentSolidColor !== `rgb(${r}, ${g}, ${b})`) {
           console.log('Color changing, applying transition');
           
-          // Apply the new colors with transitions
-          document.documentElement.style.setProperty('--dynamic-dark-color', color);
-          document.documentElement.style.setProperty('--dynamic-dark-color-solid', `rgb(${r}, ${g}, ${b})`);
+          // Apply both color updates in a single frame to ensure synchronized transitions
+          requestAnimationFrame(() => {
+            // Apply the new colors with transitions - using direct property setting
+            document.documentElement.style.setProperty('--dynamic-dark-color', color);
+            document.documentElement.style.setProperty('--dynamic-dark-color-solid', `rgb(${r}, ${g}, ${b})`);
+            console.log('Applied synchronized color updates');
+          });
         } else {
           // If colors aren't changing, just set them without transition
           document.documentElement.style.setProperty('--dynamic-dark-color', color);

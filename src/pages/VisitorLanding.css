@@ -40,11 +40,13 @@ ion-footer {
   bottom: 0;
   background: linear-gradient(to bottom, 
     rgba(0,0,0,0.2) 0%,
-    rgba(0,0,0,0.4) 50%,
-    rgba(0,0,0,0.6) 100%
+    rgba(0,0,0,0.3) 40%,
+    rgba(0,0,0,0.1) 80%,
+    rgba(0,0,0,0) 100%
   );
   z-index: 10;
   pointer-events: none;
+  will-change: background;
 }
 
 /* Level 4: Content Layer - Bottom Positioned with Adaptive Background */
@@ -76,12 +78,12 @@ ion-footer {
   );
   z-index: 20;
   pointer-events: none;
-  /* Smooth transitions for both position and color */
+  will-change: background, height, bottom; /* Rendering hint for smoother transitions */
+  /* Synchronized transitions for both position and color */
   transition: 
     height 0.3s ease, 
     bottom 0.3s ease,
-    background-color 2s ease-in-out, /* Match the solid color transition property */
-    background 2s ease-in-out; /* Smooth color transition */
+    background 2s ease-in-out; /* Single transition for background */
 }
 
 /* Add a separate solid color layer to ensure complete opacity */
@@ -95,10 +97,11 @@ ion-footer {
   background-color: var(--dynamic-dark-color-solid, rgb(0,0,0));
   z-index: 19; /* Just below the gradient layer */
   pointer-events: none;
-  /* Smooth transitions for both height and color */
+  will-change: background-color, height; /* Rendering hint for smoother transitions */
+  /* Synchronized transitions for both height and color */
   transition: 
     height 0.3s ease,
-    background-color 2s ease-in-out; /* Smooth color transition */
+    background-color 2s ease-in-out; /* Match the gradient transition timing exactly */
 }
 
 /* Ensure content is above the background */
