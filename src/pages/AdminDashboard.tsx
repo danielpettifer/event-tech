@@ -188,30 +188,30 @@ const AdminDashboard: React.FC = () => {
     };
   }, [history]);
   
-  const loadGallerySettings = () => {
-    const settings = GallerySettingsService.getOrInitializeSettings();
+  const loadGallerySettings = async () => {
+    const settings = await GallerySettingsService.getOrInitializeSettings();
     setGalleryName(settings.galleryName);
     
-    const activeLogo = GallerySettingsService.getActiveLogo();
+    const activeLogo = await GallerySettingsService.getActiveLogo();
     if (activeLogo) {
       setGalleryLogo(activeLogo.url);
     }
   };
 
-  const loadClients = () => {
-    const allClients = ClientService.getAllClients();
+  const loadClients = async () => {
+    const allClients = await ClientService.getAllClients();
     setClients(allClients);
   };
 
-  const loadClientStats = () => {
-    const stats = ClientService.getClientStats();
+  const loadClientStats = async () => {
+    const stats = await ClientService.getClientStats();
     setClientStats(stats);
   };
 
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.trim()) {
-      const searchResults = ClientService.searchClients(query);
+      const searchResults = await ClientService.searchClients(query);
       setClients(searchResults);
     } else {
       loadClients();
@@ -245,13 +245,13 @@ const AdminDashboard: React.FC = () => {
   };
 
   // Event management functions
-  const loadEvents = () => {
-    const allEvents = EventService.getAllEvents();
+  const loadEvents = async () => {
+    const allEvents = await EventService.getAllEvents();
     setEvents(allEvents);
   };
 
-  const loadEventStats = () => {
-    const stats = EventService.getEventStats();
+  const loadEventStats = async () => {
+    const stats = await EventService.getEventStats();
     setEventStats({
       totalEvents: stats.totalEvents,
       activeEvents: stats.activeEvents,
