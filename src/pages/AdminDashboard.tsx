@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   IonContent,
   IonPage,
@@ -46,17 +46,17 @@ import {
   star,
   cloudUpload
 } from 'ionicons/icons';
-import { useHistory } from 'react-router-dom';
-import { ClientService } from '../services/ClientService';
-import { Client } from '../types/Client';
+import {useHistory} from 'react-router-dom';
+import {ClientService} from '../services/ClientService';
+import {Client} from '../types/Client';
 import ClientForm from '../components/ClientForm';
-import { EventService } from '../services/EventService';
-import { Event } from '../types/Event';
+import {EventService} from '../services/EventService';
+import {Event} from '../types/Event';
 import EventForm from '../components/EventForm';
-import { ItemService } from '../services/ItemService';
-import { Item } from '../types/Item';
+import {ItemService} from '../services/ItemService';
+import {Item} from '../types/Item';
 import ItemForm from '../components/ItemForm';
-import { GallerySettingsService } from '../services/GallerySettingsService';
+import {GallerySettingsService} from '../services/GallerySettingsService';
 import './AdminDashboard.css';
 
 // Dummy data
@@ -68,9 +68,9 @@ const dummyStats = {
 };
 
 const dummyRecentVisitors = [
-  { id: 1, name: 'John Smith', email: 'john@example.com', visitDate: '2025-01-07', interest: 'Abstract Art' },
-  { id: 2, name: 'Sarah Johnson', email: 'sarah@example.com', visitDate: '2025-01-06', interest: 'Landscapes' },
-  { id: 3, name: 'Mike Brown', email: 'mike@example.com', visitDate: '2025-01-06', interest: 'Sculptures' }
+  {id: 1, name: 'John Smith', email: 'john@example.com', visitDate: '2025-01-07', interest: 'Abstract Art'},
+  {id: 2, name: 'Sarah Johnson', email: 'sarah@example.com', visitDate: '2025-01-06', interest: 'Landscapes'},
+  {id: 3, name: 'Mike Brown', email: 'mike@example.com', visitDate: '2025-01-06', interest: 'Sculptures'}
 ];
 
 const AdminDashboard: React.FC = () => {
@@ -91,7 +91,7 @@ const AdminDashboard: React.FC = () => {
     topCategories: [],
     topInterests: []
   });
-  
+
   // Event management state
   const [events, setEvents] = useState<Event[]>([]);
   const [eventSearchQuery, setEventSearchQuery] = useState('');
@@ -103,7 +103,7 @@ const AdminDashboard: React.FC = () => {
     upcomingEvents: 0,
     completedEvents: 0
   });
-  
+
   // Item management state
   const [items, setItems] = useState<Item[]>([]);
   const [itemSearchQuery, setItemSearchQuery] = useState('');
@@ -120,29 +120,29 @@ const AdminDashboard: React.FC = () => {
 
   // Active event state
   const [activeEventId, setActiveEventId] = useState<string | undefined>(undefined);
-  
+
   // Gallery settings state
   const [galleryName, setGalleryName] = useState('Demo Gallery');
   const [galleryLogo, setGalleryLogo] = useState<string | null>(null);
-  
+
   // Edit mode state
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [tempEventChanges, setTempEventChanges] = useState<Partial<Event>>({});
-  
+
   const history = useHistory();
 
   useEffect(() => {
     // Check authentication
     const isAuthenticated = localStorage.getItem('isAuthenticated');
     const email = localStorage.getItem('userEmail');
-    
+
     // Temporarily disable authentication check for testing
     // if (!isAuthenticated) {
     //   history.push('/admin/login');
     //   return;
     // }
-    
+
     if (email) {
       setUserEmail(email);
     } else {
@@ -162,7 +162,7 @@ const AdminDashboard: React.FC = () => {
     loadItemStats();
     loadActiveEvent();
     loadGallerySettings();
-    
+
     // Add a storage event listener to detect changes to localStorage
     // This will allow the component to update when settings are changed in another tab/window
     const handleStorageChange = (event: StorageEvent) => {
@@ -171,27 +171,27 @@ const AdminDashboard: React.FC = () => {
         loadGallerySettings();
       }
     };
-    
+
     // Add a custom event listener for same-tab changes
     const handleCustomStorageChange = (event: CustomEvent) => {
       console.log('Settings changed in same tab, reloading gallery settings');
       loadGallerySettings();
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('gallerySettingsChanged', handleCustomStorageChange as EventListener);
-    
+
     // Clean up event listeners
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('gallerySettingsChanged', handleCustomStorageChange as EventListener);
     };
   }, [history]);
-  
+
   const loadGallerySettings = async () => {
     const settings = await GallerySettingsService.getOrInitializeSettings();
     setGalleryName(settings.galleryName);
-    
+
     const activeLogo = await GallerySettingsService.getActiveLogo();
     if (activeLogo) {
       setGalleryLogo(activeLogo.url);
@@ -260,10 +260,10 @@ const AdminDashboard: React.FC = () => {
     });
   };
 
-  const handleEventSearch = (query: string) => {
+  const handleEventSearch = async (query: string) => {
     setEventSearchQuery(query);
     if (query.trim()) {
-      const searchResults = EventService.searchEvents(query);
+      const searchResults = await EventService.searchEvents(query);
       setEvents(searchResults);
     } else {
       loadEvents();
@@ -361,21 +361,25 @@ const AdminDashboard: React.FC = () => {
 
   const handleSaveEdit = () => {
     if (editingEvent && Object.keys(tempEventChanges).length > 0) {
-      const updatedEvent = { ...editingEvent, ...tempEventChanges };
-      EventService.updateEvent(editingEvent.id, updatedEvent);
-      
-      // Update the selected event and events list
-      setSelectedEvent(updatedEvent);
-      loadEvents();
-      
-      // If showItems was changed, save the preference to localStorage
-      if (tempEventChanges.showItems !== undefined && 
-          tempEventChanges.showItems !== editingEvent.showItems && 
-          editingEvent.id === activeEventId) {
-        localStorage.setItem('gallery_show_items_preference', tempEventChanges.showItems.toString());
-      }
+      const updatedEvent = {...editingEvent, ...tempEventChanges};
+      EventService.updateEvent(editingEvent.id, updatedEvent)
+        .then(() => {
+          // Update the selected event and events list
+          setSelectedEvent(updatedEvent);
+          loadEvents();
+
+          // If showItems was changed, save the preference to localStorage
+          if (tempEventChanges.showItems !== undefined &&
+            tempEventChanges.showItems !== editingEvent.showItems &&
+            editingEvent.id === activeEventId) {
+            localStorage.setItem('gallery_show_items_preference', tempEventChanges.showItems.toString());
+          }
+        })
+        .catch((error) => {
+          console.error('Error updating event:', error);
+        });
     }
-    
+
     setIsEditMode(false);
     setEditingEvent(null);
     setTempEventChanges({});
@@ -400,7 +404,7 @@ const AdminDashboard: React.FC = () => {
     if (isEditMode) {
       const currentImages = tempEventChanges.backgroundImages || editingEvent?.backgroundImages || [];
       const updatedImages = [...currentImages, imageUrl];
-      
+
       setTempEventChanges(prev => ({
         ...prev,
         backgroundImages: updatedImages,
@@ -414,7 +418,7 @@ const AdminDashboard: React.FC = () => {
     if (isEditMode) {
       const currentImages = tempEventChanges.backgroundImages || editingEvent?.backgroundImages || [];
       const updatedImages = currentImages.filter(img => img !== imageUrl);
-      
+
       setTempEventChanges(prev => ({
         ...prev,
         backgroundImages: updatedImages,
@@ -425,11 +429,11 @@ const AdminDashboard: React.FC = () => {
   };
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: statsChart },
-    { id: 'events', label: 'Events', icon: calendar },
-    { id: 'clients', label: 'Clients', icon: people },
-    { id: 'items', label: 'Items', icon: images },
-    { id: 'settings', label: 'Settings', icon: settings }
+    {id: 'dashboard', label: 'Dashboard', icon: statsChart},
+    {id: 'events', label: 'Events', icon: calendar},
+    {id: 'clients', label: 'Clients', icon: people},
+    {id: 'items', label: 'Items', icon: images},
+    {id: 'settings', label: 'Settings', icon: settings}
   ];
 
   const renderDashboard = () => (
@@ -440,7 +444,7 @@ const AdminDashboard: React.FC = () => {
             <IonCard className="stat-card">
               <IonCardContent>
                 <div className="stat-item">
-                  <IonIcon icon={people} className="stat-icon" />
+                  <IonIcon icon={people} className="stat-icon"/>
                   <div>
                     <h2>{dummyStats.totalVisitors}</h2>
                     <p>Total Visitors</p>
@@ -453,7 +457,7 @@ const AdminDashboard: React.FC = () => {
             <IonCard className="stat-card">
               <IonCardContent>
                 <div className="stat-item">
-                  <IonIcon icon={person} className="stat-icon" />
+                  <IonIcon icon={person} className="stat-icon"/>
                   <div>
                     <h2>{dummyStats.totalClients}</h2>
                     <p>Total Clients</p>
@@ -466,7 +470,7 @@ const AdminDashboard: React.FC = () => {
             <IonCard className="stat-card">
               <IonCardContent>
                 <div className="stat-item">
-                  <IonIcon icon={calendar} className="stat-icon" />
+                  <IonIcon icon={calendar} className="stat-icon"/>
                   <div>
                     <h2>{dummyStats.activeEvents}</h2>
                     <p>Active Events</p>
@@ -479,7 +483,7 @@ const AdminDashboard: React.FC = () => {
             <IonCard className="stat-card">
               <IonCardContent>
                 <div className="stat-item">
-                  <IonIcon icon={images} className="stat-icon" />
+                  <IonIcon icon={images} className="stat-icon"/>
                   <div>
                     <h2>{dummyStats.totalItems}</h2>
                     <p>Total Items</p>
@@ -489,7 +493,7 @@ const AdminDashboard: React.FC = () => {
             </IonCard>
           </IonCol>
         </IonRow>
-        
+
         <IonRow>
           <IonCol size="12">
             <IonCard>
@@ -535,10 +539,10 @@ const AdminDashboard: React.FC = () => {
                 <div className="events-sidebar-header">
                   <h3>Events</h3>
                   <IonButton fill="clear" size="small" onClick={handleAddEvent}>
-                    <IonIcon icon={add} />
+                    <IonIcon icon={add}/>
                   </IonButton>
                 </div>
-                
+
                 <IonSearchbar
                   value={eventSearchQuery}
                   onIonInput={(e) => handleEventSearch(e.detail.value!)}
@@ -553,20 +557,20 @@ const AdminDashboard: React.FC = () => {
                     </div>
                   ) : (
                     events.map((event) => (
-                      <div 
-                        key={event.id} 
+                      <div
+                        key={event.id}
                         className={`event-sidebar-item ${selectedEvent?.id === event.id ? 'selected' : ''}`}
                         onClick={() => setSelectedEvent(event)}
                       >
                         <div className="event-sidebar-header">
                           <h4>{event.title}</h4>
-                          <IonBadge 
+                          <IonBadge
                             color={
                               event.status === 'Active' ? 'success' :
-                              event.status === 'Published' ? 'primary' :
-                              event.status === 'Draft' ? 'medium' :
-                              event.status === 'Completed' ? 'dark' :
-                              'warning'
+                                event.status === 'Published' ? 'primary' :
+                                  event.status === 'Draft' ? 'medium' :
+                                    event.status === 'Completed' ? 'dark' :
+                                      'warning'
                             }
                           >
                             {event.status}
@@ -590,9 +594,9 @@ const AdminDashboard: React.FC = () => {
                       <div className="event-title-section">
                         <h2>{selectedEvent.title}</h2>
                         <div className="event-actions">
-                          <IonButton 
-                            fill="outline" 
-                            size="small" 
+                          <IonButton
+                            fill="outline"
+                            size="small"
                             onClick={() => handleSetActiveEvent(selectedEvent.id)}
                             color={selectedEvent.id === activeEventId ? 'success' : 'primary'}
                           >
@@ -605,10 +609,10 @@ const AdminDashboard: React.FC = () => {
                       </div>
                       <IonBadge color={
                         selectedEvent.status === 'Active' ? 'success' :
-                        selectedEvent.status === 'Published' ? 'primary' :
-                        selectedEvent.status === 'Draft' ? 'medium' :
-                        selectedEvent.status === 'Completed' ? 'dark' :
-                        'warning'
+                          selectedEvent.status === 'Published' ? 'primary' :
+                            selectedEvent.status === 'Draft' ? 'medium' :
+                              selectedEvent.status === 'Completed' ? 'dark' :
+                                'warning'
                       }>
                         {selectedEvent.status}
                       </IonBadge>
@@ -616,7 +620,7 @@ const AdminDashboard: React.FC = () => {
 
                     <div className="event-details-content">
                       <p className="event-description">{selectedEvent.description}</p>
-                      
+
                       <div className="event-info-grid">
                         <div className="event-info-item">
                           <strong>Type:</strong> {selectedEvent.eventType}
@@ -673,8 +677,8 @@ const AdminDashboard: React.FC = () => {
                             <strong>Show Items Carousel:</strong>
                           </div>
                           <div className="event-toggle-control">
-                            <IonButton 
-                              fill={selectedEvent.showItems ? "solid" : "outline"} 
+                            <IonButton
+                              fill={selectedEvent.showItems ? "solid" : "outline"}
                               color={selectedEvent.showItems ? "success" : "medium"}
                               size="small"
                               onClick={() => {
@@ -686,7 +690,7 @@ const AdminDashboard: React.FC = () => {
                                     ...prev,
                                     showItems: newShowItemsValue
                                   }));
-                                  
+
                                   // Also update the global setting if this is the active event
                                   if (selectedEvent.id === activeEventId) {
                                     GallerySettingsService.updateShowItemCards(newShowItemsValue);
@@ -698,7 +702,7 @@ const AdminDashboard: React.FC = () => {
                                     ...prev,
                                     showItems: newShowItemsValue
                                   }));
-                                  
+
                                   // Also update the global setting if this is the active event
                                   if (selectedEvent.id === activeEventId) {
                                     GallerySettingsService.updateShowItemCards(newShowItemsValue);
@@ -706,19 +710,19 @@ const AdminDashboard: React.FC = () => {
                                 }
                               }}
                             >
-                              {isEditMode 
-                                ? (tempEventChanges.showItems !== undefined 
-                                  ? tempEventChanges.showItems 
-                                  : selectedEvent.showItems) 
-                                  ? "Enabled" 
+                              {isEditMode
+                                ? (tempEventChanges.showItems !== undefined
+                                  ? tempEventChanges.showItems
+                                  : selectedEvent.showItems)
+                                  ? "Enabled"
                                   : "Disabled"
-                                : selectedEvent.showItems 
-                                  ? "Enabled" 
+                                : selectedEvent.showItems
+                                  ? "Enabled"
                                   : "Disabled"
                               }
                             </IonButton>
                             <p className="event-toggle-description">
-                              {selectedEvent.featuredItems && selectedEvent.featuredItems.length > 0 
+                              {selectedEvent.featuredItems && selectedEvent.featuredItems.length > 0
                                 ? `Controls visibility of ${selectedEvent.featuredItems.length} items in the visitor landing carousel.`
                                 : "No items currently attached to this event. Add items to display in the carousel."}
                             </p>
@@ -765,28 +769,28 @@ const AdminDashboard: React.FC = () => {
                               <div className="background-images-edit">
                                 <div className="background-images-thumbnails">
                                   {(tempEventChanges.backgroundImages || editingEvent?.backgroundImages || []).map((imageUrl, index) => (
-                                    <div 
-                                      key={index} 
+                                    <div
+                                      key={index}
                                       className={`background-thumbnail ${(tempEventChanges.imageUrl || editingEvent?.imageUrl) === imageUrl ? 'active' : ''}`}
                                       onClick={() => handleSetBackgroundImage(imageUrl)}
                                     >
-                                      <img src={imageUrl} alt={`Background ${index + 1}`} />
+                                      <img src={imageUrl} alt={`Background ${index + 1}`}/>
                                       {(tempEventChanges.imageUrl || editingEvent?.imageUrl) === imageUrl && (
                                         <div className="active-indicator">
-                                          <IonIcon icon={star} />
+                                          <IonIcon icon={star}/>
                                         </div>
                                       )}
                                       <div className="thumbnail-actions">
-                                        <IonButton 
-                                          fill="clear" 
-                                          size="small" 
+                                        <IonButton
+                                          fill="clear"
+                                          size="small"
                                           color="danger"
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             handleRemoveBackgroundImage(imageUrl);
                                           }}
                                         >
-                                          <IonIcon icon={trash} />
+                                          <IonIcon icon={trash}/>
                                         </IonButton>
                                       </div>
                                     </div>
@@ -795,7 +799,7 @@ const AdminDashboard: React.FC = () => {
                                     <input
                                       type="file"
                                       accept="image/*"
-                                      style={{ display: 'none' }}
+                                      style={{display: 'none'}}
                                       id="background-image-upload"
                                       onChange={(e) => {
                                         const file = e.target.files?.[0];
@@ -809,12 +813,12 @@ const AdminDashboard: React.FC = () => {
                                         }
                                       }}
                                     />
-                                    <IonButton 
-                                      fill="outline" 
+                                    <IonButton
+                                      fill="outline"
                                       size="small"
                                       onClick={() => document.getElementById('background-image-upload')?.click()}
                                     >
-                                      <IonIcon icon={cloudUpload} slot="start" />
+                                      <IonIcon icon={cloudUpload} slot="start"/>
                                       Add Image
                                     </IonButton>
                                   </div>
@@ -825,20 +829,20 @@ const AdminDashboard: React.FC = () => {
                                 {selectedEvent.backgroundImages && selectedEvent.backgroundImages.length > 0 ? (
                                   <div className="background-images-thumbnails">
                                     {selectedEvent.backgroundImages.map((imageUrl, index) => (
-                                      <div 
-                                        key={index} 
+                                      <div
+                                        key={index}
                                         className={`background-thumbnail ${selectedEvent.imageUrl === imageUrl ? 'active' : ''}`}
                                       >
-                                        <img src={imageUrl} alt={`Background ${index + 1}`} />
+                                        <img src={imageUrl} alt={`Background ${index + 1}`}/>
                                         {selectedEvent.imageUrl === imageUrl && (
                                           <div className="active-indicator">
-                                            <IonIcon icon={star} />
+                                            <IonIcon icon={star}/>
                                           </div>
                                         )}
                                       </div>
                                     ))}
-                                    <IonButton 
-                                      fill="clear" 
+                                    <IonButton
+                                      fill="clear"
                                       size="small"
                                       onClick={() => handleStartEdit(selectedEvent)}
                                     >
@@ -848,12 +852,12 @@ const AdminDashboard: React.FC = () => {
                                 ) : (
                                   <div className="no-background-images">
                                     <p>No background images</p>
-                                    <IonButton 
-                                      fill="outline" 
+                                    <IonButton
+                                      fill="outline"
                                       size="small"
                                       onClick={() => handleStartEdit(selectedEvent)}
                                     >
-                                      <IonIcon icon={add} slot="start" />
+                                      <IonIcon icon={add} slot="start"/>
                                       Add Images
                                     </IonButton>
                                   </div>
@@ -897,7 +901,7 @@ const AdminDashboard: React.FC = () => {
                 <IonBadge color="success">{clientStats.emailListClients} Email List</IonBadge>
               </div>
             </div>
-            
+
             <IonSearchbar
               value={searchQuery}
               onIonInput={(e) => handleSearch(e.detail.value!)}
@@ -909,7 +913,8 @@ const AdminDashboard: React.FC = () => {
               {clients.length === 0 ? (
                 <IonCard>
                   <IonCardContent>
-                    <p>No clients found. {searchQuery ? 'Try adjusting your search.' : 'Add your first client to get started.'}</p>
+                    <p>No clients
+                      found. {searchQuery ? 'Try adjusting your search.' : 'Add your first client to get started.'}</p>
                   </IonCardContent>
                 </IonCard>
               ) : (
@@ -957,7 +962,7 @@ const AdminDashboard: React.FC = () => {
                         <div className="client-actions">
                           {client.onEmailList && (
                             <IonBadge color="success">
-                              <IonIcon icon={mail} />
+                              <IonIcon icon={mail}/>
                             </IonBadge>
                           )}
                           <p className="client-date">
@@ -973,7 +978,7 @@ const AdminDashboard: React.FC = () => {
 
             <IonFab vertical="bottom" horizontal="end" slot="fixed">
               <IonFabButton onClick={handleAddClient}>
-                <IonIcon icon={add} />
+                <IonIcon icon={add}/>
               </IonFabButton>
             </IonFab>
           </div>
@@ -990,7 +995,7 @@ const AdminDashboard: React.FC = () => {
                 <IonBadge color="medium">{itemStats.reservedItems} Reserved</IonBadge>
               </div>
             </div>
-            
+
             <IonSearchbar
               value={itemSearchQuery}
               onIonInput={(e) => handleItemSearch(e.detail.value!)}
@@ -1002,7 +1007,8 @@ const AdminDashboard: React.FC = () => {
               {items.length === 0 ? (
                 <IonCard>
                   <IonCardContent>
-                    <p>No items found. {itemSearchQuery ? 'Try adjusting your search.' : 'Add your first item to get started.'}</p>
+                    <p>No items
+                      found. {itemSearchQuery ? 'Try adjusting your search.' : 'Add your first item to get started.'}</p>
                   </IonCardContent>
                 </IonCard>
               ) : (
@@ -1012,10 +1018,10 @@ const AdminDashboard: React.FC = () => {
                       <div className="item-info">
                         <div className="item-image">
                           {item.thumbnailImage ? (
-                            <img src={item.thumbnailImage} alt={item.title} />
+                            <img src={item.thumbnailImage} alt={item.title}/>
                           ) : (
                             <div className="image-placeholder">
-                              <IonIcon icon={images} />
+                              <IonIcon icon={images}/>
                             </div>
                           )}
                         </div>
@@ -1024,11 +1030,11 @@ const AdminDashboard: React.FC = () => {
                             <h3>{item.title}</h3>
                             <IonBadge color={
                               item.status === 'Available' ? 'success' :
-                              item.status === 'Sold' ? 'dark' :
-                              item.status === 'Reserved' ? 'warning' :
-                              item.status === 'On Loan' ? 'tertiary' :
-                              item.status === 'In Restoration' ? 'medium' :
-                              'light'
+                                item.status === 'Sold' ? 'dark' :
+                                  item.status === 'Reserved' ? 'warning' :
+                                    item.status === 'On Loan' ? 'tertiary' :
+                                      item.status === 'In Restoration' ? 'medium' :
+                                        'light'
                             }>
                               {item.status}
                             </IonBadge>
@@ -1039,7 +1045,8 @@ const AdminDashboard: React.FC = () => {
                           <p className="item-year"><strong>Year:</strong> {item.year}</p>
                           <div className="item-pricing">
                             <p><strong>Price:</strong> {item.currency} {item.price.toLocaleString()}</p>
-                            <p><strong>Estimated Value:</strong> {item.currency} {item.estimatedValue.toLocaleString()}</p>
+                            <p><strong>Estimated Value:</strong> {item.currency} {item.estimatedValue.toLocaleString()}
+                            </p>
                           </div>
                           <div className="item-location">
                             <p><strong>Location:</strong> {item.location}</p>
@@ -1088,7 +1095,7 @@ const AdminDashboard: React.FC = () => {
 
             <IonFab vertical="bottom" horizontal="end" slot="fixed">
               <IonFabButton onClick={handleAddItem}>
-                <IonIcon icon={add} />
+                <IonIcon icon={add}/>
               </IonFabButton>
             </IonFab>
           </div>
@@ -1115,12 +1122,12 @@ const AdminDashboard: React.FC = () => {
                   <div className="company-info">
                     {galleryLogo ? (
                       <div className="company-logo">
-                        <img src={galleryLogo} alt={galleryName} />
+                        <img src={galleryLogo} alt={galleryName}/>
                       </div>
                     ) : (
                       <IonAvatar className="company-logo">
                         <div className="logo-placeholder">
-                          <IonIcon icon={business} />
+                          <IonIcon icon={business}/>
                         </div>
                       </IonAvatar>
                     )}
@@ -1148,7 +1155,7 @@ const AdminDashboard: React.FC = () => {
                     }
                   }}
                 >
-                  <IonIcon icon={item.icon} slot="start" />
+                  <IonIcon icon={item.icon} slot="start"/>
                   <IonLabel>{item.label}</IonLabel>
                 </IonItem>
               ))}
@@ -1175,7 +1182,7 @@ const AdminDashboard: React.FC = () => {
                     onClick={handleLogout}
                     className="logout-button"
                   >
-                    <IonIcon icon={logOut} slot="start" />
+                    <IonIcon icon={logOut} slot="start"/>
                     Logout
                   </IonButton>
                 </IonCardContent>
@@ -1188,7 +1195,7 @@ const AdminDashboard: React.FC = () => {
           <IonHeader>
             <IonToolbar>
               <IonButtons slot="start">
-                <IonMenuButton />
+                <IonMenuButton/>
               </IonButtons>
               <IonTitle>
                 {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
@@ -1197,17 +1204,17 @@ const AdminDashboard: React.FC = () => {
                 {isEditMode ? (
                   <>
                     <IonButton fill="clear" color="medium" onClick={handleCancelEdit}>
-                      <IonIcon icon={close} slot="start" />
+                      <IonIcon icon={close} slot="start"/>
                       Cancel
                     </IonButton>
                     <IonButton fill="solid" color="primary" onClick={handleSaveEdit}>
-                      <IonIcon icon={checkmark} slot="start" />
+                      <IonIcon icon={checkmark} slot="start"/>
                       Done
                     </IonButton>
                   </>
                 ) : (
                   <IonButton fill="clear" onClick={() => history.push('/')}>
-                    <IonIcon icon={home} />
+                    <IonIcon icon={home}/>
                   </IonButton>
                 )}
               </IonButtons>
