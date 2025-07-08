@@ -13,8 +13,8 @@ export interface Client {
   basisForProcessing: string;
   dataProtectionDate: string;
   generalInformation?: string;
-  categories: string[];
-  interests: string[];
+  categories: { name: string }[];
+  interests: { name: string }[];
   createdAt: string;
   updatedAt: string;
 }

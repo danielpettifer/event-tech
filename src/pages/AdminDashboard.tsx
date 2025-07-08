@@ -921,7 +921,9 @@ const AdminDashboard: React.FC = () => {
                             {client.firstName.charAt(0)}{client.lastName.charAt(0)}
                           </div>
                         </IonAvatar>
+
                         <div className="client-details">
+
                           <h3>{client.firstName} {client.lastName}</h3>
                           <p>{client.email}</p>
                           <p>{client.townCity}, {client.country}</p>
@@ -931,7 +933,7 @@ const AdminDashboard: React.FC = () => {
                           <div className="client-tags">
                             {client.categories.slice(0, 3).map((category, index) => (
                               <IonBadge key={index} color="medium" className="tag">
-                                {category}
+                                {category.name}
                               </IonBadge>
                             ))}
                             {client.categories.length > 3 && (
@@ -943,7 +945,7 @@ const AdminDashboard: React.FC = () => {
                           <div className="client-interests">
                             {client.interests.slice(0, 2).map((interest, index) => (
                               <IonBadge key={index} color="tertiary" className="tag">
-                                {interest}
+                                {interest.name}
                               </IonBadge>
                             ))}
                             {client.interests.length > 2 && (
