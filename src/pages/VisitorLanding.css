@@ -71,15 +71,16 @@ ion-footer {
   width: 100%;
   gap: 20px;
   pointer-events: auto;
+  align-items: flex-end; /* Align columns at the bottom */
 }
 
 .column-left {
-  flex: 1;
+  flex: 1.2; /* Slightly larger left column */
   min-width: 0; /* Allow proper shrinking */
 }
 
 .column-right {
-  flex: 1;
+  flex: 0.8; /* Slightly smaller right column */
   min-width: 0; /* Allow proper shrinking */
 }
 
@@ -239,12 +240,14 @@ ion-footer {
 @media (min-width: 768px) {
   .items-container {
     width: 100%;
-    height: 300px;
+    height: 200px; /* Reduced height */
     margin: 0;
-    padding: 20px;
+    padding: 0;
     background: transparent;
     z-index: 60;
     border: 0 !important;
+    display: flex;
+    align-items: flex-end; /* Align to bottom */
   }
   
   .items-scroll-container {
@@ -276,6 +279,34 @@ ion-footer {
   .items-scroll-container::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
   }
+  
+  /* Carousel Gradient Mask */
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Ensure mask doesn't extend beyond container */
+  }
+  
+  .carousel-gradient-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 100%;
+    background: linear-gradient(to right, 
+      transparent 0%, 
+      var(--dynamic-dark-color-solid) 100%
+    );
+    pointer-events: none; /* Allow clicks to pass through */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 30; /* Above carousel items */
+  }
+  
+  .carousel-gradient-mask.visible {
+    opacity: 1;
+  }
 }
 
 .item-card {
@@ -301,8 +332,8 @@ ion-footer {
 @media (min-width: 768px) {
   .item-card {
     flex-shrink: 0;
-    width: 320px;
-    height: 260px;
+    width: 240px; /* Smaller width */
+    height: 180px; /* Smaller height */
   }
 }
 
@@ -378,15 +409,15 @@ ion-footer {
 /* Desktop card content */
 @media (min-width: 768px) {
   .item-card-content {
-    padding: 20px;
+    padding: 12px; /* Reduced padding for smaller cards */
   }
   
   .item-card-title {
-    font-size: 1.2rem;
+    font-size: 1rem; /* Smaller font size */
   }
   
   .item-card-artist {
-    font-size: 0.95rem;
+    font-size: 0.85rem; /* Smaller font size */
   }
 }
 

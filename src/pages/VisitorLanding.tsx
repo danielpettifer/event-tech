@@ -483,21 +483,46 @@ const VisitorLanding: React.FC = () => {
             {showItemCards && items.length > 0 && (
               <div className="column-right">
                 <div className="items-container">
-                  <div className="items-scroll-container">
-                    {items.map((item) => (
-                      <div 
-                        key={item.id}
-                        className="item-card" 
-                        onClick={() => handleItemClick(item)}
-                      >
-                        <img src={item.thumbnailImage || item.images[0]} alt={item.title} />
-                        <div className="item-card-overlay"></div>
-                        <div className="item-card-content">
-                          <h3 className="item-card-title">{item.title}</h3>
-                          <p className="item-card-artist">{item.artist}</p>
+                  <div className="carousel-container">
+                    <div 
+                      className="items-scroll-container"
+                      ref={(el) => {
+                        if (el) {
+                          // Initial check for scroll mask
+                          const hasMoreContent = el.scrollWidth > el.clientWidth;
+                          const maskEl = el.parentElement?.querySelector('.carousel-gradient-mask');
+                          if (maskEl) {
+                            maskEl.classList.toggle('visible', hasMoreContent);
+                          }
+                          
+                          // Add scroll event listener
+                          el.addEventListener('scroll', () => {
+                            const isAtEnd = Math.ceil(el.scrollLeft + el.clientWidth) >= el.scrollWidth - 10;
+                            const maskEl = el.parentElement?.querySelector('.carousel-gradient-mask');
+                            if (maskEl) {
+                              maskEl.classList.toggle('visible', !isAtEnd);
+                            }
+                          });
+                        }
+                      }}
+                    >
+                      {items.map((item) => (
+                        <div 
+                          key={item.id}
+                          className="item-card" 
+                          onClick={() => handleItemClick(item)}
+                        >
+                          <img src={item.thumbnailImage || item.images[0]} alt={item.title} />
+                          <div className="item-card-overlay"></div>
+                          <div className="item-card-content">
+                            <h3 className="item-card-title">{item.title}</h3>
+                            <p className="item-card-artist">{item.artist}</p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                    {/* Gradient mask for indicating more content */}
+                    <div className="carousel-gradient-mask"></div>
                   </div>
                 </div>
               </div>
