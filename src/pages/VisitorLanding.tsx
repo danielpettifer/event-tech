@@ -432,74 +432,77 @@ const VisitorLanding: React.FC = () => {
         
         {/* Bottom Content Overlay */}
         <div className="bottom-content-overlay">
-          {/* Active Event Banner */}
-          {activeEvent && (
-            <div className="active-event-banner">
-              <IonCard className="event-banner-card" button onClick={() => setIsDescriptionModalOpen(true)}>
-                <IonCardContent>
-                  <div className="event-banner-content">
-                    <div className="event-banner-info">
-                      <h2>{activeEvent.title}</h2>
-                      <div className="event-banner-details">
-                        <IonChip color="light">
-                          <IonLabel>{activeEvent.eventType}</IonLabel>
-                        </IonChip>
-                        <IonChip color="light">
-                          <IonLabel>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
-                        </IonChip>
-                        {/* {activeEvent.isTicketed && activeEvent.ticketPrice && (
-                          <IonChip color="success">
-                            <IonLabel>£{activeEvent.ticketPrice}</IonLabel>
-                          </IonChip>
-                        )} */}
+          {/* Two-column layout container */}
+          <div className="two-column-layout">
+            {/* Left Column: Event Description */}
+            {activeEvent && (
+              <div className="column-left">
+                <div className="active-event-banner">
+                  <IonCard className="event-banner-card" button onClick={() => setIsDescriptionModalOpen(true)}>
+                    <IonCardContent>
+                      <div className="event-banner-content">
+                        <div className="event-banner-info">
+                          <h2>{activeEvent.title}</h2>
+                          <div className="event-banner-details">
+                            <IonChip color="light">
+                              <IonLabel>{activeEvent.eventType}</IonLabel>
+                            </IonChip>
+                            <IonChip color="light">
+                              <IonLabel>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
+                            </IonChip>
+                            {/* {activeEvent.isTicketed && activeEvent.ticketPrice && (
+                              <IonChip color="success">
+                                <IonLabel>£{activeEvent.ticketPrice}</IonLabel>
+                              </IonChip>
+                            )} */}
+                          </div>
+                          <div className="event-description-container">
+                            <p>{activeEvent.description}</p>
+                          </div>
+                          <IonButton 
+                            className="read-more-button" 
+                            size="default"
+                            fill="clear"
+                            shape='round'
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent card click from triggering
+                              setIsDescriptionModalOpen(true);
+                            }}
+                          >
+                            Read More
+                          </IonButton>
+                        </div>
                       </div>
-                      <div className="event-description-container">
-                        <p>{activeEvent.description}</p>
-                      </div>
-                      <IonButton 
-                        className="read-more-button" 
-                        size="default"
-                        fill="clear"
-                        shape='round'
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click from triggering
-                          setIsDescriptionModalOpen(true);
-                        }}
-                      >
-                        Read More
-                      </IonButton>
-                    </div>
-                    {/* <IonBadge color="success" className="active-badge">
-                      Active Event
-                    </IonBadge> */}
-                  </div>
-                </IonCardContent>
-              </IonCard>
-            </div>
-          )}
-
-          {/* Items Display or Event Default Image - Conditional Rendering */}
-          {showItemCards && items.length > 0 && (
-            // Show carousel if there are featured items
-            <div className="items-container">
-              <div className="items-scroll-container">
-                {items.map((item) => (
-                  <div 
-                    key={item.id}
-                    className="item-card" 
-                    onClick={() => handleItemClick(item)}
-                  >
-                    <img src={item.thumbnailImage || item.images[0]} alt={item.title} />
-                    <div className="item-card-overlay"></div>
-                    <div className="item-card-content">
-                      <h3 className="item-card-title">{item.title}</h3>
-                      <p className="item-card-artist">{item.artist}</p>
-                    </div>
-                  </div>
-                ))}
+                    </IonCardContent>
+                  </IonCard>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {/* Right Column: Items Carousel */}
+            {showItemCards && items.length > 0 && (
+              <div className="column-right">
+                <div className="items-container">
+                  <div className="items-scroll-container">
+                    {items.map((item) => (
+                      <div 
+                        key={item.id}
+                        className="item-card" 
+                        onClick={() => handleItemClick(item)}
+                      >
+                        <img src={item.thumbnailImage || item.images[0]} alt={item.title} />
+                        <div className="item-card-overlay"></div>
+                        <div className="item-card-content">
+                          <h3 className="item-card-title">{item.title}</h3>
+                          <p className="item-card-artist">{item.artist}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Event Default Image - shown when no featured items but event has image */}
           {showItemCards && items.length === 0 && activeEvent && activeEvent.imageUrl && (

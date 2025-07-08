@@ -64,6 +64,33 @@ ion-footer {
   overflow-y: auto; /* Allow scrolling if content is too tall */
 }
 
+/* Two-Column Layout */
+.two-column-layout {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 20px;
+  pointer-events: auto;
+}
+
+.column-left {
+  flex: 1;
+  min-width: 0; /* Allow proper shrinking */
+}
+
+.column-right {
+  flex: 1;
+  min-width: 0; /* Allow proper shrinking */
+}
+
+/* Responsive layout for mobile */
+@media (max-width: 767px) {
+  .two-column-layout {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
 /* Level 3: Dynamic Bottom Gradient - Fade Effect */
 .dynamic-bottom-gradient {
   position: fixed; /* Fixed to the viewport */
@@ -196,7 +223,7 @@ ion-footer {
 
 .items-container {
   padding: 16px;
-  margin-top: 60px;
+  margin-top: 0; /* Removed top margin for two-column layout */
 }
 
 /* Mobile: Vertical stack */
@@ -210,15 +237,15 @@ ion-footer {
 
 /* Desktop and Landscape: Horizontal scroll at bottom */
 @media (min-width: 768px) {
-.items-container {
-  width: 100%;
-  height: 300px;
-  margin: 0;
-  padding: 20px;
-  background: transparent;
-  z-index: 60;
-  border: 0 !important;
-}
+  .items-container {
+    width: 100%;
+    height: 300px;
+    margin: 0;
+    padding: 20px;
+    background: transparent;
+    z-index: 60;
+    border: 0 !important;
+  }
   
   .items-scroll-container {
     display: flex;
@@ -443,8 +470,8 @@ ion-footer {
 /* Active Event Banner */
 .active-event-banner {
   width: 100%;
-  padding: 0 20px;
-  margin-bottom: 20px;
+  padding: 0;
+  margin-bottom: 0;
   z-index: 70; /* Higher than the items-container z-index (60) */
 }
 
@@ -554,7 +581,7 @@ ion-footer {
 /* Responsive Design for Event Banner */
 @media (max-width: 768px) {
   .active-event-banner {
-    padding: 16px;
+    padding: 0;
   }
   
   .event-banner-content {
@@ -633,11 +660,6 @@ ion-footer {
     right: 20px;
   }
   
-  .items-container {
-    padding: 20px 40px;
-    margin-right: 380px; /* Make room for the visitor form */
-  }
-  
   .bottom-content-overlay {
     padding: 20px 20px 56px 20px;
   }
@@ -645,10 +667,8 @@ ion-footer {
 
 @media (min-width: 1024px) {
   .items-container {
-    min-width: 100vw;
-    /* margin: 80px auto 0; */
+    min-width: 100%;
     padding: 16px;
-    /* margin-right: 380px; */
   }
 }
 
