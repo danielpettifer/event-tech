@@ -445,10 +445,10 @@ const VisitorLanding: React.FC = () => {
                           <h2>{activeEvent.title}</h2>
                           <div className="event-banner-details">
                             <IonChip color="light">
-                              <IonLabel>{activeEvent.eventType}</IonLabel>
+                              <IonLabel color="light" style={{color: 'white'}}>{activeEvent.eventType}</IonLabel>
                             </IonChip>
                             <IonChip color="light">
-                              <IonLabel>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
+                              <IonLabel color="light" style={{color: 'white'}}>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
                             </IonChip>
                             {/* {activeEvent.isTicketed && activeEvent.ticketPrice && (
                               <IonChip color="success">

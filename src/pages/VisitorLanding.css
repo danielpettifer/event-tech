@@ -286,6 +286,7 @@ ion-footer {
     width: 100%;
     height: 100%;
     overflow: hidden; /* Ensure mask doesn't extend beyond container */
+    border-radius: 16px;
   }
   
   .carousel-gradient-mask {
@@ -338,8 +339,7 @@ ion-footer {
 }
 
 .item-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  opacity: 0.5;
 }
 
 .item-card img {
@@ -460,6 +460,7 @@ ion-footer {
   opacity: 1 !important;
   --color: var(--dynamic-dark-color, rgba(0, 0, 0, 0.8)) !important;
   margin: 28px !important;
+  font-weight: 600 !important;
 }
 
 .visitor-sevices-button-content {
@@ -568,6 +569,7 @@ ion-footer {
   font-size: 0.9rem;
   text-transform: uppercase;
   transition: --color 2s ease-in-out; /* Add transition for dynamic color */
+  font-weight: 600 !important;
 }
 
 .event-banner-details {
