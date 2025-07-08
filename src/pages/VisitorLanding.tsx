@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   IonContent,
   IonPage,
@@ -8,7 +8,6 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonInput,
-  IonTextarea,
   IonItem,
   IonLabel,
   IonModal,
@@ -17,16 +16,11 @@ import {
   IonTitle,
   IonButtons,
   IonIcon,
-  IonGrid,
-  IonRow,
-  IonCol,
   IonToast,
   IonChip,
-  IonBadge,
-  IonFooter,
   IonFabButton
 } from '@ionic/react';
-import { close, chevronForward, lockClosed, person, heart, star, image, chevronDown } from 'ionicons/icons';
+import { close, lockClosed, person, chevronDown } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { ItemService } from '../services/ItemService';
 import { Item } from '../types/Item';
@@ -64,20 +58,20 @@ const VisitorLanding: React.FC = () => {
   const history = useHistory();
 
   // Add a function to load all data that can be called when needed
-  const loadData = () => {
+  const loadData = async () => {
     // Initialize sample data if needed
-    ItemService.initializeSampleData();
-    EventService.initializeSampleData();
+    await ItemService.initializeSampleData();
+    await EventService.initializeSampleData();
     
     // Load gallery settings - this is the global preference
-    const showCards = GallerySettingsService.getShowItemCards();
+    const showCards = await GallerySettingsService.getShowItemCards();
     setShowItemCards(showCards);
     
     // Load gallery logo and name
-    const activeLogo = GallerySettingsService.getActiveLogo();
+    const activeLogo = await GallerySettingsService.getActiveLogo();
     setGalleryLogo(activeLogo);
     
-    const settings = GallerySettingsService.getOrInitializeSettings();
+    const settings = await GallerySettingsService.getOrInitializeSettings();
     setGalleryName(settings.galleryName);
     
     console.log('Show items carousel:', showCards);
@@ -99,7 +93,7 @@ const VisitorLanding: React.FC = () => {
     };
     
     // Add a custom event listener for same-tab changes
-    const handleCustomStorageChange = (event: CustomEvent) => {
+    const handleCustomStorageChange = () => {
       console.log('Settings changed in same tab, reloading data');
       loadData();
     };
@@ -116,69 +110,74 @@ const VisitorLanding: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Load active event and items
-    const activeEventId = GallerySettingsService.getActiveEventId();
-    let currentEvent: Event | null = null;
-    let currentItems: Item[] = [];
-    
-    if (activeEventId) {
-      currentEvent = EventService.getEventById(activeEventId);
-      setActiveEvent(currentEvent);
-      
-      // First check the global setting - if it's false, don't show items regardless
-      if (!showItemCards) {
-        currentItems = [];
-        setItems([]);
-        // Global setting takes precedence
-        setShowItemCards(false);
-      }
-      // Then check if event-specific showItems is explicitly set to false
-      else if (currentEvent?.showItems === false) {
-        // If showItems is false, don't show items regardless of whether there are featured items
-        currentItems = [];
-        setItems([]);
-        setShowItemCards(false);
-      } else if (currentEvent && currentEvent.featuredItems && currentEvent.featuredItems.length > 0) {
-        // If global and event settings allow showing items, and there are featured items, show them
-        const featuredItems = currentEvent.featuredItems
-          .map(itemId => ItemService.getItemById(itemId))
-          .filter(item => item !== null) as Item[];
-        currentItems = featuredItems;
-        setItems(featuredItems);
-        setShowItemCards(true);
+    const handler = async () => {
+      // Load active event and items
+      const activeEventId = await GallerySettingsService.getActiveEventId();
+      let currentEvent: Event | null = null;
+      let currentItems: Item[] = [];
+
+      if (activeEventId) {
+        currentEvent = await EventService.getEventById(activeEventId);
+        setActiveEvent(currentEvent);
+
+        // First check the global setting - if it's false, don't show items regardless
+        if (!showItemCards) {
+          currentItems = [];
+          setItems([]);
+          // Global setting takes precedence
+          setShowItemCards(false);
+        }
+        // Then check if event-specific showItems is explicitly set to false
+        else if (currentEvent?.showItems === false) {
+          // If showItems is false, don't show items regardless of whether there are featured items
+          currentItems = [];
+          setItems([]);
+          setShowItemCards(false);
+        } else if (currentEvent && currentEvent.featuredItems && currentEvent.featuredItems.length > 0) {
+          // If global and event settings allow showing items, and there are featured items, show them
+          const featuredItems = (
+            await Promise.all(
+              currentEvent.featuredItems.map(itemId => ItemService.getItemById(itemId))
+            )
+          ).filter(item => item !== null) as Item[];
+          currentItems = featuredItems;
+          setItems(featuredItems);
+          setShowItemCards(true);
+        } else {
+          // No featured items - will show event default image instead
+          currentItems = [];
+          setItems([]);
+        }
       } else {
-        // No featured items - will show event default image instead
-        currentItems = [];
-        setItems([]);
+        // No active event, show all public items
+        const publicItems = await ItemService.getPublicItems();
+        currentItems = publicItems;
+        setItems(publicItems);
       }
-    } else {
-      // No active event, show all public items
-      const publicItems = ItemService.getPublicItems();
-      currentItems = publicItems;
-      setItems(publicItems);
+
+      // Load background images - use event default image if no carousel items
+      let bgImages = await ItemService.getLandingPageBackgroundImages();
+
+      // If there's an active event with no featured items but has an image, use that as background
+      if (activeEventId && currentEvent && currentItems.length === 0 && currentEvent.imageUrl) {
+        bgImages = [currentEvent.imageUrl];
+      }
+
+      setBackgroundImages(bgImages);
     }
-    
-    // Load background images - use event default image if no carousel items
-    let bgImages = ItemService.getLandingPageBackgroundImages();
-    
-    // If there's an active event with no featured items but has an image, use that as background
-    if (activeEventId && currentEvent && currentItems.length === 0 && currentEvent.imageUrl) {
-      bgImages = [currentEvent.imageUrl];
-    }
-    
-    setBackgroundImages(bgImages);
+    handler();
   }, [showItemCards]);
 
   // Get the current background image URL
-  const currentBackgroundImage = useMemo(() => {
-    if (backgroundImages.length > 0) {
-      return backgroundImages[currentBackgroundIndex];
-    }
-    return null;
-  }, [backgroundImages, currentBackgroundIndex]);
+  // const currentBackgroundImage = useMemo(() => {
+  //   if (backgroundImages.length > 0) {
+  //     return backgroundImages[currentBackgroundIndex];
+  //   }
+  //   return null;
+  // }, [backgroundImages, currentBackgroundIndex]);
 
   // Extract dominant dark color from current background image
-  const { dominantColor } = useColorExtraction(currentBackgroundImage);
+  // const { dominantColor } = useColorExtraction(currentBackgroundImage);
 
   // Function to update gradient heights based on content position
   const updateGradientHeights = () => {

@@ -42,10 +42,10 @@ const Settings: React.FC = () => {
     loadSettings();
   }, []);
 
-  const loadSettings = () => {
+  const loadSettings = async () => {
     setIsLoading(true);
     try {
-      const settings = GallerySettingsService.getOrInitializeSettings();
+      const settings = await GallerySettingsService.getOrInitializeSettings();
       setGallerySettings(settings);
       
       // Initialize logo state
@@ -67,12 +67,12 @@ const Settings: React.FC = () => {
     }
   };
 
-  const handleSaveBasicInfo = () => {
+  const handleSaveBasicInfo = async () => {
     if (!gallerySettings) return;
 
     try {
-      GallerySettingsService.updateGalleryName(gallerySettings.galleryName);
-      GallerySettingsService.updateContactInfo(gallerySettings.contactInfo);
+      await GallerySettingsService.updateGalleryName(gallerySettings.galleryName);
+      await GallerySettingsService.updateContactInfo(gallerySettings.contactInfo);
       setToastMessage('Basic information saved successfully!');
       setShowToast(true);
     } catch (error) {
@@ -82,7 +82,7 @@ const Settings: React.FC = () => {
     }
   };
 
-  const handleLogoChange = (imageUrl: string) => {
+  const handleLogoChange = async (imageUrl: string) => {
     if (!gallerySettings) return;
     
     console.log('Handling logo change with URL:', imageUrl);
@@ -126,7 +126,7 @@ const Settings: React.FC = () => {
         }
         
         console.log('Adding new logo with name:', logoName);
-        const updatedSettings = GallerySettingsService.addLogo(imageUrl, logoName);
+        const updatedSettings = await GallerySettingsService.addLogo(imageUrl, logoName);
         
         // Set the new logo as active
         const newLogo = updatedSettings.logoUrls.find(logo => logo.url === imageUrl);

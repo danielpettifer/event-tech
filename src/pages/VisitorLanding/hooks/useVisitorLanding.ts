@@ -30,20 +30,20 @@ export const useVisitorLanding = () => {
   const adminLogin = useAdminLogin(setToastMessage, setShowToast);
 
   // Load all data that can be called when needed
-  const loadData = () => {
+  const loadData = async () => {
     // Initialize sample data if needed
     ItemService.initializeSampleData();
     EventService.initializeSampleData();
     
     // Load gallery settings - this is the global preference
-    const showCards = GallerySettingsService.getShowItemCards();
+    const showCards = await GallerySettingsService.getShowItemCards();
     setShowItemCards(showCards);
     
     // Load gallery logo and name
-    const activeLogo = GallerySettingsService.getActiveLogo();
+    const activeLogo = await GallerySettingsService.getActiveLogo();
     setGalleryLogo(activeLogo);
     
-    const settings = GallerySettingsService.getOrInitializeSettings();
+    const settings = await GallerySettingsService.getOrInitializeSettings();
     setGalleryName(settings.galleryName);
     
     console.log('Show items carousel:', showCards);
@@ -85,68 +85,73 @@ export const useVisitorLanding = () => {
 
   // Load active event and items
   useEffect(() => {
-    // Load active event and items
-    const activeEventId = GallerySettingsService.getActiveEventId();
-    let currentEvent: Event | null = null;
-    let currentItems: Item[] = [];
-    
-    if (activeEventId) {
-      currentEvent = EventService.getEventById(activeEventId);
-    } else {
-      // If no active event is set in settings, get the first active event
-      const activeEvents = EventService.getActiveEvents();
-      if (activeEvents.length > 0) {
-        currentEvent = activeEvents[0];
-        // Update the gallery settings with the active event ID
-        GallerySettingsService.updateActiveEvent(currentEvent.id);
-      }
-    }
-    
-    setActiveEvent(currentEvent);
-    
-    if (currentEvent) {
-      // First check the global setting - if it's false, don't show items regardless
-      if (!showItemCards) {
-        currentItems = [];
-        setItems([]);
-        // Global setting takes precedence
-        setShowItemCards(false);
-      }
-      // Then check if event-specific showItems is explicitly set to false
-      else if (currentEvent.showItems === false) {
-        // If showItems is false, don't show items regardless of whether there are featured items
-        currentItems = [];
-        setItems([]);
-        setShowItemCards(false);
-      } else if (currentEvent.featuredItems && currentEvent.featuredItems.length > 0) {
-        // If global and event settings allow showing items, and there are featured items, show them
-        const featuredItems = currentEvent.featuredItems
-          .map(itemId => ItemService.getItemById(itemId))
-          .filter(item => item !== null) as Item[];
-        currentItems = featuredItems;
-        setItems(featuredItems);
-        setShowItemCards(true);
+    const handler = async () => {
+      // Load active event and items
+      const activeEventId = await GallerySettingsService.getActiveEventId();
+      let currentEvent: Event | null = null;
+      let currentItems: Item[] = [];
+
+      if (activeEventId) {
+        currentEvent = await EventService.getEventById(activeEventId);
       } else {
-        // No featured items - will show event default image instead
-        currentItems = [];
-        setItems([]);
+        // If no active event is set in settings, get the first active event
+        const activeEvents = await EventService.getActiveEvents();
+        if (activeEvents.length > 0) {
+          currentEvent = activeEvents[0];
+          // Update the gallery settings with the active event ID
+          await GallerySettingsService.updateActiveEvent(currentEvent.id);
+        }
       }
-    } else {
-      // No active event, show all public items
-      const publicItems = ItemService.getPublicItems();
-      currentItems = publicItems;
-      setItems(publicItems);
+
+      setActiveEvent(currentEvent);
+
+      if (currentEvent) {
+        // First check the global setting - if it's false, don't show items regardless
+        if (!showItemCards) {
+          currentItems = [];
+          setItems([]);
+          // Global setting takes precedence
+          setShowItemCards(false);
+        }
+        // Then check if event-specific showItems is explicitly set to false
+        else if (currentEvent.showItems === false) {
+          // If showItems is false, don't show items regardless of whether there are featured items
+          currentItems = [];
+          setItems([]);
+          setShowItemCards(false);
+        } else if (currentEvent.featuredItems && currentEvent.featuredItems.length > 0) {
+          // If global and event settings allow showing items, and there are featured items, show them
+          const featuredItems = (
+            await Promise.all(
+              currentEvent.featuredItems.map(itemId => ItemService.getItemById(itemId))
+            )
+          ).filter(item => item !== null) as Item[];
+          currentItems = featuredItems;
+          setItems(featuredItems);
+          setShowItemCards(true);
+        } else {
+          // No featured items - will show event default image instead
+          currentItems = [];
+          setItems([]);
+        }
+      } else {
+        // No active event, show all public items
+        const publicItems = await ItemService.getPublicItems();
+        currentItems = publicItems;
+        setItems(publicItems);
+      }
+
+      // Load background images - use event default image if no carousel items
+      let bgImages = await ItemService.getLandingPageBackgroundImages();
+
+      // If there's an active event with no featured items but has an image, use that as background
+      if (activeEventId && currentEvent && currentItems.length === 0 && currentEvent.imageUrl) {
+        bgImages = [currentEvent.imageUrl];
+      }
+
+      setBackgroundImages(bgImages);
     }
-    
-    // Load background images - use event default image if no carousel items
-    let bgImages = ItemService.getLandingPageBackgroundImages();
-    
-    // If there's an active event with no featured items but has an image, use that as background
-    if (activeEventId && currentEvent && currentItems.length === 0 && currentEvent.imageUrl) {
-      bgImages = [currentEvent.imageUrl];
-    }
-    
-    setBackgroundImages(bgImages);
+    handler();
   }, [showItemCards]);
 
   // Item click handler

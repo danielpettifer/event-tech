@@ -23,9 +23,8 @@ import {
   IonToast,
   IonChip,
   IonToggle,
-  IonFooter
 } from '@ionic/react';
-import { close, save, calendar, add, remove, checkmark } from 'ionicons/icons';
+import { close, save, calendar, add, remove } from 'ionicons/icons';
 import { Event, EVENT_TYPES, EVENT_STATUSES, EVENT_TAGS } from '../types/Event';
 import { EventService } from '../services/EventService';
 import { ItemService } from '../services/ItemService';

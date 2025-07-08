@@ -39,7 +39,6 @@ import {
   mail,
   home,
   add,
-  search,
   checkmark,
   close,
   trash,
@@ -134,7 +133,7 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     // Check authentication
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    // const isAuthenticated = localStorage.getItem('isAuthenticated');
     const email = localStorage.getItem('userEmail');
 
     // Temporarily disable authentication check for testing
@@ -173,7 +172,7 @@ const AdminDashboard: React.FC = () => {
     };
 
     // Add a custom event listener for same-tab changes
-    const handleCustomStorageChange = (event: CustomEvent) => {
+    const handleCustomStorageChange = () => {
       console.log('Settings changed in same tab, reloading gallery settings');
       loadGallerySettings();
     };
@@ -226,11 +225,6 @@ const AdminDashboard: React.FC = () => {
 
   const handleAddClient = () => {
     setSelectedClient(null);
-    setIsClientFormOpen(true);
-  };
-
-  const handleEditClient = (client: Client) => {
-    setSelectedClient(client);
     setIsClientFormOpen(true);
   };
 
@@ -291,13 +285,13 @@ const AdminDashboard: React.FC = () => {
   };
 
   // Item management functions
-  const loadItems = () => {
-    const allItems = ItemService.getAllItems();
+  const loadItems = async () => {
+    const allItems = await ItemService.getAllItems();
     setItems(allItems);
   };
 
-  const loadItemStats = () => {
-    const stats = ItemService.getItemStats();
+  const loadItemStats = async () => {
+    const stats = await ItemService.getItemStats();
     setItemStats({
       totalItems: stats.totalItems,
       availableItems: stats.availableItems,
@@ -308,10 +302,10 @@ const AdminDashboard: React.FC = () => {
     });
   };
 
-  const handleItemSearch = (query: string) => {
+  const handleItemSearch = async (query: string) => {
     setItemSearchQuery(query);
     if (query.trim()) {
-      const searchResults = ItemService.searchItems(query);
+      const searchResults = await ItemService.searchItems(query);
       setItems(searchResults);
     } else {
       loadItems();
@@ -339,13 +333,13 @@ const AdminDashboard: React.FC = () => {
   };
 
   // Active event management
-  const handleSetActiveEvent = (eventId: string) => {
-    GallerySettingsService.updateActiveEvent(eventId);
+  const handleSetActiveEvent = async (eventId: string) => {
+    await GallerySettingsService.updateActiveEvent(eventId);
     setActiveEventId(eventId);
   };
 
-  const loadActiveEvent = () => {
-    const activeId = GallerySettingsService.getActiveEventId();
+  const loadActiveEvent = async () => {
+    const activeId = await GallerySettingsService.getActiveEventId();
     setActiveEventId(activeId);
   };
 
