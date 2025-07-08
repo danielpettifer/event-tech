@@ -432,10 +432,11 @@ const VisitorLanding: React.FC = () => {
         
         {/* Bottom Content Overlay */}
         <div className="bottom-content-overlay">
-          {/* Two-column layout container */}
-          <div className="two-column-layout">
-            {/* Left Column: Event Description */}
-            {activeEvent && (
+          {/* Conditional rendering based on whether there's an active event with description */}
+          {activeEvent && activeEvent.description ? (
+            /* Two-column layout container when event has description */
+            <div className="two-column-layout">
+              {/* Left Column: Event Description */}
               <div className="column-left">
                 <div className="active-event-banner">
                   <IonCard className="event-banner-card" button onClick={() => setIsDescriptionModalOpen(true)}>
@@ -445,10 +446,10 @@ const VisitorLanding: React.FC = () => {
                           <h2>{activeEvent.title}</h2>
                           <div className="event-banner-details">
                             <IonChip color="light">
-                              <IonLabel color="light" style={{color: 'white'}}>{activeEvent.eventType}</IonLabel>
+                              <IonLabel>{activeEvent.eventType}</IonLabel>
                             </IonChip>
                             <IonChip color="light">
-                              <IonLabel color="light" style={{color: 'white'}}>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
+                              <IonLabel>{new Date(activeEvent.startDate).toLocaleDateString()} - {new Date(activeEvent.endDate).toLocaleDateString()}</IonLabel>
                             </IonChip>
                             {/* {activeEvent.isTicketed && activeEvent.ticketPrice && (
                               <IonChip color="success">
@@ -477,11 +478,60 @@ const VisitorLanding: React.FC = () => {
                   </IonCard>
                 </div>
               </div>
-            )}
 
-            {/* Right Column: Items Carousel */}
-            {showItemCards && items.length > 0 && (
-              <div className="column-right">
+              {/* Right Column: Items Carousel */}
+              {showItemCards && items.length > 0 && (
+                <div className="column-right">
+                  <div className="items-container">
+                    <div className="carousel-container">
+                      <div 
+                        className="items-scroll-container"
+                        ref={(el) => {
+                          if (el) {
+                            // Initial check for scroll mask
+                            const hasMoreContent = el.scrollWidth > el.clientWidth;
+                            const maskEl = el.parentElement?.querySelector('.carousel-gradient-mask');
+                            if (maskEl) {
+                              maskEl.classList.toggle('visible', hasMoreContent);
+                            }
+                            
+                            // Add scroll event listener
+                            el.addEventListener('scroll', () => {
+                              const isAtEnd = Math.ceil(el.scrollLeft + el.clientWidth) >= el.scrollWidth - 10;
+                              const maskEl = el.parentElement?.querySelector('.carousel-gradient-mask');
+                              if (maskEl) {
+                                maskEl.classList.toggle('visible', !isAtEnd);
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        {items.map((item) => (
+                          <div 
+                            key={item.id}
+                            className="item-card" 
+                            onClick={() => handleItemClick(item)}
+                          >
+                            <img src={item.thumbnailImage || item.images[0]} alt={item.title} />
+                            <div className="item-card-overlay"></div>
+                            <div className="item-card-content">
+                              <h3 className="item-card-title">{item.title}</h3>
+                              <p className="item-card-artist">{item.artist}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {/* Gradient mask for indicating more content */}
+                      <div className="carousel-gradient-mask"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Full-width carousel when no event description */
+            showItemCards && items.length > 0 && (
+              <div className="full-width-carousel">
                 <div className="items-container">
                   <div className="carousel-container">
                     <div 
@@ -526,8 +576,8 @@ const VisitorLanding: React.FC = () => {
                   </div>
                 </div>
               </div>
-            )}
-          </div>
+            )
+          )}
 
           {/* Event Default Image - shown when no featured items but event has image */}
           {showItemCards && items.length === 0 && activeEvent && activeEvent.imageUrl && (
