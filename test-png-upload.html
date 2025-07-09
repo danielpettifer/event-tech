@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PNG Upload Test</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1, h2, h3 {
+      color: #333;
+    }
+    
+    h1 {
+      margin-top: 0;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    
+    .controls {
+      margin-bottom: 15px;
+    }
+    
+    .preview-container {
+      margin-top: 15px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+      min-height: 100px;
+    }
+    
+    .preview-container img {
+      max-width: 100%;
+      max-height: 300px;
+      display: block;
+      margin: 10px auto;
+      border: 1px solid #ddd;
+    }
+    
+    .success {
+      color: #28a745;
+    }
+    
+    .error {
+      color: #dc3545;
+    }
+    
+    .warning {
+      color: #ffc107;
+    }
+    
+    .info {
+      color: #17a2b8;
+    }
+    
+    button {
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    
+    button:hover {
+      background-color: #0069d9;
+    }
+    
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    input[type="file"] {
+      display: block;
+      margin-bottom: 10px;
+    }
+    
+    .file-info {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+    }
+    
+    .file-info div {
+      margin-bottom: 5px;
+    }
+    
+    .storage-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .storage-bar {
+      flex-grow: 1;
+      height: 20px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+      margin: 0 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .storage-bar-fill {
+      height: 100%;
+      background-color: #007bff;
+      transition: width 0.3s ease;
+    }
+    
+    .storage-text {
+      font-size: 14px;
+      color: #6c757d;
+    }
+    
+    .hex-display {
+      font-family: monospace;
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .byte {
+      display: inline-block;
+      width: 30px;
+      text-align: center;
+      margin-right: 2px;
+    }
+    
+    .byte.png-signature {
+      background-color: #d4edda;
+      color: #155724;
+      border-radius: 2px;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-bottom: none;
+      margin-bottom: -1px;
+    }
+    
+    .tab.active {
+      background-color: white;
+      border-color: #ddd;
+      border-radius: 4px 4px 0 0;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .status-message {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    
+    .status-message.success {
+      background-color: rgba(40, 167, 69, 0.1);
+      border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+    
+    .status-message.error {
+      background-color: rgba(220, 53, 69, 0.1);
+      border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+    
+    .status-message.warning {
+      background-color: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.2);
+    }
+    
+    .status-message.info {
+      background-color: rgba(23, 162, 184, 0.1);
+      border: 1px solid rgba(23, 162, 184, 0.2);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    
+    th {
+      background-color: #f2f2f2;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    .code {
+      font-family: monospace;
+      background-color: #f8f9fa;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PNG Upload Test</h1>
+    <p>This tool helps diagnose issues with PNG file uploads, particularly when MIME types are inconsistent.</p>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="png-test">PNG Test</div>
+      <div class="tab" data-tab="mime-test">MIME Type Test</div>
+      <div class="tab" data-tab="header-test">File Header Test</div>
+      <div class="tab" data-tab="storage-test">Storage Test</div>
+      <div class="tab" data-tab="troubleshooting">Troubleshooting</div>
+    </div>
+    
+    <div class="tab-content active" id="png-test">
+      <div class="section">
+        <h2>PNG Upload Test</h2>
+        <p>Upload a PNG file to test if it's properly detected and processed.</p>
+        
+        <div class="storage-info">
+          <span class="storage-text">Storage Usage:</span>
+          <div class="storage-bar">
+            <div class="storage-bar-fill" id="storageBarFill" style="width: 0%"></div>
+          </div>
+          <span class="storage-text" id="storagePercentage">0%</span>
+        </div>
+        
+        <div class="controls">
+          <input type="file" id="pngFileInput" accept="image/png,.png" />
+          <button id="uploadPngButton">Test PNG Upload</button>
+          <button id="clearPngButton">Clear</button>
+        </div>
+        
+        <div id="pngStatusMessage" class="status-message" style="display: none;"></div>
+        
+        <div class="preview-container" id="pngPreviewContainer">
+          <p class="info">Select a PNG file and click "Test PNG Upload" to analyze it.</p>
+        </div>
+        
+        <div class="file-info" id="pngFileInfo" style="display: none;"></div>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="mime-test">
+      <div class="section">
+        <h2>MIME Type Test</h2>
+        <p>Test how different browsers and systems report MIME types for PNG files.</p>
+        
+        <div class="controls">
+          <input type="file" id="mimeFileInput" accept="*/*" />
+          <button id="testMimeButton">Check MIME Type</button>
+          <button id="clearMimeButton">Clear</button>
+        </div>
+        
+        <div id="mimeStatusMessage" class="status-message" style="display: none;"></div>
+        
+        <div class="file-info" id="mimeFileInfo" style="display: none;"></div>
+        
+        <h3>Common MIME Type Issues</h3>
+        <table>
+          <tr>
+            <th>Reported MIME Type</th>
+            <th>Possible Cause</th>
+            <th>Solution</th>
+          </tr>
+          <tr>
+            <td><span class="code">application/octet-stream</span></td>
+            <td>Generic binary type when browser can't determine specific type</td>
+            <td>Check file extension and file header</td>
+          </tr>
+          <tr>
+            <td><span class="code">image/x-png</span></td>
+            <td>Older MIME type for PNG files</td>
+            <td>Treat as <span class="code">image/png</span></td>
+          </tr>
+          <tr>
+            <td><span class="code">application/png</span></td>
+            <td>Incorrect MIME type sometimes reported</td>
+            <td>Check file extension and file header</td>
+          </tr>
+          <tr>
+            <td><span class="code">image/png</span></td>
+            <td>Correct MIME type for PNG files</td>
+            <td>No action needed</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="header-test">
+      <div class="section">
+        <h2>File Header Test</h2>
+        <p>Examine the file header bytes to confirm if a file is a valid PNG regardless of MIME type.</p>
+        
+        <div class="controls">
+          <input type="file" id="headerFileInput" accept="*/*" />
+          <button id="checkHeaderButton">Check File Header</button>
+          <button id="clearHeaderButton">Clear</button>
+        </div>
+        
+        <div id="headerStatusMessage" class="status-message" style="display: none;"></div>
+        
+        <div class="file-info" id="headerFileInfo" style="display: none;"></div>
+        
+        <h3>PNG File Signature</h3>
+        <p>A valid PNG file always starts with these 8 bytes:</p>
+        <div class="hex-display">
+          <span class="byte png-signature">89</span>
+          <span class="byte png-signature">50</span>
+          <span class="byte png-signature">4E</span>
+          <span class="byte png-signature">47</span>
+          <span class="byte png-signature">0D</span>
+          <span class="byte png-signature">0A</span>
+          <span class="byte png-signature">1A</span>
+          <span class="byte png-signature">0A</span>
+        </div>
+        <p>This translates to: <span class="code">‰PNG\r\n\x1A\n</span> (where \r\n is a Windows line ending and \x1A is a SUB character)</p>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="storage-test">
+      <div class="section">
+        <h2>Storage Test</h2>
+        <p>Test localStorage capacity and how PNG files affect storage usage.</p>
+        
+        <div class="storage-info">
+          <span class="storage-text">Storage Usage:</span>
+          <div class="storage-bar">
+            <div class="storage-bar-fill" id="storageTestBarFill" style="width: 0%"></div>
+          </div>
+          <span class="storage-text" id="storageTestPercentage">0%</span>
+        </div>
+        
+        <div class="controls">
+          <button id="checkStorageButton">Check Storage Usage</button>
+          <button id="fillStorageButton">Fill Storage (Test)</button>
+          <button id="clearStorageButton">Clear Storage</button>
+        </div>
+        
+        <div id="storageStatusMessage" class="status-message" style="display: none;"></div>
+        
+        <div class="file-info" id="storageInfo" style="display: none;"></div>
+        
+        <h3>Storage Limits</h3>
+        <p>Browser localStorage typically has these limits:</p>
+        <ul>
+          <li>Chrome, Firefox, Safari: ~5MB per domain</li>
+          <li>Edge: ~10MB per domain</li>
+          <li>Mobile browsers: Often more limited (2-5MB)</li>
+        </ul>
+        <p>PNG files with transparency can be quite large when stored as data URLs in localStorage.</p>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="troubleshooting">
+      <div class="section">
+        <h2>Troubleshooting PNG Upload Issues</h2>
+        
+        <h3>Common Problems and Solutions</h3>
+        
+        <h4>1. PNG files not being recognized</h4>
+        <ul>
+          <li>Check if the file has a .png extension</li>
+          <li>Verify the file's MIME type using the MIME Type Test</li>
+          <li>Confirm the file has a valid PNG header using the File Header Test</li>
+          <li>Try renaming the file to ensure it has a .png extension</li>
+        </ul>
+        
+        <h4>2. Storage quota errors</h4>
+        <ul>
+          <li>Use the Storage Test to check current usage</li>
+          <li>Large PNG files with transparency can consume significant storage</li>
+          <li>Consider optimizing PNG files before upload (reduce dimensions, compress)</li>
+          <li>Clear unused items from storage</li>
+        </ul>
+        
+        <h4>3. PNG files appear corrupted</h4>
+        <ul>
+          <li>Check if the file is actually a valid PNG using the File Header Test</li>
+          <li>Some PNG files may have been saved incorrectly or corrupted</li>
+          <li>Try opening and resaving the PNG in an image editor</li>
+        </ul>
+        
+        <h4>4. PNG optimization tips</h4>
+        <ul>
+          <li>Use tools like TinyPNG, ImageOptim, or PNGOUT to compress PNG files</li>
+          <li>Consider converting to WebP format if transparency is not needed</li>
+          <li>Resize large images to appropriate dimensions before upload</li>
+          <li>Remove unnecessary metadata from PNG files</li>
+        </ul>
+        
+        <h3>Implementation Code</h3>
+        <p>Here's a code snippet for robust PNG detection:</p>
+        <pre class="hex-display">
+// Check by file extension
+const isPngByExtension = file.name.toLowerCase().endsWith('.png');
+
+// Check by MIME type
+const isPngByMimeType = file.type === 'image/png';
+
+// First quick check based on extension and MIME type
+let isPNG = isPngByExtension || isPngByMimeType;
+
+// For suspicious files, check the header
+if (isPngByExtension && !isPngByMimeType) {
+  const confirmedPng = await isPngByHeader(file);
+  if (!confirmedPng) {
+    console.warn(`File ${file.name} has PNG extension but header check failed`);
+    // Handle invalid PNG
+  }
+}
+
+// Function to check PNG header
+function isPngByHeader(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const arr = new Uint8Array(e.target.result);
+      // Check PNG signature: 89 50 4E 47 0D 0A 1A 0A
+      const isPng = arr.length >= 8 &&
+                    arr[0] === 0x89 && 
+                    arr[1] === 0x50 && 
+                    arr[2] === 0x4E && 
+                    arr[3] === 0x47 && 
+                    arr[4] === 0x0D && 
+                    arr[5] === 0x0A && 
+                    arr[6] === 0x1A && 
+                    arr[7] === 0x0A;
+      resolve(isPng);
+    };
+    reader.onerror = () => resolve(false);
+    reader.readAsArrayBuffer(file.slice(0, 8));
+  });
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and content
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding content
+        tab.classList.add('active');
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+    
+    // Storage management
+    function updateStorageUsage() {
+      let used = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          const value = localStorage.getItem(key) || '';
+          used += key.length + value.length;
+        }
+      }
+      
+      // Estimate total localStorage size (5MB is common)
+      const estimatedTotal = 5 * 1024 * 1024; // 5MB in bytes
+      const percentUsed = (used / estimatedTotal) * 100;
+      
+      document.getElementById('storageBarFill').style.width = `${percentUsed}%`;
+      document.getElementById('storagePercentage').textContent = `${percentUsed.toFixed(2)}%`;
+      
+      document.getElementById('storageTestBarFill').style.width = `${percentUsed}%`;
+      document.getElementById('storageTestPercentage').textContent = `${percentUsed.toFixed(2)}%`;
+      
+      return { 
+        used, 
+        usedMB: used / (1024 * 1024), 
+        estimatedTotal, 
+        estimatedTotalMB: estimatedTotal / (1024 * 1024), 
+        percentUsed,
+        available: estimatedTotal - used,
+        availableMB: (estimatedTotal - used) / (1024 * 1024)
+      };
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes < 1024) {
+        return bytes + ' bytes';
+      } else if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(2) + ' KB';
+      } else {
+        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+      }
+    }
+    
+    // Show status message
+    function showStatusMessage(containerId, message, type) {
+      const container = document.getElementById(containerId);
+      container.textContent = message;
+      container.className = `status-message ${type}`;
+      container.style.display = 'block';
+      
+      // Auto-hide after 8 seconds
+      setTimeout(() => {
+        container.style.display = 'none';
+      }, 8000);
+    }
+    
+    // Check if a file is a PNG by examining its header bytes
+    function isPngByHeader(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (!e.target || !e.target.result) {
+            resolve({ isPng: false, headerBytes: [] });
+            return;
+          }
+          
+          const arr = new Uint8Array(e.target.result);
+          // Check PNG signature: 89 50 4E 47 0D 0A 1A 0A
+          const isPng = arr.length >= 8 &&
+                        arr[0] === 0x89 && 
+                        arr[1] === 0x50 && 
+                        arr[2] === 0x4E && 
+                        arr[3] === 0x47 && 
+                        arr[4] === 0x0D && 
+                        arr[5] === 0x0A && 
+                        arr[6] === 0x1A && 
+                        arr[7] === 0x0A;
+          
+          // Get the first 16 bytes for display
+          const headerBytes = Array.from(arr.slice(0, 16)).map(b => b.toString(16).padStart(2, '0').toUpperCase());
+          
+          resolve({ isPng, headerBytes });
+        };
+        reader.onerror = () => resolve({ isPng: false, headerBytes: [] });
+        reader.readAsArrayBuffer(file.slice(0, 16)); // Read the first 16 bytes
+      });
+    }
+    
+    // Convert file to data URL
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            resolve(reader.result);
+          } else {
+            reject(new Error('Failed to read file'));
+          }
+        };
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    // PNG Test
+    document.getElementById('uploadPngButton').addEventListener('click', async () => {
+      const fileInput = document.getElementById('pngFileInput');
+      const previewContainer = document.getElementById('pngPreviewContainer');
+      const fileInfoContainer = document.getElementById('pngFileInfo');
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatusMessage('pngStatusMessage', 'Please select a file first.', 'error');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      
+      // Clear previous content
+      previewContainer.innerHTML = '';
+      fileInfoContainer.innerHTML = '';
+      fileInfoContainer.style.display = 'none';
+      
+      // Create file info
+      const fileInfo = document.createElement('div');
+      
+      // Basic file info
+      fileInfo.innerHTML = `
+        <h3>File Information</h3>
+        <div>File name: ${file.name}</div>
+        <div>File size: ${formatFileSize(file.size)}</div>
+        <div>MIME type: ${file.type || 'unknown'}</div>
+        <div>Last modified: ${new Date(file.lastModified).toLocaleString()}</div>
+      `;
+      
+      // Check file extension
+      const extension = file.name.split('.').pop().toLowerCase();
+      const extensionDiv = document.createElement('div');
+      extensionDiv.innerHTML = `File extension: <strong>${extension}</strong>`;
+      if (extension === 'png') {
+        extensionDiv.classList.add('success');
+      }
+      fileInfo.appendChild(extensionDiv);
+      
+      // Check MIME type
+      const mimeTypeDiv = document.createElement('div');
+      const isPngByMimeType = file.type === 'image/png';
+      mimeTypeDiv.innerHTML = `MIME type check: <strong>${isPngByMimeType ? 'Passed' : 'Failed'}</strong> (${file.type})`;
+      if (isPngByMimeType) {
+        mimeTypeDiv.classList.add('success');
+      } else if (file.type === 'image/x-png' || file.type === 'application/png') {
+        mimeTypeDiv.classList.add('warning');
+        mimeTypeDiv.innerHTML += ' - Non-standard but acceptable PNG MIME type';
+      } else if (!file.type) {
+        mimeTypeDiv.classList.add('warning');
+        mimeTypeDiv.innerHTML += ' - No MIME type detected';
+      } else if (file.type === 'application/octet-stream') {
+        mimeTypeDiv.classList.add('warning');
+        mimeTypeDiv.innerHTML += ' - Generic binary type, will check header';
+      } else {
+        mimeTypeDiv.classList.add('error');
+      }
+      fileInfo.appendChild(mimeTypeDiv);
+      
+      // Check file header
+      try {
+        const headerResult = await isPngByHeader(file);
+        const headerDiv = document.createElement('div');
+        headerDiv.innerHTML = `Header check: <strong>${headerResult.isPng ? 'Passed' : 'Failed'}</strong>`;
+        
+        if (headerResult.isPng) {
+          headerDiv.classList.add('success');
+        } else {
+          headerDiv.classList.add('error');
+        }
+        
+        // Display header bytes
+        const headerBytesDiv = document.createElement('div');
+        headerBytesDiv.innerHTML = '<div>File header bytes:</div>';
+        
+        const hexDisplay = document.createElement('div');
+        hexDisplay.className = 'hex-display';
+        
+        headerResult.headerBytes.forEach((byte, index) => {
+          const byteSpan = document.createElement('span');
+          byteSpan.className = 'byte';
+          byteSpan.textContent = byte;
+          
+          // Highlight PNG signature bytes
+          if (index < 8 && headerResult.isPng) {
+            byteSpan.classList.add('png-signature');
+          }
+          
+          hexDisplay.appendChild(byteSpan);
+        });
+        
+        headerBytesDiv.appendChild(hexDisplay);
+        fileInfo.appendChild(headerDiv);
+        fileInfo.appendChild(headerBytesDiv);
+        
+        // Overall PNG validation
+        const isPngByExtension = extension === 'png';
+        const validationDiv = document.createElement('div');
+        validationDiv.innerHTML = `<h3>PNG Validation</h3>`;
+        
+        const validationResultDiv = document.createElement('div');
+        const isPng = headerResult.isPng || (isPngByExtension && isPngByMimeType);
+        
+        if (headerResult.isPng) {
+          validationResultDiv.innerHTML = `<strong>Result: Valid PNG file</strong> (confirmed by file header)`;
+          validationResultDiv.classList.add('success');
+        } else if (isPngByExtension && isPngByMimeType) {
+          validationResultDiv.innerHTML = `<strong>Result: Likely PNG file</strong> (by extension and MIME type, but header check failed)`;
+          validationResultDiv.classList.add('warning');
+        } else if (isPngByExtension || isPngByMimeType) {
+          validationResultDiv.innerHTML = `<strong>Result: Possible PNG file</strong> (by ${isPngByExtension ? 'extension' : 'MIME type'} only)`;
+          validationResultDiv.classList.add('warning');
+        } else {
+          validationResultDiv.innerHTML = `<strong>Result: Not a PNG file</strong>`;
+          validationResultDiv.classList.add('error');
+        }
+        
+        validationDiv.appendChild(validationResultDiv);
+        fileInfo.appendChild(validationDiv);
+        
+        // Try to display the image
+        try {
+          const dataUrl = await fileToDataUrl(file);
+          
+          // Create image element
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          previewContainer.appendChild(img);
+          
+          // Add image info when loaded
+          img.onload = () => {
+            const imageInfoDiv = document.createElement('div');
+            imageInfoDiv.innerHTML = `<h3>Image Properties</h3>
+              <div>Dimensions: ${img.naturalWidth}x${img.naturalHeight} pixels</div>
+              <div>Aspect ratio: ${(img.naturalWidth / img.naturalHeight).toFixed(2)}</div>
+              <div>Data URL size: ${formatFileSize(dataUrl.length)}</div>
+            `;
+            
+            // Check if image dimensions match file size expectations
+            const pixelCount = img.naturalWidth * img.naturalHeight;
+            const bytesPerPixel = file.size / pixelCount;
+            
+            const pixelInfoDiv = document.createElement('div');
+            pixelInfoDiv.innerHTML = `Bytes per pixel: ${bytesPerPixel.toFixed(2)}`;
+            
+            // PNG with transparency typically has higher bytes per pixel
+            if (bytesPerPixel > 4) {
+              pixelInfoDiv.innerHTML += ' (Likely has transparency or is uncompressed)';
+            } else if (bytesPerPixel < 1) {
+              pixelInfoDiv.innerHTML += ' (Highly compressed)';
+            }
+            
+            imageInfoDiv.appendChild(pixelInfoDiv);
+            
+            // Storage impact
+            const storageImpactDiv = document.createElement('div');
+            storageImpactDiv.innerHTML = `<h3>Storage Impact</h3>`;
+            
+            const storageUsage = updateStorageUsage();
+            const dataUrlSizeMB = dataUrl.length / (1024 * 1024);
+            const percentOfAvailable = (dataUrl.length / storageUsage.available) * 100;
+            
+            storageImpactDiv.innerHTML += `
+              <div>Data URL size: ${formatFileSize(dataUrl.length)} (${dataUrlSizeMB.toFixed(2)} MB)</div>
+              <div>Current storage usage: ${formatFileSize(storageUsage.used)} of ~${formatFileSize(storageUsage.estimatedTotal)} (${storageUsage.percentUsed.toFixed(2)}%)</div>
+              <div>This image would use ${percentOfAvailable.toFixed(2)}% of remaining storage</div>
+            `;
+            
+            if (percentOfAvailable > 50) {
+              const warningDiv = document.createElement('div');
+              warningDiv.innerHTML = `<strong>Warning:</strong> This image is quite large and will use a significant portion of available storage.`;
+              warningDiv.className = 'warning';
+              storageImpactDiv.appendChild(warningDiv);
+            }
+            
+            fileInfo.appendChild(imageInfoDiv);
+            fileInfo.appendChild(storageImpactDiv);
+            
+            // Show recommendations
+            const recommendationsDiv = document.createElement('div');
+            recommendationsDiv.innerHTML = `<h3>Recommendations</h3>`;
+            
+            if (dataUrlSizeMB > 1) {
+              recommendationsDiv.innerHTML += `
+                <div class="${dataUrlSizeMB > 2 ? 'warning' : 'info'}">
+                  <strong>Size optimization:</strong> This PNG file is ${dataUrlSizeMB > 2 ? 'very' : 'somewhat'} large. 
+                  Consider optimizing it with a tool like TinyPNG or ImageOptim.
+                </div>
+              `;
+            }
+            
+            if (bytesPerPixel > 4) {
+              recommendationsDiv.innerHTML += `
+                <div class="info">
+                  <strong>Transparency detected:</strong> This PNG likely has transparency which increases file size.
+                  If transparency is not needed, consider using JPEG format instead.
+                </div>
+              `;
+            }
+            
+            fileInfo.appendChild(recommendationsDiv);
+            
+            // Display file info
+            fileInfoContainer.appendChild(fileInfo);
+            fileInfoContainer.style.display = 'block';
+            
+            showStatusMessage('pngStatusMessage', 'PNG analysis complete!', 'success');
+          };
+          
+          img.onerror = () => {
+            const errorDiv = document.createElement('div');
+            errorDiv.innerHTML = `<h3>Error</h3><div class="error">Failed to display image. The file may be corrupted or not a valid image.</div>`;
+            fileInfo.appendChild(errorDiv);
+            
+            fileInfoContainer.appendChild(fileInfo);
+            fileInfoContainer.style.display = 'block';
+            
+            showStatusMessage('pngStatusMessage', 'Failed to display image.', 'error');
+          };
+        } catch (error) {
+          console.error('Error converting file to data URL:', error);
+          
+          const errorDiv = document.createElement('div');
+          errorDiv.innerHTML = `<h3>Error</h3><div class="error">Failed to process image: ${error.message}</div>`;
+          fileInfo.appendChild(errorDiv);
+          
+          fileInfoContainer.appendChild(fileInfo);
+          fileInfoContainer.style.display = 'block';
+          
+          showStatusMessage('pngStatusMessage', 'Error processing file.', 'error');
+        }
+      } catch (error) {
+        console.error('Error checking file header:', error);
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.innerHTML = `<h3>Error</h3><div class="error">Failed to check file header: ${error.message}</div>`;
+        fileInfo.appendChild(errorDiv);
+        
+        fileInfoContainer.appendChild(fileInfo);
+        fileInfoContainer.style.display = 'block';
+        
+        showStatusMessage('pngStatusMessage', 'Error checking file header.', 'error');
+      }
+    });
+    
+    // Clear PNG test
+    document.getElementById('clearPngButton').addEventListener('click', () => {
+      document.getElementById('pngFileInput').value = '';
+      document.getElementById('pngPreviewContainer').innerHTML = '<p class="info">Select a PNG file and click "Test PNG Upload" to analyze it.</p>';
+      document.getElementById('pngFileInfo').innerHTML = '';
+      document.getElementById('pngFileInfo').style.display = 'none';
+      document.getElementById('pngStatusMessage').style.display = 'none';
+    });
+    
+    // MIME Type Test
+    document.getElementById('testMimeButton').addEventListener('click', async () => {
+      const fileInput = document.getElementById('mimeFileInput');
+      const fileInfoContainer = document.getElementById('mimeFileInfo');
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatusMessage('mimeStatusMessage', 'Please select a file first.', 'error');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      
+      // Clear previous content
+      fileInfoContainer.innerHTML = '';
+      fileInfoContainer.style.display = 'none';
+      
+      // Create file info
+      const fileInfo = document.createElement('div');
+      
+      // Basic file info
+      fileInfo.innerHTML = `
+        <h3>MIME Type Analysis</h3>
+        <div>File name: ${file.name}</div>
+        <div>File extension: ${file.name.split('.').pop().toLowerCase()}</div>
+        <div>Reported MIME type: <strong>${file.type || 'unknown'}</strong></div>
+      `;
+      
+      // Check if it's a PNG by extension
+      const isPngByExtension = file.name.toLowerCase().endsWith('.png');
+      if (isPngByExtension) {
+        const extensionDiv = document.createElement('div');
+        extensionDiv.innerHTML = `File has PNG extension: <strong>Yes</strong>`;
+        extensionDiv.className = 'success';
+        fileInfo.appendChild(extensionDiv);
+      }
+      
+      // Check if it's a PNG by MIME type
+      const isPngByMimeType = file.type === 'image/png';
+      const mimeTypeDiv = document.createElement('div');
+      
+      if (isPngByMimeType) {
+        mimeTypeDiv.innerHTML = `MIME type is standard PNG type (image/png): <strong>Yes</strong>`;
+        mimeTypeDiv.className = 'success';
+      } else if (file.type === 'image/x-png' || file.type === 'application/png') {
+        mimeTypeDiv.innerHTML = `MIME type is non-standard PNG type (${file.type}): <strong>Yes</strong>`;
+        mimeTypeDiv.className = 'warning';
+      } else if (file.type === 'application/octet-stream') {
+        mimeTypeDiv.innerHTML = `MIME type is generic binary (${file.type}): <strong>Yes</strong>`;
+        mimeTypeDiv.className = 'warning';
+      } else if (!file.type) {
+        mimeTypeDiv.innerHTML = `No MIME type reported: <strong>Yes</strong>`;
+        mimeTypeDiv.className = 'warning';
+      } else {
+        mimeTypeDiv.innerHTML = `MIME type is not PNG-related: <strong>Yes</strong>`;
+        mimeTypeDiv.className = 'error';
+      }
+      
+      fileInfo.appendChild(mimeTypeDiv);
+      
+      // Check file header if it might be a PNG
+      if (isPngByExtension || isPngByMimeType || file.type === 'image/x-png' || file.type === 'application/png' || file.type === 'application/octet-stream') {
+        try {
+          const headerResult = await isPngByHeader(file);
+          const headerDiv = document.createElement('div');
+          
+          if (headerResult.isPng) {
+            headerDiv.innerHTML = `PNG header signature detected: <strong>Yes</strong>`;
+            headerDiv.className = 'success';
+          } else {
+            headerDiv.innerHTML = `PNG header signature detected: <strong>No</strong>`;
+            headerDiv.className = 'error';
+          }
+          
+          fileInfo.appendChild(headerDiv);
+          
+          // Conclusion
+          const conclusionDiv = document.createElement('div');
+          conclusionDiv.innerHTML = `<h3>Conclusion</h3>`;
+          
+          if (headerResult.isPng) {
+            conclusionDiv.innerHTML += `<div class="success">This is a valid PNG file based on its header signature.</div>`;
+            
+            if (!isPngByMimeType) {
+              conclusionDiv.innerHTML += `<div class="warning">However, the browser reports a non-standard MIME type (${file.type || 'none'}).</div>`;
+              
+              if (isPngByExtension) {
+                conclusionDiv.innerHTML += `<div class="info">The file has a .png extension, which helps with identification.</div>`;
+              }
+              
+              conclusionDiv.innerHTML += `<div class="info">Recommendation: Use both file extension and header checks for reliable PNG detection.</div>`;
+            }
+          } else if (isPngByMimeType || isPngByExtension) {
+            conclusionDiv.innerHTML += `<div class="warning">This file has PNG characteristics (${isPngByMimeType ? 'MIME type' : ''}${isPngByMimeType && isPngByExtension ? ' and ' : ''}${isPngByExtension ? 'extension' : ''}) but lacks a valid PNG header.</div>`;
+            conclusionDiv.innerHTML += `<div class="info">It may be corrupted or incorrectly labeled.</div>`;
+          } else {
+            conclusionDiv.innerHTML += `<div class="info">This does not appear to be a PNG file.</div>`;
+          }
+          
+          fileInfo.appendChild(conclusionDiv);
+        } catch (error) {
+          console.error('Error checking file header:', error);
+          
+          const errorDiv = document.createElement('div');
+          errorDiv.innerHTML = `<div class="error">Failed to check file header: ${error.message}</div>`;
+          fileInfo.appendChild(errorDiv);
+        }
+      }
+      
+      // Display file info
+      fileInfoContainer.appendChild(fileInfo);
+      fileInfoContainer.style.display = 'block';
+      
+      showStatusMessage('mimeStatusMessage', 'MIME type analysis complete!', 'success');
+    });
+    
+    // Clear MIME test
+    document.getElementById('clearMimeButton').addEventListener('click', () => {
+      document.getElementById('mimeFileInput').value = '';
+      document.getElementById('mimeFileInfo').innerHTML = '';
+      document.getElementById('mimeFileInfo').style.display = 'none';
+      document.getElementById('mimeStatusMessage').style.display = 'none';
+    });
+    
+    // Header Test
+    document.getElementById('checkHeaderButton').addEventListener('click', async () => {
+      const fileInput = document.getElementById('headerFileInput');
+      const fileInfoContainer = document.getElementById('headerFileInfo');
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatusMessage('headerStatusMessage', 'Please select a file first.', 'error');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      
+      // Clear previous content
+      fileInfoContainer.innerHTML = '';
+      fileInfoContainer.style.display = 'none';
+      
+      // Create file info
+      const fileInfo = document.createElement('div');
+      
+      // Basic file info
+      fileInfo.innerHTML = `
+        <h3>File Header Analysis</h3>
+        <div>File name: ${file.name}</div>
+        <div>File size: ${formatFileSize(file.size)}</div>
+        <div>MIME type: ${file.type || 'unknown'}</div>
+      `;
+      
+      try {
+        const headerResult = await isPngByHeader(file);
+        
+        // Display header bytes
+        const headerBytesDiv = document.createElement('div');
+        headerBytesDiv.innerHTML = '<h3>First 16 bytes of file:</h3>';
+        
+        const hexDisplay = document.createElement('div');
+        hexDisplay.className = 'hex-display';
+        
+        headerResult.headerBytes.forEach((byte, index) => {
+          const byteSpan = document.createElement('span');
+          byteSpan.className = 'byte';
+          byteSpan.textContent = byte;
+          
+          // Highlight PNG signature bytes
+          if (index < 8 && headerResult.isPng) {
+            byteSpan.classList.add('png-signature');
+          }
+          
+          hexDisplay.appendChild(byteSpan);
+        });
+        
+        headerBytesDiv.appendChild(hexDisplay);
+        fileInfo.appendChild(headerBytesDiv);
+        
+        // PNG signature check
+        const signatureDiv = document.createElement('div');
+        
+        if (headerResult.isPng) {
+          signatureDiv.innerHTML = `<h3>Result: <span class="success">PNG Signature Detected</span></h3>
+            <div>This file has a valid PNG signature in its header.</div>
+            <div>The first 8 bytes match the PNG standard: 89 50 4E 47 0D 0A 1A 0A</div>
+          `;
+        } else {
+          signatureDiv.innerHTML = `<h3>Result: <span class="error">Not a PNG File</span></h3>
+            <div>This file does not have a PNG signature in its header.</div>
+            <div>Expected: 89 50 4E 47 0D 0A 1A 0A</div>
+            <div>Found: ${headerResult.headerBytes.slice(0, 8).join(' ')}</div>
+          `;
+        }
+        
+        fileInfo.appendChild(signatureDiv);
+        
+      } catch (error) {
+        console.error('Error checking file header:', error);
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.innerHTML = `<h3>Error</h3><div class="error">Failed to check file header: ${error.message}</div>`;
+        fileInfo.appendChild(errorDiv);
+      }
+      
+      // Display file info
+      fileInfoContainer.appendChild(fileInfo);
+      fileInfoContainer.style.display = 'block';
+      
+      showStatusMessage('headerStatusMessage', 'File header analysis complete!', 'success');
+    });
+    
+    // Clear Header test
+    document.getElementById('clearHeaderButton').addEventListener('click', () => {
+      document.getElementById('headerFileInput').value = '';
+      document.getElementById('headerFileInfo').innerHTML = '';
+      document.getElementById('headerFileInfo').style.display = 'none';
+      document.getElementById('headerStatusMessage').style.display = 'none';
+    });
+    
+    // Storage Test
+    document.getElementById('checkStorageButton').addEventListener('click', () => {
+      const storageInfoContainer = document.getElementById('storageInfo');
+      
+      // Clear previous content
+      storageInfoContainer.innerHTML = '';
+      storageInfoContainer.style.display = 'none';
+      
+      // Get storage usage
+      const storageUsage = updateStorageUsage();
+      
+      // Create storage info
+      const storageInfo = document.createElement('div');
+      
+      storageInfo.innerHTML = `
+        <h3>Storage Usage</h3>
+        <div>Used: ${formatFileSize(storageUsage.used)} (${storageUsage.usedMB.toFixed(2)} MB)</div>
+        <div>Available: ~${formatFileSize(storageUsage.available)} (${storageUsage.availableMB.toFixed(2)} MB)</div>
+        <div>Total: ~${formatFileSize(storageUsage.estimatedTotal)} (${storageUsage.estimatedTotalMB.toFixed(2)} MB)</div>
+        <div>Usage: ${storageUsage.percentUsed.toFixed(2)}%</div>
+      `;
+      
+      // Add warning if storage is getting full
+      if (storageUsage.percentUsed > 70) {
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'warning';
+        warningDiv.innerHTML = `<strong>Warning:</strong> Storage usage is high (${storageUsage.percentUsed.toFixed(2)}%). Consider clearing some data.`;
+        storageInfo.appendChild(warningDiv);
+      }
+      
+      // Display localStorage keys
+      const keysDiv = document.createElement('div');
+      keysDiv.innerHTML = '<h3>localStorage Keys</h3>';
+      
+      if (localStorage.length === 0) {
+        keysDiv.innerHTML += '<div>No items in localStorage.</div>';
+      } else {
+        const keysList = document.createElement('ul');
+        
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key) {
+            const value = localStorage.getItem(key) || '';
+            const keyItem = document.createElement('li');
+            keyItem.innerHTML = `<strong>${key}</strong>: ${formatFileSize(key.length + value.length)} (${value.length > 100 ? value.substring(0, 100) + '...' : value})`;
+            keysList.appendChild(keyItem);
+          }
+        }
+        
+        keysDiv.appendChild(keysList);
+      }
+      
+      storageInfo.appendChild(keysDiv);
+      
+      // Display storage info
+      storageInfoContainer.appendChild(storageInfo);
+      storageInfoContainer.style.display = 'block';
+      
+      showStatusMessage('storageStatusMessage', 'Storage analysis complete!', 'success');
+    });
+    
+    // Fill Storage (Test)
+    document.getElementById('fillStorageButton').addEventListener('click', () => {
+      const storageUsage = updateStorageUsage();
+      
+      if (storageUsage.percentUsed > 80) {
+        if (!confirm('Storage is already over 80% full. Continue anyway?')) {
+          return;
+        }
+      }
+      
+      // Generate a random string of specified length
+      function generateRandomString(length) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+      }
+      
+      try {
+        // Create a 100KB chunk
+        const chunk = generateRandomString(100 * 1024);
+        
+        // Try to fill storage with 100KB chunks until it fails
+        let chunkCount = 0;
+        let failed = false;
+        
+        while (!failed && chunkCount < 100) { // Limit to 100 chunks (10MB) for safety
+          try {
+            localStorage.setItem(`test_chunk_${chunkCount}`, chunk);
+            chunkCount++;
+            updateStorageUsage();
+          } catch (error) {
+            failed = true;
+            console.error('Storage limit reached:', error);
+          }
+        }
+        
+        showStatusMessage('storageStatusMessage', `Added ${chunkCount} chunks (${formatFileSize(chunkCount * chunk.length)}) to storage.`, 'success');
+        
+        // Update storage display
+        document.getElementById('checkStorageButton').click();
+      } catch (error) {
+        console.error('Error filling storage:', error);
+        showStatusMessage('storageStatusMessage', `Error filling storage: ${error.message}`, 'error');
+      }
+    });
+    
+    // Clear Storage
+    document.getElementById('clearStorageButton').addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear all localStorage data? This cannot be undone.')) {
+        // Only clear test chunks
+        const keysToRemove = [];
+        
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('test_chunk_')) {
+            keysToRemove.push(key);
+          }
+        }
+        
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
+        updateStorageUsage();
+        showStatusMessage('storageStatusMessage', `Cleared ${keysToRemove.length} test items from storage.`, 'success');
+        
+        // Update storage display
+        document.getElementById('checkStorageButton').click();
+      }
+    });
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      updateStorageUsage();
+    });
+  </script>
+</body>
+</html>

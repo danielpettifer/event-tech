@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Selections Test</title>
+  <script src="https://unpkg.com/@ionic/core@latest/dist/ionic.js"></script>
+  <link href="https://unpkg.com/@ionic/core@latest/css/ionic.bundle.css" rel="stylesheet">
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .test-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+    .test-title {
+      margin-top: 0;
+      color: var(--ion-color-primary);
+    }
+    .test-description {
+      margin-bottom: 20px;
+      color: #666;
+    }
+    .test-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .test-result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .event-list {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .event-card {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .event-card.selected {
+      border: 2px solid var(--ion-color-primary);
+    }
+    .event-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .background-images {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .background-image {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+    .background-image img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+    .background-image.selected {
+      border: 2px solid var(--ion-color-primary);
+    }
+    .active-indicator {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      background-color: var(--ion-color-primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+    .featured-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .featured-item {
+      padding: 8px 12px;
+      background-color: #f0f0f0;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .featured-item.selected {
+      background-color: var(--ion-color-primary);
+      color: white;
+    }
+    .log-container {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .log-entry {
+      margin-bottom: 5px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    .log-entry.success {
+      color: green;
+    }
+    .log-entry.error {
+      color: red;
+    }
+    .log-entry.info {
+      color: blue;
+    }
+  </style>
+</head>
+<body>
+  <ion-app>
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Admin Selections Test</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="container">
+        <h1>Admin Panel Selection Tests</h1>
+        <p>This page tests the functionality of selecting featured artworks, items, background images, etc. in the admin panel.</p>
+        
+        <div class="test-section">
+          <h2 class="test-title">Test 1: Background Image Selection</h2>
+          <p class="test-description">Tests that background images can be selected and set as primary.</p>
+          
+          <div class="test-controls">
+            <ion-button id="reset-bg-test" color="medium">Reset Test</ion-button>
+            <ion-button id="run-bg-test" color="primary">Run Test</ion-button>
+          </div>
+          
+          <div id="bg-test-content">
+            <h3>Select an Event</h3>
+            <div class="event-list" id="bg-event-list">
+              <!-- Events will be populated here -->
+            </div>
+            
+            <h3>Background Images</h3>
+            <div class="background-images" id="bg-images">
+              <!-- Background images will be populated here -->
+            </div>
+            
+            <div class="log-container" id="bg-test-log">
+              <!-- Log entries will be added here -->
+            </div>
+          </div>
+        </div>
+        
+        <div class="test-section">
+          <h2 class="test-title">Test 2: Featured Items Selection</h2>
+          <p class="test-description">Tests that featured items can be selected and saved.</p>
+          
+          <div class="test-controls">
+            <ion-button id="reset-items-test" color="medium">Reset Test</ion-button>
+            <ion-button id="run-items-test" color="primary">Run Test</ion-button>
+          </div>
+          
+          <div id="items-test-content">
+            <h3>Select an Event</h3>
+            <div class="event-list" id="items-event-list">
+              <!-- Events will be populated here -->
+            </div>
+            
+            <h3>Available Items</h3>
+            <div class="featured-items" id="available-items">
+              <!-- Items will be populated here -->
+            </div>
+            
+            <h3>Selected Items</h3>
+            <div class="featured-items" id="selected-items">
+              <!-- Selected items will be shown here -->
+            </div>
+            
+            <div class="test-controls">
+              <ion-button id="save-items" color="success">Save Changes</ion-button>
+            </div>
+            
+            <div class="log-container" id="items-test-log">
+              <!-- Log entries will be added here -->
+            </div>
+          </div>
+        </div>
+        
+        <div class="test-section">
+          <h2 class="test-title">Test 3: Edit Mode Persistence</h2>
+          <p class="test-description">Tests that edit mode properly persists changes when switching between events.</p>
+          
+          <div class="test-controls">
+            <ion-button id="reset-edit-test" color="medium">Reset Test</ion-button>
+            <ion-button id="run-edit-test" color="primary">Run Test</ion-button>
+          </div>
+          
+          <div id="edit-test-content">
+            <div class="test-controls">
+              <ion-button id="start-edit" color="primary">Start Edit Mode</ion-button>
+              <ion-button id="switch-event" color="secondary">Switch Event</ion-button>
+              <ion-button id="save-changes" color="success">Save Changes</ion-button>
+            </div>
+            
+            <div class="log-container" id="edit-test-log">
+              <!-- Log entries will be added here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ion-app>
+
+  <script>
+    // Storage keys
+    const EVENTS_KEY = 'gallery_events';
+    const ITEMS_KEY = 'gallery_items';
+    
+    // State
+    let events = [];
+    let items = [];
+    let selectedEventId = null;
+    let selectedItemIds = [];
+    let isEditMode = false;
+    
+    // DOM Elements
+    const bgEventList = document.getElementById('bg-event-list');
+    const bgImages = document.getElementById('bg-images');
+    const bgTestLog = document.getElementById('bg-test-log');
+    const resetBgTest = document.getElementById('reset-bg-test');
+    const runBgTest = document.getElementById('run-bg-test');
+    
+    const itemsEventList = document.getElementById('items-event-list');
+    const availableItems = document.getElementById('available-items');
+    const selectedItems = document.getElementById('selected-items');
+    const itemsTestLog = document.getElementById('items-test-log');
+    const resetItemsTest = document.getElementById('reset-items-test');
+    const runItemsTest = document.getElementById('run-items-test');
+    const saveItems = document.getElementById('save-items');
+    
+    const startEdit = document.getElementById('start-edit');
+    const switchEvent = document.getElementById('switch-event');
+    const saveChanges = document.getElementById('save-changes');
+    const editTestLog = document.getElementById('edit-test-log');
+    const resetEditTest = document.getElementById('reset-edit-test');
+    const runEditTest = document.getElementById('run-edit-test');
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadEvents();
+      loadItems();
+      setupEventListeners();
+    });
+    
+    // Load data
+    function loadEvents() {
+      const storedEvents = localStorage.getItem(EVENTS_KEY);
+      events = storedEvents ? JSON.parse(storedEvents) : [];
+      
+      if (events.length === 0) {
+        logMessage(bgTestLog, 'No events found in localStorage. Please run the app first to initialize sample data.', 'error');
+        logMessage(itemsTestLog, 'No events found in localStorage. Please run the app first to initialize sample data.', 'error');
+        logMessage(editTestLog, 'No events found in localStorage. Please run the app first to initialize sample data.', 'error');
+      }
+    }
+    
+    function loadItems() {
+      const storedItems = localStorage.getItem(ITEMS_KEY);
+      items = storedItems ? JSON.parse(storedItems) : [];
+      
+      if (items.length === 0) {
+        logMessage(itemsTestLog, 'No items found in localStorage. Please run the app first to initialize sample data.', 'error');
+      }
+    }
+    
+    // Setup event listeners
+    function setupEventListeners() {
+      resetBgTest.addEventListener('click', resetBackgroundTest);
+      runBgTest.addEventListener('click', runBackgroundTest);
+      
+      resetItemsTest.addEventListener('click', resetItemsTest);
+      runItemsTest.addEventListener('click', runItemsTest);
+      saveItems.addEventListener('click', saveSelectedItems);
+      
+      resetEditTest.addEventListener('click', resetEditModeTest);
+      runEditTest.addEventListener('click', runEditModeTest);
+      startEdit.addEventListener('click', startEditMode);
+      switchEvent.addEventListener('click', switchToNextEvent);
+      saveChanges.addEventListener('click', saveEditChanges);
+    }
+    
+    // Background Image Test Functions
+    function resetBackgroundTest() {
+      bgTestLog.innerHTML = '';
+      bgEventList.innerHTML = '';
+      bgImages.innerHTML = '';
+      selectedEventId = null;
+      logMessage(bgTestLog, 'Background image test reset', 'info');
+    }
+    
+    function runBackgroundTest() {
+      resetBackgroundTest();
+      logMessage(bgTestLog, 'Running background image test...', 'info');
+      
+      // Render events
+      renderEventList(bgEventList, (eventId) => {
+        selectedEventId = eventId;
+        renderBackgroundImages(bgImages, eventId);
+      });
+    }
+    
+    function renderEventList(container, onEventSelect) {
+      container.innerHTML = '';
+      
+      if (events.length === 0) {
+        container.innerHTML = '<p>No events found</p>';
+        return;
+      }
+      
+      events.forEach(event => {
+        const card = document.createElement('ion-card');
+        card.className = `event-card ${event.id === selectedEventId ? 'selected' : ''}`;
+        card.setAttribute('button', 'true');
+        card.onclick = () => {
+          selectedEventId = event.id;
+          
+          // Update selected state in UI
+          document.querySelectorAll('.event-card').forEach(c => {
+            c.classList.remove('selected');
+          });
+          card.classList.add('selected');
+          
+          if (onEventSelect) {
+            onEventSelect(event.id);
+          }
+        };
+        
+        card.innerHTML = `
+          <ion-card-header>
+            <ion-card-title>${event.title}</ion-card-title>
+            <ion-badge color="${getStatusColor(event.status)}">${event.status}</ion-badge>
+          </ion-card-header>
+          <ion-card-content>
+            <p>${event.eventType}</p>
+            <p>${new Date(event.startDate).toLocaleDateString()}</p>
+          </ion-card-content>
+        `;
+        
+        container.appendChild(card);
+      });
+    }
+    
+    function renderBackgroundImages(container, eventId) {
+      container.innerHTML = '';
+      
+      const event = events.find(e => e.id === eventId);
+      if (!event) {
+        container.innerHTML = '<p>Event not found</p>';
+        return;
+      }
+      
+      if (!event.backgroundImages || event.backgroundImages.length === 0) {
+        container.innerHTML = '<p>No background images for this event</p>';
+        return;
+      }
+      
+      logMessage(bgTestLog, `Loaded ${event.backgroundImages.length} background images for event: ${event.title}`, 'info');
+      
+      event.backgroundImages.forEach((imageUrl, index) => {
+        const imageDiv = document.createElement('div');
+        imageDiv.className = `background-image ${event.imageUrl === imageUrl ? 'selected' : ''}`;
+        
+        imageDiv.innerHTML = `
+          <img src="${imageUrl}" alt="Background ${index + 1}">
+          ${event.imageUrl === imageUrl ? '<div class="active-indicator">Primary</div>' : ''}
+        `;
+        
+        imageDiv.addEventListener('click', () => {
+          // Update the event to set this as the primary background image
+          event.imageUrl = imageUrl;
+          
+          // Save to localStorage
+          localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+          
+          // Update UI
+          document.querySelectorAll('.background-image').forEach(img => {
+            img.classList.remove('selected');
+            img.querySelector('.active-indicator')?.remove();
+          });
+          
+          imageDiv.classList.add('selected');
+          if (!imageDiv.querySelector('.active-indicator')) {
+            const indicator = document.createElement('div');
+            indicator.className = 'active-indicator';
+            indicator.textContent = 'Primary';
+            imageDiv.appendChild(indicator);
+          }
+          
+          logMessage(bgTestLog, `Set image ${index + 1} as primary background for event: ${event.title}`, 'success');
+        });
+        
+        container.appendChild(imageDiv);
+      });
+    }
+    
+    // Featured Items Test Functions
+    function resetItemsTest() {
+      itemsTestLog.innerHTML = '';
+      itemsEventList.innerHTML = '';
+      availableItems.innerHTML = '';
+      selectedItems.innerHTML = '';
+      selectedEventId = null;
+      selectedItemIds = [];
+      logMessage(itemsTestLog, 'Featured items test reset', 'info');
+    }
+    
+    function runItemsTest() {
+      resetItemsTest();
+      logMessage(itemsTestLog, 'Running featured items test...', 'info');
+      
+      // Render events
+      renderEventList(itemsEventList, (eventId) => {
+        selectedEventId = eventId;
+        renderAvailableItems();
+        renderSelectedItems();
+      });
+    }
+    
+    function renderAvailableItems() {
+      availableItems.innerHTML = '';
+      
+      if (items.length === 0) {
+        availableItems.innerHTML = '<p>No items found</p>';
+        return;
+      }
+      
+      const event = events.find(e => e.id === selectedEventId);
+      if (!event) {
+        availableItems.innerHTML = '<p>Please select an event first</p>';
+        return;
+      }
+      
+      // Get current featured items
+      selectedItemIds = [...(event.featuredItems || [])];
+      
+      // Show items not already featured
+      const availableItemsList = items.filter(item => !selectedItemIds.includes(item.id));
+      
+      if (availableItemsList.length === 0) {
+        availableItems.innerHTML = '<p>All items are already featured</p>';
+        return;
+      }
+      
+      availableItemsList.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'featured-item';
+        itemDiv.textContent = item.title;
+        
+        itemDiv.addEventListener('click', () => {
+          // Add to selected items
+          selectedItemIds.push(item.id);
+          
+          // Update UI
+          renderAvailableItems();
+          renderSelectedItems();
+          
+          logMessage(itemsTestLog, `Added item: ${item.title} to featured items`, 'info');
+        });
+        
+        availableItems.appendChild(itemDiv);
+      });
+    }
+    
+    function renderSelectedItems() {
+      selectedItems.innerHTML = '';
+      
+      if (selectedItemIds.length === 0) {
+        selectedItems.innerHTML = '<p>No items selected</p>';
+        return;
+      }
+      
+      selectedItemIds.forEach(itemId => {
+        const item = items.find(i => i.id === itemId);
+        if (!item) return;
+        
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'featured-item selected';
+        itemDiv.textContent = item.title;
+        
+        itemDiv.addEventListener('click', () => {
+          // Remove from selected items
+          selectedItemIds = selectedItemIds.filter(id => id !== itemId);
+          
+          // Update UI
+          renderAvailableItems();
+          renderSelectedItems();
+          
+          logMessage(itemsTestLog, `Removed item: ${item.title} from featured items`, 'info');
+        });
+        
+        selectedItems.appendChild(itemDiv);
+      });
+    }
+    
+    function saveSelectedItems() {
+      if (!selectedEventId) {
+        logMessage(itemsTestLog, 'Please select an event first', 'error');
+        return;
+      }
+      
+      const event = events.find(e => e.id === selectedEventId);
+      if (!event) {
+        logMessage(itemsTestLog, 'Event not found', 'error');
+        return;
+      }
+      
+      // Update event with selected items
+      event.featuredItems = [...selectedItemIds];
+      
+      // Save to localStorage
+      localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+      
+      logMessage(itemsTestLog, `Saved ${selectedItemIds.length} featured items for event: ${event.title}`, 'success');
+    }
+    
+    // Edit Mode Test Functions
+    function resetEditModeTest() {
+      editTestLog.innerHTML = '';
+      isEditMode = false;
+      selectedEventId = null;
+      logMessage(editTestLog, 'Edit mode test reset', 'info');
+    }
+    
+    function runEditModeTest() {
+      resetEditModeTest();
+      logMessage(editTestLog, 'Running edit mode test...', 'info');
+      
+      if (events.length === 0) {
+        logMessage(editTestLog, 'No events found', 'error');
+        return;
+      }
+      
+      // Select the first event
+      selectedEventId = events[0].id;
+      logMessage(editTestLog, `Selected event: ${events[0].title}`, 'info');
+    }
+    
+    function startEditMode() {
+      if (!selectedEventId) {
+        logMessage(editTestLog, 'Please run the test first to select an event', 'error');
+        return;
+      }
+      
+      isEditMode = true;
+      logMessage(editTestLog, 'Started edit mode', 'info');
+    }
+    
+    function switchToNextEvent() {
+      if (events.length <= 1) {
+        logMessage(editTestLog, 'Not enough events to switch', 'error');
+        return;
+      }
+      
+      if (!selectedEventId) {
+        logMessage(editTestLog, 'Please run the test first to select an event', 'error');
+        return;
+      }
+      
+      // Find current event index
+      const currentIndex = events.findIndex(e => e.id === selectedEventId);
+      if (currentIndex === -1) return;
+      
+      // Get next event (or loop back to first)
+      const nextIndex = (currentIndex + 1) % events.length;
+      const nextEvent = events[nextIndex];
+      
+      // Check if edit mode is preserved
+      const editModeStatus = isEditMode ? 'Edit mode is still active' : 'Edit mode was cleared';
+      
+      // Switch to next event
+      selectedEventId = nextEvent.id;
+      
+      logMessage(editTestLog, `Switched to event: ${nextEvent.title}`, 'info');
+      logMessage(editTestLog, editModeStatus, isEditMode ? 'success' : 'error');
+    }
+    
+    function saveEditChanges() {
+      if (!selectedEventId) {
+        logMessage(editTestLog, 'Please run the test first to select an event', 'error');
+        return;
+      }
+      
+      if (!isEditMode) {
+        logMessage(editTestLog, 'Please start edit mode first', 'error');
+        return;
+      }
+      
+      // Simulate saving changes
+      isEditMode = false;
+      
+      logMessage(editTestLog, 'Changes saved successfully', 'success');
+      logMessage(editTestLog, 'Edit mode exited', 'info');
+    }
+    
+    // Utility Functions
+    function getStatusColor(status) {
+      switch (status) {
+        case 'Active': return 'success';
+        case 'Published': return 'primary';
+        case 'Draft': return 'medium';
+        case 'Completed': return 'dark';
+        default: return 'warning';
+      }
+    }
+    
+    function logMessage(container, message, type = 'info') {
+      const logEntry = document.createElement('div');
+      logEntry.className = `log-entry ${type}`;
+      logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      container.appendChild(logEntry);
+      container.scrollTop = container.scrollHeight;
+    }
+  </script>
+</body>
+</html>

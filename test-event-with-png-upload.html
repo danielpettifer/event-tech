@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event with PNG Upload Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    h1, h2, h3 {
+      color: #333;
+    }
+    
+    h1 {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    
+    button:hover {
+      background-color: #0069d9;
+    }
+    
+    .status {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+    
+    .info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    pre {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+    
+    .image-preview {
+      max-width: 100%;
+      height: auto;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-bottom: none;
+      margin-bottom: -1px;
+    }
+    
+    .tab.active {
+      background-color: white;
+      border-color: #ddd;
+      border-radius: 4px 4px 0 0;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .console-output {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      padding: 15px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    
+    .console-output .error {
+      color: #dc3545;
+    }
+    
+    .console-output .warning {
+      color: #ffc107;
+    }
+    
+    .console-output .info {
+      color: #17a2b8;
+    }
+    
+    .console-output .success {
+      color: #28a745;
+    }
+    
+    .upload-container {
+      margin-top: 20px;
+      padding: 20px;
+      border: 2px dashed #ccc;
+      border-radius: 4px;
+      text-align: center;
+    }
+    
+    .upload-container:hover {
+      border-color: #007bff;
+    }
+    
+    .upload-container input[type="file"] {
+      display: none;
+    }
+    
+    .preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .preview-item {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .preview-item .remove-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    
+    .preview-item .remove-btn:hover {
+      background: rgba(255, 255, 255, 0.9);
+    }
+  </style>
+</head>
+<body>
+  <h1>Event with PNG Upload Test</h1>
+  <p>This tool helps test PNG uploads with a default event, ensuring all elements work correctly together.</p>
+  
+  <div class="tabs">
+    <div class="tab active" data-tab="event">Event Setup</div>
+    <div class="tab" data-tab="upload">PNG Upload</div>
+    <div class="tab" data-tab="test">Test All</div>
+  </div>
+  
+  <div class="tab-content active" id="event">
+    <div class="section">
+      <h2>Create Default Event</h2>
+      <p>This will create a comprehensive default event with background images, featured items, and a detailed description.</p>
+      
+      <button id="createDefaultEventBtn">Create Default Event</button>
+      <button id="viewCurrentEventBtn">View Current Event</button>
+      <button id="resetSettingsBtn">Reset Settings</button>
+      
+      <div id="eventStatus" class="status" style="display: none;"></div>
+      <div id="eventPreview" style="display: none;"></div>
+    </div>
+  </div>
+  
+  <div class="tab-content" id="upload">
+    <div class="section">
+      <h2>PNG Upload Test</h2>
+      <p>Test PNG file uploads with various types of PNG files.</p>
+      
+      <div class="upload-container">
+        <input type="file" id="pngFileInput" accept="image/png,.png" multiple>
+        <button id="selectFileBtn">Choose PNG Files</button>
+        <p>Or drag and drop PNG files here</p>
+      </div>
+      
+      <div class="preview-container" id="previewContainer"></div>
+      
+      <div class="upload-actions" style="margin-top: 20px;">
+        <button id="addToEventBtn">Add Images to Event</button>
+        <button id="clearImagesBtn">Clear Images</button>
+      </div>
+      
+      <div id="uploadStatus" class="status" style="display: none;"></div>
+      
+      <div class="console-output" id="consoleOutput">
+        Console output will appear here...
+      </div>
+    </div>
+  </div>
+  
+  <div class="tab-content" id="test">
+    <div class="section">
+      <h2>Test All Elements</h2>
+      <p>Test the complete functionality of the event with PNG uploads.</p>
+      
+      <button id="testAllBtn">Run Complete Test</button>
+      <button id="openVisitorLandingBtn">Open Visitor Landing</button>
+      
+      <div id="testStatus" class="status" style="display: none;"></div>
+      <div id="testResults" style="display: none;"></div>
+    </div>
+  </div>
+  
+  <script>
+    // Tab functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        tab.classList.add('active');
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+    
+    // Console output functionality
+    const consoleOutput = document.getElementById('consoleOutput');
+    const originalConsole = {
+      log: console.log,
+      warn: console.warn,
+      error: console.error,
+      info: console.info
+    };
+    
+    function appendToConsole(message, type) {
+      const line = document.createElement('div');
+      line.className = type;
+      line.textContent = `[${new Date().toLocaleTimeString()}] [${type.toUpperCase()}] ${message}`;
+      consoleOutput.appendChild(line);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalConsole.log(...args);
+      appendToConsole(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '), 'info');
+    };
+    
+    console.warn = function(...args) {
+      originalConsole.warn(...args);
+      appendToConsole(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '), 'warning');
+    };
+    
+    console.error = function(...args) {
+      originalConsole.error(...args);
+      appendToConsole(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '), 'error');
+    };
+    
+    console.info = function(...args) {
+      originalConsole.info(...args);
+      appendToConsole(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '), 'success');
+    };
+    
+    // Helper functions
+    function showStatus(elementId, message, type) {
+      const statusElement = document.getElementById(elementId);
+      statusElement.textContent = message;
+      statusElement.className = `status ${type}`;
+      statusElement.style.display = 'block';
+      
+      // Auto-hide after 8 seconds for success messages
+      if (type === 'success') {
+        setTimeout(() => {
+          statusElement.style.display = 'none';
+        }, 8000);
+      }
+    }
+    
+    function formatJson(obj) {
+      return JSON.stringify(obj, null, 2);
+    }
+    
+    // Initialize mock services if needed
+    function initializeServices() {
+      if (typeof ItemService === 'undefined') {
+        eval(`
+          class ItemService {
+            static initializeSampleData() {
+              console.log('Initializing sample items data');
+              // Implementation would be in the actual ItemService
+            }
+            
+            static getAllItems() {
+              return JSON.parse(localStorage.getItem('gallery_items') || '[]');
+            }
+            
+            static getItemById(id) {
+              const items = this.getAllItems();
+              return items.find(item => item.id === id) || null;
+            }
+            
+            static saveItem(itemData) {
+              const items = this.getAllItems();
+              const newItem = {
+                ...itemData,
+                id: 'item_' + Date.now(),
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              };
+              
+              items.push(newItem);
+              localStorage.setItem('gallery_items', JSON.stringify(items));
+              return newItem;
+            }
+          }
+          
+          class EventService {
+            static initializeSampleData() {
+              console.log('Initializing sample events data');
+              // Implementation would be in the actual EventService
+            }
+            
+            static getAllEvents() {
+              return JSON.parse(localStorage.getItem('gallery_events') || '[]');
+            }
+            
+            static getEventById(id) {
+              const events = this.getAllEvents();
+              return events.find(event => event.id === id) || null;
+            }
+            
+            static saveEvent(eventData) {
+              const events = this.getAllEvents();
+              const newEvent = {
+                ...eventData,
+                id: 'event_' + Date.now(),
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              };
+              
+              events.push(newEvent);
+              localStorage.setItem('gallery_events', JSON.stringify(events));
+              return newEvent;
+            }
+            
+            static updateEvent(id, eventData) {
+              const events = this.getAllEvents();
+              const index = events.findIndex(event => event.id === id);
+              
+              if (index === -1) return null;
+              
+              events[index] = {
+                ...events[index],
+                ...eventData,
+                updatedAt: new Date().toISOString()
+              };
+              
+              localStorage.setItem('gallery_events', JSON.stringify(events));
+              return events[index];
+            }
+            
+            static addFeaturedItem(eventId, itemId) {
+              const event = this.getEventById(eventId);
+              if (!event) return false;
+              
+              if (!event.featuredItems.includes(itemId)) {
+                const updatedFeaturedItems = [...event.featuredItems, itemId];
+                this.updateEvent(eventId, { featuredItems: updatedFeaturedItems });
+                return true;
+              }
+              return false;
+            }
+          }
+          
+          class GallerySettingsService {
+            static updateActiveEvent(eventId) {
+              const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+              settings.activeEventId = eventId;
+              settings.updatedAt = new Date().toISOString();
+              localStorage.setItem('gallery_settings', JSON.stringify(settings));
+              return settings;
+            }
+            
+            static updateShowItemCards(show) {
+              const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+              settings.showItemCards = show;
+              settings.updatedAt = new Date().toISOString();
+              localStorage.setItem('gallery_settings', JSON.stringify(settings));
+              localStorage.setItem('gallery_show_items_preference', show.toString());
+              return settings;
+            }
+            
+            static getActiveEventId() {
+              const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+              return settings.activeEventId;
+            }
+          }
+        `);
+      }
+      
+      // Initialize sample data
+      ItemService.initializeSampleData();
+      EventService.initializeSampleData();
+    }
+    
+    // PNG file validation
+    function isPngByHeader(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (!e.target || !e.target.result) {
+            resolve(false);
+            return;
+          }
+          
+          const arr = new Uint8Array(e.target.result);
+          // Check PNG signature: 89 50 4E 47 0D 0A 1A 0A
+          const isPng = arr.length >= 8 &&
+                        arr[0] === 0x89 && 
+                        arr[1] === 0x50 && 
+                        arr[2] === 0x4E && 
+                        arr[3] === 0x47 && 
+                        arr[4] === 0x0D && 
+                        arr[5] === 0x0A && 
+                        arr[6] === 0x1A && 
+                        arr[7] === 0x0A;
+          
+          resolve(isPng);
+        };
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsArrayBuffer(file.slice(0, 8)); // Read just the first 8 bytes
+      });
+    }
+    
+    // Convert file to data URL
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            resolve(reader.result);
+          } else {
+            reject(new Error('Failed to read file'));
+          }
+        };
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    // Create Default Event
+    document.getElementById('createDefaultEventBtn').addEventListener('click', async () => {
+      try {
+        // Initialize services
+        initializeServices();
+        
+        // Create background images array
+        const backgroundImages = [
+          "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=1920&h=1080&fit=crop",
+          "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop",
+          "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=1920&h=1080&fit=crop",
+          "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1920&h=1080&fit=crop"
+        ];
+        
+        // Create the default event
+        const defaultEvent = {
+          title: "Comprehensive Art Exhibition: Masters Through Time",
+          description: "Experience an extraordinary journey through art history with our most ambitious exhibition to date. 'Masters Through Time' brings together iconic works spanning multiple centuries and artistic movements, from Renaissance masterpieces to contemporary innovations.\n\nThis carefully curated collection showcases the evolution of artistic expression, highlighting the technical brilliance, emotional depth, and cultural significance of each era. Visitors will discover connections between seemingly disparate artistic movements and gain insight into how each generation of artists built upon, reacted to, or revolutionized what came before.\n\nFeaturing works by renowned artists including Van Gogh, Hokusai, Vermeer, Monet, Botticelli, and contemporary masters, this exhibition offers a unique opportunity to witness the dialogue between different periods and styles in one comprehensive experience.\n\nAudio guides are available in multiple languages, and our knowledgeable docents offer guided tours twice daily. Photography is permitted without flash.",
+          startDate: "2025-01-15",
+          endDate: "2025-05-15",
+          startTime: "10:00",
+          endTime: "18:00",
+          location: "Main Gallery - All Floors",
+          eventType: "Exhibition",
+          status: "Active",
+          maxAttendees: 300,
+          currentAttendees: 0,
+          ticketPrice: 15,
+          isTicketed: true,
+          featuredArtists: ["Vincent van Gogh", "Katsushika Hokusai", "Johannes Vermeer", "Claude Monet", "Sandro Botticelli"],
+          featuredArtworks: ["The Starry Night", "The Great Wave off Kanagawa", "Girl with a Pearl Earring", "Water Lilies", "The Birth of Venus"],
+          featuredItems: [],
+          showItems: true,
+          tags: ["Masterpieces", "Historical", "Multi-Period", "Featured Exhibition", "International Artists", "Classical Art"],
+          contactEmail: "exhibitions@gallery.com",
+          contactPhone: "+44 20 7123 4567",
+          specialInstructions: "Audio guides available in multiple languages. Photography permitted without flash.",
+          isPublic: true,
+          imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&h=600&fit=crop",
+          images: [
+            "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&h=600&fit=crop",
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
+            "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=800&h=600&fit=crop"
+          ],
+          backgroundImages: backgroundImages
+        };
+        
+        // Save the event
+        const savedEvent = EventService.saveEvent(defaultEvent);
+        
+        // Set as active event
+        GallerySettingsService.updateActiveEvent(savedEvent.id);
+        
+        // Set show items preference
+        GallerySettingsService.updateShowItemCards(true);
+        
+        // Show success message
+        showStatus('eventStatus', 'Default event created successfully!', 'success');
+        
+        // Show event preview
+        const previewElement = document.getElementById('eventPreview');
+        previewElement.innerHTML = '';
+        previewElement.style.display = 'block';
+        
+        const heading = document.createElement('h3');
+        heading.textContent = 'Event Preview:';
+        previewElement.appendChild(heading);
+        
+        const eventJson = document.createElement('pre');
+        eventJson.textContent = formatJson(savedEvent);
+        previewElement.appendChild(eventJson);
+        
+        console.info('Default event created successfully');
+        
+      } catch (error) {
+        console.error('Error creating default event:', error);
+        showStatus('eventStatus', `Error creating default event: ${error.message}`, 'error');
+      }
+    });
+    
+    // View Current Event
+    document.getElementById('viewCurrentEventBtn').addEventListener('click', () => {
+      try {
+        initializeServices();
+        
+        // Get active event
+        const activeEventId = GallerySettingsService.getActiveEventId();
+        
+        if (!activeEventId) {
+          showStatus('eventStatus', 'No active event found. Please create a default event first.', 'warning');
+          return;
+        }
+        
+        const activeEvent = EventService.getEventById(activeEventId);
+        
+        if (!activeEvent) {
+          showStatus('eventStatus', 'Active event not found in storage.', 'error');
+          return;
+        }
+        
+        // Show event preview
+        const previewElement = document.getElementById('eventPreview');
+        previewElement.innerHTML = '';
+        previewElement.style.display = 'block';
+        
+        const heading = document.createElement('h3');
+        heading.textContent = 'Current Active Event:';
+        previewElement.appendChild(heading);
+        
+        const eventJson = document.createElement('pre');
+        eventJson.textContent = formatJson(activeEvent);
+        previewElement.appendChild(eventJson);
+        
+        showStatus('eventStatus', 'Current event loaded successfully!', 'success');
+        
+      } catch (error) {
+        console.error('Error viewing current event:', error);
+        showStatus('eventStatus', `Error viewing current event: ${error.message}`, 'error');
+      }
+    });
+    
+    // Reset Settings
+    document.getElementById('resetSettingsBtn').addEventListener('click', () => {
+      try {
+        localStorage.removeItem('gallery_settings');
+        localStorage.removeItem('gallery_show_items_preference');
+        
+        showStatus('eventStatus', 'Settings reset successfully!', 'success');
+      } catch (error) {
+        console.error('Error resetting settings:', error);
+        showStatus('eventStatus', `Error resetting settings: ${error.message}`, 'error');
+      }
+    });
+    
+    // PNG Upload functionality
+    const uploadedFiles = [];
+    
+    document.getElementById('selectFileBtn').addEventListener('click', () => {
+      document.getElementById('pngFileInput').click();
+    });
+    
+    document.getElementById('pngFileInput').addEventListener('change', async (event) => {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+      
+      console.info(`Processing ${files.length} files...`);
+      
+      for (const file of files) {
+        await processFile(file);
+      }
+      
+      // Reset the input to allow selecting the same file again
+      event.target.value = '';
+    });
+    
+    // Drag and drop functionality
+    const uploadContainer = document.querySelector('.upload-container');
+    
+    uploadContainer.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadContainer.style.borderColor = '#007bff';
+      uploadContainer.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
+    });
+    
+    uploadContainer.addEventListener('dragleave', () => {
+      uploadContainer.style.borderColor = '#ccc';
+      uploadContainer.style.backgroundColor = '';
+    });
+    
+    uploadContainer.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      uploadContainer.style.borderColor = '#ccc';
+      uploadContainer.style.backgroundColor = '';
+      
+      const files = e.dataTransfer.files;
+      if (!files || files.length === 0) return;
+      
+      console.info(`Processing ${files.length} dropped files...`);
+      
+      for (const file of files) {
+        await processFile(file);
+      }
+    });
+    
+    async function processFile(file) {
+      console.info(`Processing file: ${file.name} (${file.type})`);
+      
+      try {
+        // Check file extension
+        const isPngByExtension = file.name.toLowerCase().endsWith('.png');
+        console.info(`PNG extension check: ${isPngByExtension ? 'Passed' : 'Failed'}`);
+        
+        // Check MIME type
+        const isPngByMimeType = file.type === 'image/png';
+        console.info(`PNG MIME type check: ${isPngByMimeType ? 'Passed' : 'Failed'} (${file.type})`);
+        
+        // Check file header
+        const isPng = await isPngByHeader(file);
+        console.info(`PNG header check: ${isPng ? 'Passed' : 'Failed'}`);
+        
+        if (!isPng) {
+          if (isPngByExtension || isPngByMimeType) {
+            console.warn('File has PNG characteristics but invalid header. May be corrupted.');
+          } else {
+            console.error('Not a valid PNG file. Skipping.');
+            return;
+          }
+        }
+        
+        // Convert to data URL
+        const dataUrl = await fileToDataUrl(file);
+        
+        // Add to uploaded files array
+        uploadedFiles.push({
+          file,
+          dataUrl,
+          isPng,
+          isPngByExtension,
+          isPngByMimeType
+        });
+        
+        // Add to preview
+        addFilePreview(file, dataUrl, uploadedFiles.length - 1);
+        
+        console.info('File processed successfully');
+        
+      } catch (error) {
+        console.error(`Error processing file: ${error.message}`);
+      }
+    }
+    
+    function addFilePreview(file, dataUrl, index) {
+      const previewContainer = document.getElementById('previewContainer');
+      
+      const previewItem = document.createElement('div');
+      previewItem.className = 'preview-item';
+      previewItem.dataset.index = index;
+      
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      img.alt = file.name;
+      
+      const removeBtn = document.createElement('div');
+      removeBtn.className = 'remove-btn';
+      removeBtn.innerHTML = '&times;';
+      removeBtn.addEventListener('click', () => {
+        // Remove from DOM
+        previewContainer.removeChild(previewItem);
+        // Mark as removed in array (don't actually remove to maintain indices)
+        uploadedFiles[index] = null;
+      });
+      
+      previewItem.appendChild(img);
+      previewItem.appendChild(removeBtn);
+      previewContainer.appendChild(previewItem);
+      
+      // Show image properties when loaded
+      img.onload = () => {
+        console.info(`Image dimensions: ${img.naturalWidth}x${img.naturalHeight}`);
+        const fileSizeMB = file.size / (1024 * 1024);
+        console.info(`File size: ${fileSizeMB.toFixed(2)} MB`);
+        
+        const pixelCount = img.naturalWidth * img.naturalHeight;
+        const bytesPerPixel = file.size / pixelCount;
+        console.info(`Bytes per pixel: ${bytesPerPixel.toFixed(2)}`);
+        
+        if (bytesPerPixel > 4) {
+          console.warn('This PNG likely has transparency or is uncompressed');
+        }
+        
+        if (fileSizeMB > 1) {
+          console.warn('Large PNG file detected. Consider optimization.');
+        }
+      };
+    }
+    
+    // Clear Images
+    document.getElementById('clearImagesBtn').addEventListener('click', () => {
+      const previewContainer = document.getElementById('previewContainer');
+      previewContainer.innerHTML = '';
+      uploadedFiles.length = 0;
+      console.info('All images cleared');
+    });
+    
+    // Add Images to Event
+    document.getElementById('addToEventBtn').addEventListener('click', async () => {
+      try {
+        initializeServices();
+        
+        // Get active event
+        const activeEventId = GallerySettingsService.getActiveEventId();
+        
+        if (!activeEventId) {
+          showStatus('uploadStatus', 'No active event found. Please create a default event first.', 'warning');
+          return;
+        }
+        
+        const activeEvent = EventService.getEventById(activeEventId);
+        
+        if (!activeEvent) {
+          showStatus('uploadStatus', 'Active event not found in storage.', 'error');
+          return;
+        }
+        
+        // Filter out null entries (removed files)
+        const validFiles = uploadedFiles.filter(entry => entry !== null);
+        
+        if (validFiles.length === 0) {
+          showStatus('uploadStatus', 'No valid images to add.', 'warning');
+          return;
+        }
+        
+        console.info(`Adding ${validFiles.length} images to event...`);
+        
+        // Create items for each image
+        const createdItems = [];
+        
+        for (const [index, entry] of validFiles.entries()) {
+          const { file, dataUrl } = entry;
+          
+          // Create a new item
+          const newItem = {
+            title: `Uploaded PNG ${index + 1}`,
+            artist: 'Test Artist',
+            medium: 'Digital',
+            dimensions: 'Variable',
+            year: new Date().getFullYear(),
+            price: 1000,
+            currency: 'USD',
+            description: `Test PNG upload item ${index + 1}. Filename: ${file.name}`,
+            category: 'Test',
+            style: 'Digital',
+            condition: 'Excellent',
+            provenance: 'Direct from artist',
+            location: 'Main Gallery',
+            status: 'Available',
+            isFramed: false,
+            acquisitionDate: new Date().toISOString(),
+            estimatedValue: 1000,
+            insuranceValue: 1000,
+            images: [dataUrl],
+            thumbnailImage: dataUrl,
+            tags: ['Test', 'PNG', 'Upload'],
+            exhibitions: [],
+            publications: [],
+            isPubliclyVisible: true,
+            isFeatured: true,
+            materials: ['Digital'],
+            techniques: ['Digital'],
+            signature: 'None',
+            certificate: false,
+            notes: 'Test upload for PNG file testing'
+          };
+          
+          // Save the item
+          const savedItem = ItemService.saveItem(newItem);
+          createdItems.push(savedItem);
+          
+          // Add to event's featured items
+          EventService.addFeaturedItem(activeEventId, savedItem.id);
+          
+          console.info(`Added item ${savedItem.id} to event`);
+        }
+        
+        // Update event to show items
+        EventService.updateEvent(activeEventId, { showItems: true });
+        GallerySettingsService.updateShowItemCards(true);
+        
+        showStatus('uploadStatus', `Successfully added ${createdItems.length} items to the event!`, 'success');
+        
+        // Clear the uploads after adding to event
+        const previewContainer = document.getElementById('previewContainer');
+        previewContainer.innerHTML = '';
+        uploadedFiles.length = 0;
+        
+      } catch (error) {
+        console.error('Error adding images to event:', error);
+        showStatus('uploadStatus', `Error adding images to event: ${error.message}`, 'error');
+      }
+    });
+    
+    // Test All functionality
+    document.getElementById('testAllBtn').addEventListener('click', async () => {
+      try {
+        initializeServices();
+        
+        // Get active event
+        const activeEventId = GallerySettingsService.getActiveEventId();
+        
+        if (!activeEventId) {
+          showStatus('testStatus', 'No active event found. Please create a default event first.', 'warning');
+          return;
+        }
+        
+        const activeEvent = EventService.getEventById(activeEventId);
+        
+        if (!activeEvent) {
+          showStatus('testStatus', 'Active event not found in storage.', 'error');
+          return;
+        }
+        
+        // Get featured items
+        const featuredItems = activeEvent.featuredItems || [];
+        
+        // Display test results
+        const resultsElement = document.getElementById('testResults');
+        resultsElement.innerHTML = '';
+        resultsElement.style.display = 'block';
+        
+        const heading = document.createElement('h3');
+        heading.textContent = 'Test Results:';
+        resultsElement.appendChild(heading);
+        
+        const resultsList = document.createElement('ul');
+        
+        // Test event
+        const eventTest = document.createElement('li');
+        eventTest.innerHTML = `<strong>Event Test:</strong> ${activeEvent ? 'Passed' : 'Failed'} - Found event "${activeEvent?.title}"`;
+        resultsList.appendChild(eventTest);
+        
+        // Test background images
+        const bgImages = activeEvent.backgroundImages || [];
+        const bgImagesTest = document.createElement('li');
+        bgImagesTest.innerHTML = `<strong>Background Images Test:</strong> ${bgImages.length > 0 ? 'Passed' : 'Failed'} - Found ${bgImages.length} background images`;
+        resultsList.appendChild(bgImagesTest);
+        
+        // Test featured items
+        const itemsTest = document.createElement('li');
+        itemsTest.innerHTML = `<strong>Featured Items Test:</strong> ${featuredItems.length > 0 ? 'Passed' : 'Warning'} - Found ${featuredItems.length} featured items`;
+        resultsList.appendChild(itemsTest);
+        
+        // Test carousel setting
+        const carouselTest = document.createElement('li');
+        carouselTest.innerHTML = `<strong>Carousel Setting Test:</strong> ${activeEvent.showItems ? 'Passed' : 'Failed'} - Carousel is ${activeEvent.showItems ? 'enabled' : 'disabled'}`;
+        resultsList.appendChild(carouselTest);
+        
+        // Test description
+        const descriptionTest = document.createElement('li');
+        descriptionTest.innerHTML = `<strong>Description Test:</strong> ${activeEvent.description && activeEvent.description.length > 100 ? 'Passed' : 'Failed'} - Description has ${activeEvent.description?.length || 0} characters`;
+        resultsList.appendChild(descriptionTest);
+        
+        resultsElement.appendChild(resultsList);
+        
+        // Overall result
+        const overallResult = document.createElement('div');
+        overallResult.className = 'status success';
+        overallResult.textContent = 'All tests completed. See results above.';
+        resultsElement.appendChild(overallResult);
+        
+        showStatus('testStatus', 'Tests completed successfully!', 'success');
+        
+      } catch (error) {
+        console.error('Error running tests:', error);
+        showStatus('testStatus', `Error running tests: ${error.message}`, 'error');
+      }
+    });
+    
+    // Open Visitor Landing
+    document.getElementById('openVisitorLandingBtn').addEventListener('click', () => {
+      window.location.href = '/';
+    });
+    
+    // Initialize console
+    console.info('Event with PNG Upload Test initialized');
+  </script>
+</body>
+</html>

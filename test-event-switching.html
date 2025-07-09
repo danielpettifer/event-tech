@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Switching Test</title>
+  <script src="https://unpkg.com/@ionic/core@latest/dist/ionic.js"></script>
+  <link href="https://unpkg.com/@ionic/core@latest/css/ionic.bundle.css" rel="stylesheet">
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .event-list {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .event-card {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .event-card.selected {
+      border: 2px solid var(--ion-color-primary);
+    }
+    .event-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .background-images {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .background-image {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+    .background-image img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+    .active-indicator {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      background-color: var(--ion-color-primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+    .test-controls {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <ion-app>
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Event Switching Test</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="container">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Test Event Switching</ion-card-title>
+            <ion-card-subtitle>Verify background images update correctly</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <p>This page tests that the background images section properly updates when switching between events.</p>
+            
+            <div class="test-controls">
+              <h4>Test Controls</h4>
+              <ion-button id="reset-btn" color="medium">Reset Test Data</ion-button>
+              <ion-button id="add-image-btn" color="success">Add Image to Selected Event</ion-button>
+            </div>
+
+            <h4>Select an Event</h4>
+            <div class="event-list" id="event-list">
+              <!-- Events will be populated here -->
+            </div>
+
+            <div id="event-details">
+              <h4>Event Details</h4>
+              <div id="event-info">
+                <!-- Event details will be shown here -->
+              </div>
+              
+              <h4>Background Images</h4>
+              <div class="background-images" id="background-images">
+                <!-- Background images will be shown here -->
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ion-content>
+  </ion-app>
+
+  <script>
+    // Storage keys
+    const EVENTS_KEY = 'gallery_events';
+    
+    // Sample data
+    const sampleEvents = [
+      {
+        id: 'event_1',
+        title: 'Summer Exhibition',
+        description: 'Annual summer exhibition featuring local artists',
+        status: 'Active',
+        eventType: 'Exhibition',
+        location: 'Main Gallery',
+        startDate: '2025-06-01',
+        endDate: '2025-08-31',
+        startTime: '10:00',
+        endTime: '18:00',
+        currentAttendees: 120,
+        maxAttendees: 500,
+        isTicketed: true,
+        ticketPrice: 15,
+        featuredArtists: ['John Smith', 'Sarah Johnson'],
+        featuredArtworks: ['Sunset at Sea', 'Mountain Landscape'],
+        featuredItems: ['item_1', 'item_2', 'item_3'],
+        showItems: true,
+        tags: ['summer', 'local', 'contemporary'],
+        specialInstructions: 'Please arrive 15 minutes before your scheduled time.',
+        contactEmail: 'summer@gallery.com',
+        contactPhone: '123-456-7890',
+        imageUrl: 'https://source.unsplash.com/random/800x600/?summer',
+        backgroundImages: [
+          'https://source.unsplash.com/random/800x600/?summer',
+          'https://source.unsplash.com/random/800x600/?art'
+        ],
+        isPublic: true,
+        createdAt: '2025-01-15T10:00:00Z',
+        updatedAt: '2025-01-15T10:00:00Z'
+      },
+      {
+        id: 'event_2',
+        title: 'Winter Collection',
+        description: 'Showcasing winter-themed artworks',
+        status: 'Published',
+        eventType: 'Collection',
+        location: 'East Wing',
+        startDate: '2025-12-01',
+        endDate: '2026-02-28',
+        startTime: '09:00',
+        endTime: '17:00',
+        currentAttendees: 50,
+        maxAttendees: 300,
+        isTicketed: true,
+        ticketPrice: 12,
+        featuredArtists: ['Emma White', 'Michael Brown'],
+        featuredArtworks: ['Snowy Mountains', 'Winter Forest'],
+        featuredItems: ['item_4', 'item_5'],
+        showItems: true,
+        tags: ['winter', 'snow', 'landscape'],
+        specialInstructions: '',
+        contactEmail: 'winter@gallery.com',
+        contactPhone: '',
+        imageUrl: 'https://source.unsplash.com/random/800x600/?winter',
+        backgroundImages: [
+          'https://source.unsplash.com/random/800x600/?winter',
+          'https://source.unsplash.com/random/800x600/?snow'
+        ],
+        isPublic: true,
+        createdAt: '2025-01-20T14:30:00Z',
+        updatedAt: '2025-01-20T14:30:00Z'
+      },
+      {
+        id: 'event_3',
+        title: 'Abstract Art Showcase',
+        description: 'A collection of modern abstract artworks',
+        status: 'Draft',
+        eventType: 'Showcase',
+        location: 'West Wing',
+        startDate: '2025-09-15',
+        endDate: '2025-10-15',
+        startTime: '11:00',
+        endTime: '19:00',
+        currentAttendees: 0,
+        maxAttendees: 200,
+        isTicketed: false,
+        ticketPrice: 0,
+        featuredArtists: ['Alex Turner', 'Lisa Chen'],
+        featuredArtworks: ['Geometric Patterns', 'Color Explosion'],
+        featuredItems: [],
+        showItems: false,
+        tags: ['abstract', 'modern', 'geometric'],
+        specialInstructions: '',
+        contactEmail: 'abstract@gallery.com',
+        contactPhone: '',
+        imageUrl: '',
+        backgroundImages: [],
+        isPublic: false,
+        createdAt: '2025-02-05T09:45:00Z',
+        updatedAt: '2025-02-05T09:45:00Z'
+      }
+    ];
+
+    // DOM elements
+    const eventList = document.getElementById('event-list');
+    const eventInfo = document.getElementById('event-info');
+    const backgroundImages = document.getElementById('background-images');
+    const resetBtn = document.getElementById('reset-btn');
+    const addImageBtn = document.getElementById('add-image-btn');
+
+    // State
+    let selectedEventId = null;
+    let events = [];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeEvents();
+      renderEventList();
+    });
+
+    // Initialize events
+    function initializeEvents() {
+      const storedEvents = localStorage.getItem(EVENTS_KEY);
+      if (storedEvents) {
+        events = JSON.parse(storedEvents);
+      } else {
+        events = sampleEvents;
+        localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+      }
+    }
+
+    // Render event list
+    function renderEventList() {
+      eventList.innerHTML = '';
+      
+      events.forEach(event => {
+        const card = document.createElement('ion-card');
+        card.className = `event-card ${event.id === selectedEventId ? 'selected' : ''}`;
+        card.setAttribute('button', 'true');
+        card.onclick = () => selectEvent(event.id);
+        
+        card.innerHTML = `
+          <ion-card-header>
+            <ion-card-title>${event.title}</ion-card-title>
+            <ion-badge color="${getStatusColor(event.status)}">${event.status}</ion-badge>
+          </ion-card-header>
+          <ion-card-content>
+            <p>${event.eventType}</p>
+            <p>${new Date(event.startDate).toLocaleDateString()}</p>
+          </ion-card-content>
+        `;
+        
+        eventList.appendChild(card);
+      });
+      
+      if (selectedEventId) {
+        renderEventDetails(selectedEventId);
+      } else if (events.length > 0) {
+        selectEvent(events[0].id);
+      }
+    }
+
+    // Select event
+    function selectEvent(eventId) {
+      selectedEventId = eventId;
+      renderEventList();
+      renderEventDetails(eventId);
+    }
+
+    // Render event details
+    function renderEventDetails(eventId) {
+      const event = events.find(e => e.id === eventId);
+      if (!event) return;
+      
+      eventInfo.innerHTML = `
+        <ion-item>
+          <ion-label>
+            <h2>${event.title}</h2>
+            <p>${event.description}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <strong>Type:</strong> ${event.eventType}
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <strong>Location:</strong> ${event.location}
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <strong>Date:</strong> ${new Date(event.startDate).toLocaleDateString()} - ${new Date(event.endDate).toLocaleDateString()}
+          </ion-label>
+        </ion-item>
+      `;
+      
+      renderBackgroundImages(event);
+    }
+
+    // Render background images
+    function renderBackgroundImages(event) {
+      backgroundImages.innerHTML = '';
+      
+      if (!event.backgroundImages || event.backgroundImages.length === 0) {
+        backgroundImages.innerHTML = '<p>No background images</p>';
+        return;
+      }
+      
+      event.backgroundImages.forEach((imageUrl, index) => {
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'background-image';
+        
+        imageDiv.innerHTML = `
+          <img src="${imageUrl}" alt="Background ${index + 1}">
+          ${event.imageUrl === imageUrl ? '<div class="active-indicator">Primary</div>' : ''}
+        `;
+        
+        backgroundImages.appendChild(imageDiv);
+      });
+    }
+
+    // Get status color
+    function getStatusColor(status) {
+      switch (status) {
+        case 'Active': return 'success';
+        case 'Published': return 'primary';
+        case 'Draft': return 'medium';
+        case 'Completed': return 'dark';
+        default: return 'warning';
+      }
+    }
+
+    // Reset test data
+    resetBtn.addEventListener('click', () => {
+      localStorage.setItem(EVENTS_KEY, JSON.stringify(sampleEvents));
+      events = sampleEvents;
+      selectedEventId = null;
+      renderEventList();
+      
+      showToast('Test data reset successfully');
+    });
+
+    // Add image to selected event
+    addImageBtn.addEventListener('click', () => {
+      if (!selectedEventId) {
+        showToast('Please select an event first', 'warning');
+        return;
+      }
+      
+      const eventIndex = events.findIndex(e => e.id === selectedEventId);
+      if (eventIndex === -1) return;
+      
+      // Generate a random image URL
+      const randomId = Math.floor(Math.random() * 1000);
+      const newImageUrl = `https://source.unsplash.com/random/800x600/?art&${randomId}`;
+      
+      // Add the image to the event
+      if (!events[eventIndex].backgroundImages) {
+        events[eventIndex].backgroundImages = [];
+      }
+      
+      events[eventIndex].backgroundImages.push(newImageUrl);
+      
+      // If no primary image is set, set this as primary
+      if (!events[eventIndex].imageUrl) {
+        events[eventIndex].imageUrl = newImageUrl;
+      }
+      
+      // Save to localStorage
+      localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+      
+      // Re-render
+      renderEventDetails(selectedEventId);
+      
+      showToast('Image added successfully');
+    });
+
+    // Show toast message
+    function showToast(message, color = 'success') {
+      const toast = document.createElement('ion-toast');
+      toast.message = message;
+      toast.duration = 2000;
+      toast.position = 'bottom';
+      toast.color = color;
+      
+      document.body.appendChild(toast);
+      return toast.present();
+    }
+  </script>
+</body>
+</html>

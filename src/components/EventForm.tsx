@@ -49,9 +49,9 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
     location: '',
     eventType: 'Exhibition',
     status: 'Draft',
-    maxAttendees: undefined,
+    maxAttendees: 1, // Default to 1
     currentAttendees: 0,
-    ticketPrice: undefined,
+    ticketPrice: 0, // Default to 0
     isTicketed: false,
     featuredArtists: [],
     featuredArtworks: [],
@@ -61,7 +61,10 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
     contactEmail: '',
     contactPhone: '',
     specialInstructions: '',
-    isPublic: true
+    isPublic: true,
+    showItems: false, // Default to false
+    featuredItems: [],
+    backgroundImages: []
   });
 
   const [showToast, setShowToast] = useState(false);
@@ -95,9 +98,9 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
         location: '',
         eventType: 'Exhibition',
         status: 'Draft',
-        maxAttendees: undefined,
+        maxAttendees: 1, // Default to 1
         currentAttendees: 0,
-        ticketPrice: undefined,
+        ticketPrice: 0, // Default to 0
         isTicketed: false,
         featuredArtists: [],
         featuredArtworks: [],
@@ -107,7 +110,9 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
         contactEmail: 'events@gallery.com',
         contactPhone: '',
         specialInstructions: '',
-        isPublic: true
+        isPublic: true,
+        showItems: false, // Default to false
+        backgroundImages: []
       });
     }
     setErrors({});
@@ -179,9 +184,9 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
         location: formData.location!,
         eventType: formData.eventType!,
         status: formData.status!,
-        maxAttendees: formData.maxAttendees,
+        maxAttendees: formData.maxAttendees ?? 1,
         currentAttendees: formData.currentAttendees || 0,
-        ticketPrice: formData.isTicketed ? formData.ticketPrice : undefined,
+        ticketPrice: formData.ticketPrice ?? 0,
         isTicketed: formData.isTicketed || false,
         featuredArtists: formData.featuredArtists || [],
         featuredArtworks: formData.featuredArtworks || [],
@@ -192,18 +197,19 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
         contactEmail: formData.contactEmail!,
         contactPhone: formData.contactPhone,
         specialInstructions: formData.specialInstructions,
-        isPublic: formData.isPublic !== false
+        isPublic: formData.isPublic !== false,
+        showItems: formData.showItems ?? false,
+        backgroundImages: formData.backgroundImages || []
       };
-
-      if (event) {
-        // Update existing event
-        EventService.updateEvent(event.id, eventData);
-        setToastMessage('Event updated successfully!');
-      } else {
-        // Create new event
-        EventService.saveEvent(eventData);
-        setToastMessage('Event created successfully!');
-      }
+      // Convert required fields to string for backend compatibility
+      const eventDataForBackend = {
+        ...eventData,
+        maxAttendees: String(eventData.maxAttendees),
+        ticketPrice: String(eventData.ticketPrice),
+        showItems: eventData.showItems ? '1' : '0',
+      };
+      EventService.saveEvent(eventDataForBackend);
+      setToastMessage('Event created successfully!');
 
       setShowToast(true);
       onSave();
@@ -225,9 +231,9 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
       location: '',
       eventType: 'Exhibition',
       status: 'Draft',
-      maxAttendees: undefined,
+      maxAttendees: 1, // Default to 1
       currentAttendees: 0,
-      ticketPrice: undefined,
+      ticketPrice: 0, // Default to 0
       isTicketed: false,
       featuredArtists: [],
       featuredArtworks: [],
@@ -237,7 +243,9 @@ const EventForm: React.FC<EventFormProps> = ({ isOpen, onDidDismiss, event, onSa
       contactEmail: '',
       contactPhone: '',
       specialInstructions: '',
-      isPublic: true
+      isPublic: true,
+      showItems: false, // Default to false
+      backgroundImages: []
     });
     setErrors({});
     setNewArtist('');

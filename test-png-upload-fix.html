@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PNG Upload Fix Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    
+    .test-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+    
+    .test-controls {
+      margin-bottom: 15px;
+    }
+    
+    .test-results {
+      margin-top: 15px;
+      padding: 15px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      min-height: 100px;
+    }
+    
+    .preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .preview-image {
+      max-width: 200px;
+      max-height: 200px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 5px;
+      background-color: white;
+    }
+    
+    .success {
+      color: #27ae60;
+      font-weight: bold;
+    }
+    
+    .error {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+    
+    .warning {
+      color: #f39c12;
+      font-weight: bold;
+    }
+    
+    button {
+      padding: 8px 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+    
+    button:hover {
+      background-color: #2980b9;
+    }
+    
+    .log-entry {
+      margin-bottom: 5px;
+      font-family: monospace;
+      font-size: 13px;
+    }
+    
+    .data-url-info {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+      word-break: break-all;
+    }
+    
+    .image-info {
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    
+    .fix-applied {
+      background-color: #d5f5e3;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+      color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+  <h1>PNG Upload Fix Test</h1>
+  <p>This tool tests the PNG upload fix implementation and helps diagnose issues with PNG file uploads.</p>
+  
+  <div class="test-section">
+    <h2>1. Standard PNG Upload Test</h2>
+    <p>Tests basic PNG file upload functionality with the fix applied.</p>
+    
+    <div class="test-controls">
+      <input type="file" id="standardPngInput" accept=".png,image/png">
+      <button id="standardPngTest">Test Upload</button>
+    </div>
+    
+    <div class="test-results" id="standardPngResults">
+      <p>Upload a PNG file to test...</p>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>2. Problematic PNG Test</h2>
+    <p>Tests PNG files with incorrect MIME types or other issues.</p>
+    
+    <div class="test-controls">
+      <input type="file" id="problematicPngInput" accept="image/*">
+      <button id="problematicPngTest">Test Upload</button>
+    </div>
+    
+    <div class="test-results" id="problematicPngResults">
+      <p>Upload a problematic PNG file to test...</p>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>3. Large PNG Compression Test</h2>
+    <p>Tests compression of large PNG files.</p>
+    
+    <div class="test-controls">
+      <input type="file" id="largePngInput" accept=".png,image/png">
+      <button id="largePngTest">Test Compression</button>
+    </div>
+    
+    <div class="test-results" id="largePngResults">
+      <p>Upload a large PNG file to test compression...</p>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>4. Fallback Conversion Test</h2>
+    <p>Tests the canvas-based fallback conversion method.</p>
+    
+    <div class="test-controls">
+      <input type="file" id="fallbackPngInput" accept=".png,image/png">
+      <button id="fallbackPngTest">Test Fallback</button>
+    </div>
+    
+    <div class="test-results" id="fallbackPngResults">
+      <p>Upload a PNG file to test fallback conversion...</p>
+    </div>
+  </div>
+  
+  <script>
+    // PNG Upload Fix Implementation
+    const PngUploadFix = {
+      // Fix MIME type for PNG files
+      fixPngMimeType(file) {
+        if (file.name.toLowerCase().endsWith('.png') && file.type !== 'image/png') {
+          console.log('Fixing PNG MIME type from', file.type, 'to image/png');
+          
+          // Create a new File object with corrected MIME type
+          return new File([file], file.name, { type: 'image/png' });
+        }
+        return file;
+      },
+      
+      // Enhanced file to data URL with better PNG handling
+      fileToDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === 'string') {
+              // Fix MIME type if needed for PNG files
+              if (file.name.toLowerCase().endsWith('.png') && !reader.result.startsWith('data:image/png')) {
+                console.log('Fixing PNG MIME type in data URL');
+                const fixedDataUrl = reader.result.replace(/^data:.*?;base64,/, 'data:image/png;base64,');
+                resolve({
+                  dataUrl: fixedDataUrl,
+                  fixed: true
+                });
+              } else {
+                resolve({
+                  dataUrl: reader.result,
+                  fixed: false
+                });
+              }
+            } else {
+              reject(new Error('Failed to read file'));
+            }
+          };
+          reader.onerror = () => reject(new Error('Failed to read file'));
+          reader.readAsDataURL(file);
+        });
+      },
+      
+      // Fallback method for PNG conversion using canvas
+      pngFallbackConversion(file) {
+        return new Promise((resolve, reject) => {
+          try {
+            const objectUrl = URL.createObjectURL(file);
+            
+            const img = new Image();
+            img.onload = () => {
+              try {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                  URL.revokeObjectURL(objectUrl);
+                  reject(new Error('Failed to get canvas context'));
+                  return;
+                }
+                
+                ctx.drawImage(img, 0, 0);
+                
+                // Get data URL from canvas with explicit PNG format
+                const canvasDataUrl = canvas.toDataURL('image/png');
+                URL.revokeObjectURL(objectUrl);
+                resolve(canvasDataUrl);
+              } catch (canvasError) {
+                URL.revokeObjectURL(objectUrl);
+                reject(canvasError);
+              }
+            };
+            
+            img.onerror = (imgError) => {
+              URL.revokeObjectURL(objectUrl);
+              reject(new Error('Failed to load image from object URL'));
+            };
+            
+            img.src = objectUrl;
+          } catch (error) {
+            reject(error);
+          }
+        });
+      },
+      
+      // Compress PNG using canvas
+      compressPng(dataUrl, quality = 0.8) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              canvas.width = img.width;
+              canvas.height = img.height;
+              const ctx = canvas.getContext('2d');
+              if (!ctx) {
+                reject(new Error('Failed to get canvas context'));
+                return;
+              }
+              
+              ctx.drawImage(img, 0, 0);
+              
+              // Get compressed data URL from canvas
+              const compressedDataUrl = canvas.toDataURL('image/png', quality);
+              
+              // Calculate compression stats
+              const originalSize = dataUrl.length;
+              const compressedSize = compressedDataUrl.length;
+              const compressionRatio = (compressedSize / originalSize) * 100;
+              
+              resolve({
+                dataUrl: compressedDataUrl,
+                originalSize,
+                compressedSize,
+                compressionRatio
+              });
+            } catch (canvasError) {
+              reject(canvasError);
+            }
+          };
+          
+          img.onerror = (imgError) => {
+            reject(new Error('Failed to load image for compression'));
+          };
+          
+          img.src = dataUrl;
+        });
+      }
+    };
+    
+    // Helper functions for the test UI
+    function appendLog(container, message, className = '') {
+      const logEntry = document.createElement('div');
+      logEntry.className = `log-entry ${className}`;
+      logEntry.textContent = message;
+      container.appendChild(logEntry);
+    }
+    
+    function appendImage(container, dataUrl, info = '') {
+      const imgContainer = document.createElement('div');
+      imgContainer.style.display = 'inline-block';
+      imgContainer.style.margin = '10px';
+      imgContainer.style.textAlign = 'center';
+      
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      img.className = 'preview-image';
+      imgContainer.appendChild(img);
+      
+      if (info) {
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'image-info';
+        infoDiv.innerHTML = info;
+        imgContainer.appendChild(infoDiv);
+      }
+      
+      container.appendChild(imgContainer);
+      return img;
+    }
+    
+    function formatBytes(bytes, decimals = 2) {
+      if (bytes === 0) return '0 Bytes';
+      
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+    
+    function truncateDataUrl(dataUrl) {
+      if (dataUrl.length <= 50) return dataUrl;
+      return dataUrl.substring(0, 47) + '...';
+    }
+    
+    // Test 1: Standard PNG Upload
+    document.getElementById('standardPngTest').addEventListener('click', async () => {
+      const fileInput = document.getElementById('standardPngInput');
+      const resultsContainer = document.getElementById('standardPngResults');
+      resultsContainer.innerHTML = '';
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        appendLog(resultsContainer, 'Please select a PNG file first.', 'error');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      appendLog(resultsContainer, `Processing file: ${file.name} (${file.type}, ${formatBytes(file.size)})`);
+      
+      try {
+        // Apply PNG MIME type fix if needed
+        const fixedFile = PngUploadFix.fixPngMimeType(file);
+        if (fixedFile !== file) {
+          appendLog(resultsContainer, `Fixed PNG MIME type from ${file.type} to ${fixedFile.type}`, 'success');
+        }
+        
+        // Convert to data URL
+        const { dataUrl, fixed } = await PngUploadFix.fileToDataUrl(fixedFile);
+        
+        if (fixed) {
+          appendLog(resultsContainer, 'Fixed incorrect data URL MIME type', 'success');
+        }
+        
+        appendLog(resultsContainer, `Data URL size: ${formatBytes(dataUrl.length)}`);
+        appendLog(resultsContainer, `Data URL: ${truncateDataUrl(dataUrl)}`, 'data-url-info');
+        
+        // Display the image
+        appendImage(resultsContainer, dataUrl, 'Standard Conversion');
+        
+        appendLog(resultsContainer, 'PNG upload test completed successfully!', 'success');
+      } catch (error) {
+        appendLog(resultsContainer, `Error: ${error.message}`, 'error');
+      }
+    });
+    
+    // Test 2: Problematic PNG Test
+    document.getElementById('problematicPngTest').addEventListener('click', async () => {
+      const fileInput = document.getElementById('problematicPngInput');
+      const resultsContainer = document.getElementById('problematicPngResults');
+      resultsContainer.innerHTML = '';
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        appendLog(resultsContainer, 'Please select a file first.', 'error');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      appendLog(resultsContainer, `Processing file: ${file.name} (${file.type}, ${formatBytes(file.size)})`);
+      
+      const isPNG = file.name.toLowerCase().endsWith('.png');
+      if (!isPNG) {
+        appendLog(resultsContainer, 'Warning: File does not have .png extension. Fix may not apply.', 'warning');
+      }
+      
+      try {
+        // Try standard conversion first
+        appendLog(resultsContainer, 'Attempting standard conversion...');
+        try {
+          const { dataUrl, fixed } = await PngUploadFix.fileToDataUrl(file);
+          
+          if (fixed) {
+            appendLog(resultsContainer, 'Fixed incorrect data URL MIME type', 'success');
+          }
+          
+          appendLog(resultsContainer, `Standard conversion succeeded. Data URL size: ${formatBytes(dataUrl.length)}`);
+          appendImage(resultsContainer, dataUrl, 'Standard Conversion' + (fixed ? ' <span class="fix-applied">(Fix Applied)</span>' : ''));
+        } catch (standardError) {
+          appendLog(resultsContainer, `Standard conversion failed: ${standardError.message}`, 'error');
+          
+          // Try fallback conversion
+          appendLog(resultsContainer, 'Attempting fallback conversion...');
+          const fallbackDataUrl = await PngUploadFix.pngFallbackConversion(file);
+          appendLog(resultsContainer, `Fallback conversion succeeded. Data URL size: ${formatBytes(fallbackDataUrl.length)}`, 'success');
+          appendImage(resultsContainer, fallbackDataUrl, 'Fallback Conversion <span class="fix-applied">(Fix Applied)</span>');
+        }
+        
+        appendLog(resultsContainer, 'Problematic PNG test completed!', 'success');
+      } catch (error) {
+        appendLog(resultsContainer, `All conversion methods failed: ${error.message}`, 'error');
+      }
+    });
+    
+    // Test 3: Large PNG Compression
+    document.getElementById('largePngTest').addEventListener('click', async () => {
+      const fileInput = document.getElementById('largePngInput');
+      const resultsContainer = document.getElementById('largePngResults');
+      resultsContainer.innerHTML = '';
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        appendLog(resultsContainer, 'Please select a PNG file first.', 'error');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      appendLog(resultsContainer, `Processing file: ${file.name} (${file.type}, ${formatBytes(file.size)})`);
+      
+      try {
+        // Convert to data URL
+        const { dataUrl } = await PngUploadFix.fileToDataUrl(file);
+        appendLog(resultsContainer, `Original data URL size: ${formatBytes(dataUrl.length)}`);
+        
+        // Display original image
+        appendImage(resultsContainer, dataUrl, 'Original Image');
+        
+        // Compress with different quality levels
+        const qualityLevels = [0.8, 0.6, 0.4];
+        
+        for (const quality of qualityLevels) {
+          appendLog(resultsContainer, `Compressing with quality: ${quality}...`);
+          const { dataUrl: compressedDataUrl, originalSize, compressedSize, compressionRatio } = 
+            await PngUploadFix.compressPng(dataUrl, quality);
+          
+          appendLog(
+            resultsContainer, 
+            `Compressed to ${formatBytes(compressedSize)} (${compressionRatio.toFixed(1)}% of original)`,
+            compressionRatio < 80 ? 'success' : ''
+          );
+          
+          appendImage(
+            resultsContainer, 
+            compressedDataUrl, 
+            `Quality: ${quality}<br>Size: ${formatBytes(compressedSize)}<br>Ratio: ${compressionRatio.toFixed(1)}%`
+          );
+        }
+        
+        appendLog(resultsContainer, 'Compression test completed!', 'success');
+      } catch (error) {
+        appendLog(resultsContainer, `Error: ${error.message}`, 'error');
+      }
+    });
+    
+    // Test 4: Fallback Conversion
+    document.getElementById('fallbackPngTest').addEventListener('click', async () => {
+      const fileInput = document.getElementById('fallbackPngInput');
+      const resultsContainer = document.getElementById('fallbackPngResults');
+      resultsContainer.innerHTML = '';
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        appendLog(resultsContainer, 'Please select a PNG file first.', 'error');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      appendLog(resultsContainer, `Processing file: ${file.name} (${file.type}, ${formatBytes(file.size)})`);
+      
+      try {
+        // Standard conversion
+        appendLog(resultsContainer, 'Performing standard conversion...');
+        const { dataUrl: standardDataUrl } = await PngUploadFix.fileToDataUrl(file);
+        appendLog(resultsContainer, `Standard conversion size: ${formatBytes(standardDataUrl.length)}`);
+        appendImage(resultsContainer, standardDataUrl, 'Standard Conversion');
+        
+        // Fallback conversion
+        appendLog(resultsContainer, 'Performing fallback conversion...');
+        const fallbackDataUrl = await PngUploadFix.pngFallbackConversion(file);
+        appendLog(resultsContainer, `Fallback conversion size: ${formatBytes(fallbackDataUrl.length)}`);
+        appendImage(resultsContainer, fallbackDataUrl, 'Fallback Conversion');
+        
+        // Compare results
+        const standardSize = standardDataUrl.length;
+        const fallbackSize = fallbackDataUrl.length;
+        const sizeDiff = ((fallbackSize - standardSize) / standardSize) * 100;
+        
+        if (Math.abs(sizeDiff) < 1) {
+          appendLog(resultsContainer, 'Both methods produced similar results.', 'success');
+        } else if (sizeDiff < 0) {
+          appendLog(resultsContainer, `Fallback method produced ${Math.abs(sizeDiff).toFixed(1)}% smaller file.`, 'success');
+        } else {
+          appendLog(resultsContainer, `Fallback method produced ${sizeDiff.toFixed(1)}% larger file.`, 'warning');
+        }
+        
+        appendLog(resultsContainer, 'Fallback test completed!', 'success');
+      } catch (error) {
+        appendLog(resultsContainer, `Error: ${error.message}`, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

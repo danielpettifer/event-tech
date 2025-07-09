@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Default Event Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    
+    .section h2 {
+      margin-top: 0;
+      color: #444;
+    }
+    
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    
+    button:hover {
+      background-color: #0069d9;
+    }
+    
+    .status {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+    
+    .info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    pre {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+    
+    .image-preview {
+      max-width: 100%;
+      height: auto;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .item-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .item-card {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    
+    .item-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .item-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+    
+    .item-card-content {
+      padding: 10px;
+    }
+    
+    .item-card-title {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .item-card-artist {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .checkbox-group {
+      margin: 10px 0;
+    }
+    
+    .checkbox-group label {
+      margin-right: 15px;
+      cursor: pointer;
+    }
+    
+    .checkbox-group input {
+      margin-right: 5px;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-bottom: none;
+      margin-bottom: -1px;
+    }
+    
+    .tab.active {
+      background-color: white;
+      border-color: #ddd;
+      border-radius: 4px 4px 0 0;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Default Event Test</h1>
+  <p>This tool helps create and test a default event with all necessary elements: background images, full description, carousel items, etc.</p>
+  
+  <div class="tabs">
+    <div class="tab active" data-tab="create">Create Event</div>
+    <div class="tab" data-tab="test">Test Elements</div>
+    <div class="tab" data-tab="view">View Event</div>
+  </div>
+  
+  <div class="tab-content active" id="create">
+    <div class="section">
+      <h2>Create Default Event</h2>
+      <p>This will create a comprehensive default event with background images, featured items, and a detailed description.</p>
+      
+      <div class="checkbox-group">
+        <label><input type="checkbox" id="includeBackgroundImages" checked> Include Background Images</label>
+        <label><input type="checkbox" id="includeFeaturedItems" checked> Include Featured Items</label>
+        <label><input type="checkbox" id="showItemsCarousel" checked> Show Items Carousel</label>
+      </div>
+      
+      <button id="createDefaultEventBtn">Create Default Event</button>
+      <button id="resetSettingsBtn">Reset Settings</button>
+      
+      <div id="createStatus" class="status" style="display: none;"></div>
+      
+      <div id="eventPreview" style="display: none;">
+        <h3>Event Preview:</h3>
+        <pre id="eventJson"></pre>
+      </div>
+    </div>
+  </div>
+  
+  <div class="tab-content" id="test">
+    <div class="section">
+      <h2>Test Event Elements</h2>
+      <p>Test various elements of the event display.</p>
+      
+      <h3>Background Images</h3>
+      <button id="testBackgroundImagesBtn">Test Background Images</button>
+      <div id="backgroundImagesStatus" class="status" style="display: none;"></div>
+      <div id="backgroundImagesPreview" style="display: none;"></div>
+      
+      <h3>Items Carousel</h3>
+      <button id="testItemsCarouselBtn">Test Items Carousel</button>
+      <button id="enableCarouselBtn">Enable Carousel</button>
+      <button id="disableCarouselBtn">Disable Carousel</button>
+      <div id="carouselStatus" class="status" style="display: none;"></div>
+      <div id="carouselPreview" style="display: none;"></div>
+      
+      <h3>Event Description</h3>
+      <button id="testDescriptionBtn">Test Description</button>
+      <div id="descriptionStatus" class="status" style="display: none;"></div>
+      <div id="descriptionPreview" style="display: none;"></div>
+    </div>
+  </div>
+  
+  <div class="tab-content" id="view">
+    <div class="section">
+      <h2>View Current Event</h2>
+      <button id="viewCurrentEventBtn">View Current Event</button>
+      <button id="viewItemsBtn">View Featured Items</button>
+      <button id="openVisitorLandingBtn">Open Visitor Landing</button>
+      
+      <div id="viewStatus" class="status" style="display: none;"></div>
+      <div id="currentEventPreview" style="display: none;"></div>
+      <div id="featuredItemsPreview" style="display: none;"></div>
+    </div>
+  </div>
+  
+  <script>
+    // Tab functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        tab.classList.add('active');
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+    
+    // Helper functions
+    function showStatus(elementId, message, type) {
+      const statusElement = document.getElementById(elementId);
+      statusElement.textContent = message;
+      statusElement.className = `status ${type}`;
+      statusElement.style.display = 'block';
+      
+      // Auto-hide after 8 seconds for success messages
+      if (type === 'success') {
+        setTimeout(() => {
+          statusElement.style.display = 'none';
+        }, 8000);
+      }
+    }
+    
+    function formatJson(obj) {
+      return JSON.stringify(obj, null, 2);
+    }
+    
+    // Create Default Event
+    document.getElementById('createDefaultEventBtn').addEventListener('click', () => {
+      const includeBackgroundImages = document.getElementById('includeBackgroundImages').checked;
+      const includeFeaturedItems = document.getElementById('includeFeaturedItems').checked;
+      const showItemsCarousel = document.getElementById('showItemsCarousel').checked;
+      
+      try {
+        // Initialize sample data if needed
+        if (typeof ItemService === 'undefined') {
+          eval(`
+            class ItemService {
+              static initializeSampleData() {
+                console.log('Initializing sample items data');
+                // Implementation would be in the actual ItemService
+              }
+              
+              static getAllItems() {
+                return JSON.parse(localStorage.getItem('gallery_items') || '[]');
+              }
+            }
+            
+            class EventService {
+              static initializeSampleData() {
+                console.log('Initializing sample events data');
+                // Implementation would be in the actual EventService
+              }
+              
+              static getAllEvents() {
+                return JSON.parse(localStorage.getItem('gallery_events') || '[]');
+              }
+              
+              static saveEvent(eventData) {
+                const events = this.getAllEvents();
+                const newEvent = {
+                  ...eventData,
+                  id: 'event_' + Date.now(),
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString()
+                };
+                
+                events.push(newEvent);
+                localStorage.setItem('gallery_events', JSON.stringify(events));
+                return newEvent;
+              }
+            }
+            
+            class GallerySettingsService {
+              static updateActiveEvent(eventId) {
+                const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+                settings.activeEventId = eventId;
+                settings.updatedAt = new Date().toISOString();
+                localStorage.setItem('gallery_settings', JSON.stringify(settings));
+                return settings;
+              }
+              
+              static updateShowItemCards(show) {
+                const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+                settings.showItemCards = show;
+                settings.updatedAt = new Date().toISOString();
+                localStorage.setItem('gallery_settings', JSON.stringify(settings));
+                localStorage.setItem('gallery_show_items_preference', show.toString());
+                return settings;
+              }
+            }
+          `);
+        }
+        
+        // Initialize sample data
+        ItemService.initializeSampleData();
+        EventService.initializeSampleData();
+        
+        // Get all items for featured items
+        const allItems = ItemService.getAllItems();
+        
+        // Select featured items (first 4 items)
+        const featuredItemIds = includeFeaturedItems 
+          ? allItems.slice(0, 4).map(item => item.id) 
+          : [];
+        
+        // Create background images array
+        const backgroundImages = includeBackgroundImages 
+          ? [
+              "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=1920&h=1080&fit=crop",
+              "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop",
+              "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=1920&h=1080&fit=crop",
+              "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1920&h=1080&fit=crop"
+            ]
+          : [];
+        
+        // Create the default event
+        const defaultEvent = {
+          title: "Comprehensive Art Exhibition: Masters Through Time",
+          description: "Experience an extraordinary journey through art history with our most ambitious exhibition to date. 'Masters Through Time' brings together iconic works spanning multiple centuries and artistic movements, from Renaissance masterpieces to contemporary innovations.\n\nThis carefully curated collection showcases the evolution of artistic expression, highlighting the technical brilliance, emotional depth, and cultural significance of each era. Visitors will discover connections between seemingly disparate artistic movements and gain insight into how each generation of artists built upon, reacted to, or revolutionized what came before.\n\nFeaturing works by renowned artists including Van Gogh, Hokusai, Vermeer, Monet, Botticelli, and contemporary masters, this exhibition offers a unique opportunity to witness the dialogue between different periods and styles in one comprehensive experience.\n\nAudio guides are available in multiple languages, and our knowledgeable docents offer guided tours twice daily. Photography is permitted without flash.",
+          startDate: "2025-01-15",
+          endDate: "2025-05-15",
+          startTime: "10:00",
+          endTime: "18:00",
+          location: "Main Gallery - All Floors",
+          eventType: "Exhibition",
+          status: "Active",
+          maxAttendees: 300,
+          currentAttendees: 0,
+          ticketPrice: 15,
+          isTicketed: true,
+          featuredArtists: ["Vincent van Gogh", "Katsushika Hokusai", "Johannes Vermeer", "Claude Monet", "Sandro Botticelli"],
+          featuredArtworks: ["The Starry Night", "The Great Wave off Kanagawa", "Girl with a Pearl Earring", "Water Lilies", "The Birth of Venus"],
+          featuredItems: featuredItemIds,
+          showItems: showItemsCarousel,
+          tags: ["Masterpieces", "Historical", "Multi-Period", "Featured Exhibition", "International Artists", "Classical Art"],
+          contactEmail: "exhibitions@gallery.com",
+          contactPhone: "+44 20 7123 4567",
+          specialInstructions: "Audio guides available in multiple languages. Photography permitted without flash.",
+          isPublic: true,
+          imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&h=600&fit=crop",
+          images: [
+            "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&h=600&fit=crop",
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
+            "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=800&h=600&fit=crop"
+          ],
+          backgroundImages: backgroundImages
+        };
+        
+        // Save the event
+        const savedEvent = EventService.saveEvent(defaultEvent);
+        
+        // Set as active event
+        GallerySettingsService.updateActiveEvent(savedEvent.id);
+        
+        // Set show items preference
+        GallerySettingsService.updateShowItemCards(showItemsCarousel);
+        
+        // Show success message
+        showStatus('createStatus', 'Default event created successfully!', 'success');
+        
+        // Show event preview
+        document.getElementById('eventJson').textContent = formatJson(savedEvent);
+        document.getElementById('eventPreview').style.display = 'block';
+        
+        console.log('Default event created:', savedEvent);
+        
+      } catch (error) {
+        console.error('Error creating default event:', error);
+        showStatus('createStatus', `Error creating default event: ${error.message}`, 'error');
+      }
+    });
+    
+    // Reset Settings
+    document.getElementById('resetSettingsBtn').addEventListener('click', () => {
+      try {
+        localStorage.removeItem('gallery_settings');
+        localStorage.removeItem('gallery_show_items_preference');
+        
+        showStatus('createStatus', 'Settings reset successfully!', 'success');
+      } catch (error) {
+        console.error('Error resetting settings:', error);
+        showStatus('createStatus', `Error resetting settings: ${error.message}`, 'error');
+      }
+    });
+    
+    // Test Background Images
+    document.getElementById('testBackgroundImagesBtn').addEventListener('click', () => {
+      try {
+        // Get active event
+        const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+        const activeEventId = settings.activeEventId;
+        
+        if (!activeEventId) {
+          showStatus('backgroundImagesStatus', 'No active event found. Please create a default event first.', 'warning');
+          return;
+        }
+        
+        const events = JSON.parse(localStorage.getItem('gallery_events') || '[]');
+        const activeEvent = events.find(event => event.id === activeEventId);
+        
+        if (!activeEvent) {
+          showStatus('backgroundImagesStatus', 'Active event not found in storage.', 'error');
+          return;
+        }
+        
+        const backgroundImages = activeEvent.backgroundImages || [];
+        
+        if (backgroundImages.length === 0) {
+          showStatus('backgroundImagesStatus', 'No background images found for this event.', 'warning');
+          return;
+        }
+        
+        // Display background images
+        const previewElement = document.getElementById('backgroundImagesPreview');
+        previewElement.innerHTML = '';
+        previewElement.style.display = 'block';
+        
+        const heading = document.createElement('h3');
+        heading.textContent = `Background Images (${backgroundImages.length})`;
+        previewElement.appendChild(heading);
+        
+        const imageGrid = document.createElement('div');
+        imageGrid.className = 'item-grid';
+        
+        backgroundImages.forEach((imageUrl, index) => {
+          const imageCard = document.createElement('div');
+          imageCard.className = 'item-card';
+          
+          const image = document.createElement('img');
+          image.src = imageUrl;
+          image.alt = `Background Image ${index + 1}`;
+          
+          const content = document.createElement('div');
+          content.className = 'item-card-content';
+          
+          const title = document.createElement('p');
+          title.className = 'item-card-title';
+          title.textContent = `Background ${index + 1}`;
+          
+          content.appendChild(title);
+          imageCard.appendChild(image);
+          imageCard.appendChild(content);
+          imageGrid.appendChild(imageCard);
+        });
+        
+        previewElement.appendChild(imageGrid);
+        
+        showStatus('backgroundImagesStatus', `Found ${backgroundImages.length} background images.`, 'success');
+        
+      } catch (error) {
+        console.error('Error testing background images:', error);
+        showStatus('backgroundImagesStatus', `Error testing background images: ${error.message}`, 'error');
+      }
+    });
+    
+    // Test Items Carousel
+    document.getElementById('testItemsCarouselBtn').addEventListener('click', () => {
+      try {
+        // Get active event
+        const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+        const activeEventId = settings.activeEventId;
+        
+        if (!activeEventId) {
+          showStatus('carouselStatus', 'No active event found. Please create a default event first.', 'warning');
+          return;
+        }
+        
+        const events = JSON.parse(localStorage.getItem('gallery_events') || '[]');
+        const activeEvent = events.find(event => event.id === activeEventId);
+        
+        if (!activeEvent) {
+          showStatus('carouselStatus', 'Active event not found in storage.', 'error');
+          return;
+        }
+        
+        const featuredItemIds = activeEvent.featuredItems || [];
+        const showItems = activeEvent.showItems !== false && settings.showItemCards !== false;
+        
+        if (featuredItemIds.length === 0) {
+          showStatus('carouselStatus', 'No featured items found for this event.', 'warning');
+          return;
+        }
+        
+        if (!showItems) {
+          showStatus('carouselStatus', 'Items carousel is currently disabled.', 'warning');
+          return;
+        }
+        
+        // Get items
+        const allItems = JSON.parse(localStorage.getItem('gallery_items') || '[]');
+        const featuredItems = allItems.filter(item => featuredItemIds.includes(item.id));
+        
+        if (featuredItems.length === 0) {
+          showStatus('carouselStatus', 'Featured items not found in storage.', 'error');
+          return;
+        }
+        
+        // Display featured items
+        const previewElement = document.getElementById('carouselPreview');
+        previewElement.innerHTML = '';
+        previewElement.style.display = 'block';
+        
+        const heading = document.createElement('h3');
+        heading.textContent = `Featured Items (${featuredItems.length})`;
+        previewElement.appendChild(heading);
+        
+        const itemGrid = document.createElement('div');
+        itemGrid.className = 'item-grid';
+        
+        featuredItems.forEach(item => {
+          const itemCard = document.createElement('div');
+          itemCard.className = 'item-card';
+          
+          const image = document.createElement('img');
+          image.src = item.thumbnailImage || item.images[0];
+          image.alt = item.title;
+          
+          const content = document.createElement('div');
+          content.className = 'item-card-content';
+          
+          const title = document.createElement('p');
+          title.className = 'item-card-title';
+          title.textContent = item.title;
+          
+          const artist = document.createElement('p');
+          artist.className = 'item-card-artist';
+          artist.textContent = item.artist;
+          
+          content.appendChild(title);
+          content.appendChild(artist);
+          itemCard.appendChild(image);
+          itemCard.appendChild(content);
+          itemGrid.appendChild(itemCard);
+        });
+        
+        previewElement.appendChild(itemGrid);
+        
+        showStatus('carouselStatus', `Found ${featuredItems.length} featured items. Carousel is ${showItems ? 'enabled' : 'disabled'}.`, 'success');
+        
+      } catch (error) {
+        console.error('Error testing items carousel:', error);
+        showStatus('carouselStatus', `Error testing items carousel: ${error.message}`, 'error');
+      }
+    });
+    
+    // Enable Carousel
+    document.getElementById('enableCarouselBtn').addEventListener('click', () => {
+      try {
+        // Get active event
+        const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+        const activeEventId = settings.activeEventId;
+        
+        if (!activeEventId) {
+          showStatus('carouselStatus', 'No active event found. Please create a default event first.', 'warning');
+          return;
+        }
+        
+        const events = JSON.parse(localStorage.getItem('gallery_events') || '[]');
+        const eventIndex = events.findIndex(event => event.id === activeEventId);
+        
+        if (eventIndex === -1) {
+          showStatus('carouselStatus', 'Active event not found in storage.', 'error');
+          return;
+        }
+        
+        // Update event
+        events[eventIndex].showItems = true;
+        localStorage.setItem('gallery_events', JSON.stringify(events));
+        
+        // Update settings
+        settings.showItemCards = true;
+        localStorage.setItem('gallery_settings', JSON.stringify(settings));
+        localStorage.setItem('gallery_show_items_preference', 'true');
+        
+        showStatus('carouselStatus', 'Items carousel enabled successfully!', 'success');
+        
+      } catch (error) {
+        console.error('Error enabling carousel:', error);
+        showStatus('carouselStatus', `Error enabling carousel: ${error.message}`, 'error');
+      }
+    });
+    
+    // Disable Carousel
+    document.getElementById('disableCarouselBtn').addEventListener('click', () => {
+      try {
+        // Get active event
+        const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+        const activeEventId = settings.activeEventId;
+        
+        if (!activeEventId) {
+          showStatus('carouselStatus', 'No active event found. Please create a default event first.', 'warning');
+          return;
+        }
+        
+        const events = JSON.parse(localStorage.getItem('gallery_events') || '[]');
+        const eventIndex = events.findIndex(event => event.id === activeEventId);
+        
+        if (eventIndex === -1) {
+          showStatus('carouselStatus', 'Active event not found in storage.', 'error');
+          return;
+        }
+        
+        // Update event
+        events[eventIndex].showItems = false;
+        localStorage.setItem('gallery_events', JSON.stringify(events));
+        
+        // Update settings
+        settings.showItemCards = false;
+        localStorage.setItem('gallery_settings', JSON.stringify(settings));
+        localStorage.setItem('gallery_show_items_preference', 'false');
+        
+        showStatus('carouselStatus', 'Items carousel disabled successfully!', 'success');
+        
+      } catch (error) {
+        console.error('Error disabling carousel:', error);
+        showStatus('carouselStatus', `Error disabling carousel: ${error.message}`, 'error');
+      }
+    });
+    
+    // Test Description
+    document.getElementById('testDescriptionBtn').addEventListener('click', () => {
+      try {
+        // Get active event
+        const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+        const activeEventId = settings.activeEventId;
+        
+        if (!activeEventId) {
+          showStatus('descriptionStatus', 'No active event found. Please create a default event first.', 'warning');
+          return;
+        }
+        
+        const events = JSON.parse(localStorage.getItem('gallery_events') || '[]');
+        const activeEvent = events.find(event => event.id === activeEventId);
+        
+        if (!activeEvent) {
+          showStatus('descriptionStatus', 'Active event not found in storage.', 'error');
+          return;
+        }
+        
+        const description = activeEvent.description || '';
+        
+        if (!description) {
+          showStatus('descriptionStatus', 'No description found for this event.', 'warning');
+          return;
+        }
+        
+        // Display description
+        const previewElement = document.getElementById('descriptionPreview');
+        previewElement.innerHTML = '';
+        previewElement.style.display = 'block';
+        
+        const heading = document.createElement('h3');
+        heading.textContent = 'Event Description';
+        previewElement.appendChild(heading);
+        
+        const descriptionElement = document.createElement('div');
+        descriptionElement.className = 'section';
+        descriptionElement.style.whiteSpace = 'pre-line';
+        descriptionElement.textContent = description;
+        
+        previewElement.appendChild(descriptionElement);
+        
+        showStatus('descriptionStatus', 'Event description loaded successfully!', 'success');
+        
+      } catch (error) {
+        console.error('Error testing description:', error);
+        showStatus('descriptionStatus', `Error testing description: ${error.message}`, 'error');
+      }
+    });
+    
+    // View Current Event
+    document.getElementById('viewCurrentEventBtn').addEventListener('click', () => {
+      try {
+        // Get active event
+        const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+        const activeEventId = settings.activeEventId;
+        
+        if (!activeEventId) {
+          showStatus('viewStatus', 'No active event found. Please create a default event first.', 'warning');
+          return;
+        }
+        
+        const events = JSON.parse(localStorage.getItem('gallery_events') || '[]');
+        const activeEvent = events.find(event => event.id === activeEventId);
+        
+        if (!activeEvent) {
+          showStatus('viewStatus', 'Active event not found in storage.', 'error');
+          return;
+        }
+        
+        // Display event
+        const previewElement = document.getElementById('currentEventPreview');
+        previewElement.innerHTML = '';
+        previewElement.style.display = 'block';
+        
+        const heading = document.createElement('h3');
+        heading.textContent = 'Current Active Event';
+        previewElement.appendChild(heading);
+        
+        const eventJson = document.createElement('pre');
+        eventJson.textContent = formatJson(activeEvent);
+        
+        previewElement.appendChild(eventJson);
+        
+        showStatus('viewStatus', 'Current event loaded successfully!', 'success');
+        
+      } catch (error) {
+        console.error('Error viewing current event:', error);
+        showStatus('viewStatus', `Error viewing current event: ${error.message}`, 'error');
+      }
+    });
+    
+    // View Featured Items
+    document.getElementById('viewItemsBtn').addEventListener('click', () => {
+      try {
+        // Get active event
+        const settings = JSON.parse(localStorage.getItem('gallery_settings') || '{}');
+        const activeEventId = settings.activeEventId;
+        
+        if (!activeEventId) {
+          showStatus('viewStatus', 'No active event found. Please create a default event first.', 'warning');
+          return;
+        }
+        
+        const events = JSON.parse(localStorage.getItem('gallery_events') || '[]');
+        const activeEvent = events.find(event => event.id === activeEventId);
+        
+        if (!activeEvent) {
+          showStatus('viewStatus', 'Active event not found in storage.', 'error');
+          return;
+        }
+        
+        const featuredItemIds = activeEvent.featuredItems || [];
+        
+        if (featuredItemIds.length === 0) {
+          showStatus('viewStatus', 'No featured items found for this event.', 'warning');
+          return;
+        }
+        
+        // Get items
+        const allItems = JSON.parse(localStorage.getItem('gallery_items') || '[]');
+        const featuredItems = allItems.filter(item => featuredItemIds.includes(item.id));
+        
+        if (featuredItems.length === 0) {
+          showStatus('viewStatus', 'Featured items not found in storage.', 'error');
+          return;
+        }
+        
+        // Display featured items
+        const previewElement = document.getElementById('featuredItemsPreview');
+        previewElement.innerHTML = '';
+        previewElement.style.display = 'block';
+        
+        const heading = document.createElement('h3');
+        heading.textContent = `Featured Items (${featuredItems.length})`;
+        previewElement.appendChild(heading);
+        
+        const itemGrid = document.createElement('div');
+        itemGrid.className = 'item-grid';
+        
+        featuredItems.forEach(item => {
+          const itemCard = document.createElement('div');
+          itemCard.className = 'item-card';
+          
+          const image = document.createElement('img');
+          image.src = item.thumbnailImage || item.images[0];
+          image.alt = item.title;
+          
+          const content = document.createElement('div');
+          content.className = 'item-card-content';
+          
+          const title = document.createElement('p');
+          title.className = 'item-card-title';
+          title.textContent = item.title;
+          
+          const artist = document.createElement('p');
+          artist.className = 'item-card-artist';
+          artist.textContent = item.artist;
+          
+          content.appendChild(title);
+          content.appendChild(artist);
+          itemCard.appendChild(image);
+          itemCard.appendChild(content);
+          itemGrid.appendChild(itemCard);
+        });
+        
+        previewElement.appendChild(itemGrid);
+        
+        showStatus('viewStatus', `Found ${featuredItems.length} featured items.`, 'success');
+        
+      } catch (error) {
+        console.error('Error viewing featured items:', error);
+        showStatus('viewStatus', `Error viewing featured items: ${error.message}`, 'error');
+      }
+    });
+    
+    // Open Visitor Landing
+    document.getElementById('openVisitorLandingBtn').addEventListener('click', () => {
+      window.location.href = '/';
+    });
+  </script>
+</body>
+</html>

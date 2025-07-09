@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Upload Test</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #333;
+      margin-top: 0;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    
+    .upload-section {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    
+    .upload-section h2 {
+      margin-top: 0;
+      color: #555;
+      font-size: 1.2rem;
+    }
+    
+    .upload-controls {
+      margin-bottom: 15px;
+    }
+    
+    .preview-container {
+      margin-top: 15px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+      min-height: 100px;
+    }
+    
+    .preview-container img {
+      max-width: 100%;
+      max-height: 300px;
+      display: block;
+      margin: 10px auto;
+      border: 1px solid #ddd;
+    }
+    
+    .success {
+      color: #28a745;
+    }
+    
+    .error {
+      color: #dc3545;
+    }
+    
+    .warning {
+      color: #ffc107;
+    }
+    
+    .info {
+      color: #17a2b8;
+    }
+    
+    button {
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+    
+    button:hover {
+      background-color: #0069d9;
+    }
+    
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    input[type="file"] {
+      display: block;
+      margin-bottom: 10px;
+    }
+    
+    .file-info {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+    }
+    
+    .file-info div {
+      margin-bottom: 5px;
+    }
+    
+    .storage-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .storage-bar {
+      flex-grow: 1;
+      height: 20px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+      margin: 0 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .storage-bar-fill {
+      height: 100%;
+      background-color: #007bff;
+      transition: width 0.3s ease;
+    }
+    
+    .storage-text {
+      font-size: 14px;
+      color: #6c757d;
+    }
+    
+    .image-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .gallery-item {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .gallery-item-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(0,0,0,0.7);
+      color: white;
+      padding: 5px;
+      font-size: 12px;
+      text-align: center;
+    }
+    
+    .remove-button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 20px;
+      height: 20px;
+      background-color: rgba(220, 53, 69, 0.8);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .remove-button:hover {
+      background-color: rgba(220, 53, 69, 1);
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-bottom: none;
+      margin-bottom: -1px;
+    }
+    
+    .tab.active {
+      background-color: white;
+      border-color: #ddd;
+      border-radius: 4px 4px 0 0;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .status-message {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    
+    .status-message.success {
+      background-color: rgba(40, 167, 69, 0.1);
+      border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+    
+    .status-message.error {
+      background-color: rgba(220, 53, 69, 0.1);
+      border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+    
+    .status-message.warning {
+      background-color: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.2);
+    }
+    
+    .status-message.info {
+      background-color: rgba(23, 162, 184, 0.1);
+      border: 1px solid rgba(23, 162, 184, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Image Upload Test</h1>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="single-upload">Single Upload</div>
+      <div class="tab" data-tab="multiple-upload">Multiple Upload</div>
+      <div class="tab" data-tab="gallery">Gallery</div>
+    </div>
+    
+    <div class="tab-content active" id="single-upload">
+      <div class="upload-section">
+        <h2>Single Image Upload</h2>
+        <p>Test uploading a single image file, with special handling for PNG files.</p>
+        
+        <div class="storage-info">
+          <span class="storage-text">Storage Usage:</span>
+          <div class="storage-bar">
+            <div class="storage-bar-fill" id="storageBarFill" style="width: 0%"></div>
+          </div>
+          <span class="storage-text" id="storagePercentage">0%</span>
+        </div>
+        
+        <div class="upload-controls">
+          <input type="file" id="singleFileInput" accept="image/*" />
+          <button id="uploadButton">Upload Image</button>
+          <button id="clearButton">Clear</button>
+        </div>
+        
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+        
+        <div class="preview-container" id="previewContainer">
+          <p class="info">Select an image file and click "Upload Image" to see a preview.</p>
+        </div>
+        
+        <div class="file-info" id="fileInfo" style="display: none;"></div>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="multiple-upload">
+      <div class="upload-section">
+        <h2>Multiple Image Upload</h2>
+        <p>Test uploading multiple image files at once.</p>
+        
+        <div class="upload-controls">
+          <input type="file" id="multipleFileInput" accept="image/*" multiple />
+          <button id="uploadMultipleButton">Upload Images</button>
+          <button id="clearMultipleButton">Clear</button>
+        </div>
+        
+        <div id="multipleStatusMessage" class="status-message" style="display: none;"></div>
+        
+        <div class="preview-container" id="multiplePreviewContainer">
+          <p class="info">Select multiple image files and click "Upload Images" to see previews.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="gallery">
+      <div class="upload-section">
+        <h2>Image Gallery</h2>
+        <p>View and manage all uploaded images.</p>
+        
+        <div class="upload-controls">
+          <button id="refreshGalleryButton">Refresh Gallery</button>
+          <button id="clearGalleryButton">Clear Gallery</button>
+        </div>
+        
+        <div id="galleryStatusMessage" class="status-message" style="display: none;"></div>
+        
+        <div class="image-gallery" id="imageGallery">
+          <p class="info">No images in the gallery yet. Upload some images first.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Constants
+    const STORAGE_KEY = 'test_image_gallery';
+    
+    // Tab functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and content
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding content
+        tab.classList.add('active');
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+    
+    // Storage management
+    function updateStorageUsage() {
+      let used = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          const value = localStorage.getItem(key) || '';
+          used += key.length + value.length;
+        }
+      }
+      
+      // Estimate total localStorage size (5MB is common)
+      const estimatedTotal = 5 * 1024 * 1024; // 5MB in bytes
+      const percentUsed = (used / estimatedTotal) * 100;
+      
+      document.getElementById('storageBarFill').style.width = `${percentUsed}%`;
+      document.getElementById('storagePercentage').textContent = `${percentUsed.toFixed(2)}%`;
+      
+      return { used, estimatedTotal, percentUsed };
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes < 1024) {
+        return bytes + ' bytes';
+      } else if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(2) + ' KB';
+      } else {
+        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+      }
+    }
+    
+    // Show status message
+    function showStatusMessage(containerId, message, type) {
+      const container = document.getElementById(containerId);
+      container.textContent = message;
+      container.className = `status-message ${type}`;
+      container.style.display = 'block';
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        container.style.display = 'none';
+      }, 5000);
+    }
+    
+    // Single file upload
+    document.getElementById('uploadButton').addEventListener('click', () => {
+      const fileInput = document.getElementById('singleFileInput');
+      const previewContainer = document.getElementById('previewContainer');
+      const fileInfoContainer = document.getElementById('fileInfo');
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatusMessage('statusMessage', 'Please select an image file first.', 'error');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      
+      // Check if it's an image
+      if (!file.type.startsWith('image/') && !file.name.toLowerCase().match(/\.(jpg|jpeg|png|gif|bmp|webp)$/)) {
+        showStatusMessage('statusMessage', 'Please select a valid image file.', 'error');
+        return;
+      }
+      
+      // Check file size
+      if (file.size > 5 * 1024 * 1024) { // 5MB
+        showStatusMessage('statusMessage', 'File size exceeds the 5MB limit.', 'warning');
+        // Continue anyway for testing purposes
+      }
+      
+      // Clear previous preview
+      previewContainer.innerHTML = '';
+      fileInfoContainer.innerHTML = '';
+      fileInfoContainer.style.display = 'none';
+      
+      // Create file info
+      const fileInfo = document.createElement('div');
+      
+      // File name and size
+      const nameDiv = document.createElement('div');
+      nameDiv.textContent = `File name: ${file.name}`;
+      fileInfo.appendChild(nameDiv);
+      
+      const sizeDiv = document.createElement('div');
+      sizeDiv.textContent = `File size: ${formatFileSize(file.size)}`;
+      fileInfo.appendChild(sizeDiv);
+      
+      // MIME type
+      const mimeDiv = document.createElement('div');
+      mimeDiv.textContent = `MIME type: ${file.type || 'unknown'}`;
+      fileInfo.appendChild(mimeDiv);
+      
+      // Check file extension
+      const extension = file.name.split('.').pop().toLowerCase();
+      const extensionDiv = document.createElement('div');
+      extensionDiv.textContent = `File extension: ${extension}`;
+      fileInfo.appendChild(extensionDiv);
+      
+      // Check if it's a PNG
+      const isPNG = extension === 'png' || file.type === 'image/png';
+      const typeDiv = document.createElement('div');
+      typeDiv.textContent = `Is PNG: ${isPNG ? 'Yes' : 'No'}`;
+      typeDiv.className = isPNG ? 'success' : '';
+      fileInfo.appendChild(typeDiv);
+      
+      // Read the file
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        // Create preview image
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        previewContainer.appendChild(img);
+        
+        // Add image dimensions when loaded
+        img.onload = () => {
+          const dimensionsDiv = document.createElement('div');
+          dimensionsDiv.textContent = `Dimensions: ${img.naturalWidth}x${img.naturalHeight}`;
+          fileInfo.appendChild(dimensionsDiv);
+          
+          // Add data URL info
+          const dataUrlDiv = document.createElement('div');
+          const dataUrl = e.target.result;
+          dataUrlDiv.textContent = `Data URL length: ${dataUrl.length} characters`;
+          fileInfo.appendChild(dataUrlDiv);
+          
+          // Extract MIME type from data URL
+          const mimeMatch = dataUrl.match(/^data:([^;]+);base64,/);
+          const mimeType = mimeMatch ? mimeMatch[1] : 'unknown';
+          
+          const dataUrlMimeDiv = document.createElement('div');
+          dataUrlMimeDiv.textContent = `Data URL MIME type: ${mimeType}`;
+          fileInfo.appendChild(dataUrlMimeDiv);
+          
+          // Check if the MIME type matches the file type
+          if (mimeType !== file.type && file.type) {
+            const mismatchDiv = document.createElement('div');
+            mismatchDiv.textContent = `Warning: Data URL MIME type (${mimeType}) doesn't match file MIME type (${file.type})`;
+            mismatchDiv.className = 'warning';
+            fileInfo.appendChild(mismatchDiv);
+          }
+          
+          // Save to localStorage
+          try {
+            // Get existing gallery
+            let gallery = [];
+            try {
+              const existingGallery = localStorage.getItem(STORAGE_KEY);
+              if (existingGallery) {
+                gallery = JSON.parse(existingGallery);
+              }
+            } catch (parseError) {
+              console.error('Error parsing gallery data:', parseError);
+              gallery = [];
+            }
+            
+            // Add new image
+            gallery.push({
+              id: Date.now().toString(),
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              width: img.naturalWidth,
+              height: img.naturalHeight,
+              dataUrl: dataUrl,
+              timestamp: new Date().toISOString()
+            });
+            
+            // Save gallery
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(gallery));
+            
+            // Update storage usage
+            updateStorageUsage();
+            
+            // Show success message
+            showStatusMessage('statusMessage', 'Image uploaded successfully!', 'success');
+            
+            // Add storage info
+            const storageUsage = updateStorageUsage();
+            const storageDiv = document.createElement('div');
+            storageDiv.textContent = `Storage usage: ${formatFileSize(storageUsage.used)} of ~${formatFileSize(storageUsage.estimatedTotal)} (${storageUsage.percentUsed.toFixed(2)}%)`;
+            fileInfo.appendChild(storageDiv);
+            
+          } catch (storageError) {
+            console.error('Error saving to localStorage:', storageError);
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.textContent = `Error saving to localStorage: ${storageError.message}`;
+            errorDiv.className = 'error';
+            fileInfo.appendChild(errorDiv);
+            
+            showStatusMessage('statusMessage', 'Error saving image to storage.', 'error');
+          }
+          
+          // Show file info
+          fileInfoContainer.appendChild(fileInfo);
+          fileInfoContainer.style.display = 'block';
+        };
+      };
+      
+      reader.onerror = () => {
+        showStatusMessage('statusMessage', 'Error reading file.', 'error');
+      };
+      
+      reader.readAsDataURL(file);
+    });
+    
+    // Clear single upload
+    document.getElementById('clearButton').addEventListener('click', () => {
+      document.getElementById('singleFileInput').value = '';
+      document.getElementById('previewContainer').innerHTML = '<p class="info">Select an image file and click "Upload Image" to see a preview.</p>';
+      document.getElementById('fileInfo').innerHTML = '';
+      document.getElementById('fileInfo').style.display = 'none';
+      document.getElementById('statusMessage').style.display = 'none';
+    });
+    
+    // Multiple file upload
+    document.getElementById('uploadMultipleButton').addEventListener('click', () => {
+      const fileInput = document.getElementById('multipleFileInput');
+      const previewContainer = document.getElementById('multiplePreviewContainer');
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatusMessage('multipleStatusMessage', 'Please select at least one image file.', 'error');
+        return;
+      }
+      
+      // Clear previous previews
+      previewContainer.innerHTML = '';
+      
+      const files = fileInput.files;
+      let successCount = 0;
+      let errorCount = 0;
+      
+      // Get existing gallery
+      let gallery = [];
+      try {
+        const existingGallery = localStorage.getItem(STORAGE_KEY);
+        if (existingGallery) {
+          gallery = JSON.parse(existingGallery);
+        }
+      } catch (parseError) {
+        console.error('Error parsing gallery data:', parseError);
+        gallery = [];
+      }
+      
+      // Process each file
+      Array.from(files).forEach((file, index) => {
+        // Check if it's an image
+        if (!file.type.startsWith('image/') && !file.name.toLowerCase().match(/\.(jpg|jpeg|png|gif|bmp|webp)$/)) {
+          errorCount++;
+          return;
+        }
+        
+        // Create preview container for this file
+        const filePreview = document.createElement('div');
+        filePreview.className = 'file-info';
+        filePreview.innerHTML = `<div>Processing: ${file.name} (${formatFileSize(file.size)})</div>`;
+        previewContainer.appendChild(filePreview);
+        
+        // Read the file
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+          // Create preview image
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          filePreview.appendChild(img);
+          
+          // Add to gallery when loaded
+          img.onload = () => {
+            try {
+              // Add new image
+              gallery.push({
+                id: Date.now().toString() + index,
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+                dataUrl: e.target.result,
+                timestamp: new Date().toISOString()
+              });
+              
+              filePreview.innerHTML += `<div class="success">Successfully processed ${file.name}</div>`;
+              successCount++;
+              
+              // If this is the last file, save gallery and update UI
+              if (index === files.length - 1) {
+                // Save gallery
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(gallery));
+                
+                // Update storage usage
+                updateStorageUsage();
+                
+                // Show success message
+                showStatusMessage('multipleStatusMessage', `Processed ${successCount} images successfully. ${errorCount} errors.`, errorCount > 0 ? 'warning' : 'success');
+              }
+            } catch (error) {
+              filePreview.innerHTML += `<div class="error">Error processing ${file.name}: ${error.message}</div>`;
+              errorCount++;
+            }
+          };
+          
+          img.onerror = () => {
+            filePreview.innerHTML += `<div class="error">Error loading ${file.name} as an image.</div>`;
+            errorCount++;
+          };
+        };
+        
+        reader.onerror = () => {
+          filePreview.innerHTML += `<div class="error">Error reading ${file.name}.</div>`;
+          errorCount++;
+        };
+        
+        reader.readAsDataURL(file);
+      });
+    });
+    
+    // Clear multiple upload
+    document.getElementById('clearMultipleButton').addEventListener('click', () => {
+      document.getElementById('multipleFileInput').value = '';
+      document.getElementById('multiplePreviewContainer').innerHTML = '<p class="info">Select multiple image files and click "Upload Images" to see previews.</p>';
+      document.getElementById('multipleStatusMessage').style.display = 'none';
+    });
+    
+    // Gallery functionality
+    function refreshGallery() {
+      const galleryContainer = document.getElementById('imageGallery');
+      
+      // Clear gallery
+      galleryContainer.innerHTML = '';
+      
+      // Get gallery data
+      let gallery = [];
+      try {
+        const galleryData = localStorage.getItem(STORAGE_KEY);
+        if (galleryData) {
+          gallery = JSON.parse(galleryData);
+        }
+      } catch (error) {
+        console.error('Error loading gallery:', error);
+        showStatusMessage('galleryStatusMessage', 'Error loading gallery.', 'error');
+        galleryContainer.innerHTML = '<p class="error">Error loading gallery data.</p>';
+        return;
+      }
+      
+      // Check if gallery is empty
+      if (!gallery || gallery.length === 0) {
+        galleryContainer.innerHTML = '<p class="info">No images in the gallery yet. Upload some images first.</p>';
+        return;
+      }
+      
+      // Display gallery items
+      gallery.forEach(item => {
+        const galleryItem = document.createElement('div');
+        galleryItem.className = 'gallery-item';
+        galleryItem.dataset.id = item.id;
+        
+        // Create image
+        const img = document.createElement('img');
+        img.src = item.dataUrl;
+        img.alt = item.name;
+        galleryItem.appendChild(img);
+        
+        // Create overlay with info
+        const overlay = document.createElement('div');
+        overlay.className = 'gallery-item-overlay';
+        overlay.textContent = item.name;
+        galleryItem.appendChild(overlay);
+        
+        // Create remove button
+        const removeButton = document.createElement('button');
+        removeButton.className = 'remove-button';
+        removeButton.textContent = '×';
+        removeButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          removeGalleryItem(item.id);
+        });
+        galleryItem.appendChild(removeButton);
+        
+        // Add click event to show full image
+        galleryItem.addEventListener('click', () => {
+          showFullImage(item);
+        });
+        
+        galleryContainer.appendChild(galleryItem);
+      });
+      
+      showStatusMessage('galleryStatusMessage', `Gallery loaded with ${gallery.length} images.`, 'success');
+    }
+    
+    function removeGalleryItem(id) {
+      // Get gallery data
+      let gallery = [];
+      try {
+        const galleryData = localStorage.getItem(STORAGE_KEY);
+        if (galleryData) {
+          gallery = JSON.parse(galleryData);
+        }
+      } catch (error) {
+        console.error('Error loading gallery:', error);
+        showStatusMessage('galleryStatusMessage', 'Error loading gallery.', 'error');
+        return;
+      }
+      
+      // Remove item
+      gallery = gallery.filter(item => item.id !== id);
+      
+      // Save gallery
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(gallery));
+      
+      // Update storage usage
+      updateStorageUsage();
+      
+      // Refresh gallery
+      refreshGallery();
+      
+      showStatusMessage('galleryStatusMessage', 'Image removed from gallery.', 'info');
+    }
+    
+    function showFullImage(item) {
+      const previewContainer = document.getElementById('previewContainer');
+      
+      // Clear previous preview
+      previewContainer.innerHTML = '';
+      
+      // Create preview image
+      const img = document.createElement('img');
+      img.src = item.dataUrl;
+      previewContainer.appendChild(img);
+      
+      // Create file info
+      const fileInfo = document.createElement('div');
+      fileInfo.className = 'file-info';
+      
+      fileInfo.innerHTML = `
+        <div>File name: ${item.name}</div>
+        <div>File size: ${formatFileSize(item.size)}</div>
+        <div>MIME type: ${item.type || 'unknown'}</div>
+        <div>Dimensions: ${item.width}x${item.height}</div>
+        <div>Uploaded: ${new Date(item.timestamp).toLocaleString()}</div>
+      `;
+      
+      previewContainer.appendChild(fileInfo);
+      
+      // Switch to single upload tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      document.querySelector('.tab[data-tab="single-upload"]').classList.add('active');
+      document.getElementById('single-upload').classList.add('active');
+      
+      showStatusMessage('statusMessage', 'Image loaded from gallery.', 'info');
+    }
+    
+    // Refresh gallery button
+    document.getElementById('refreshGalleryButton').addEventListener('click', refreshGallery);
+    
+    // Clear gallery button
+    document.getElementById('clearGalleryButton').addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear the entire gallery? This cannot be undone.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        updateStorageUsage();
+        refreshGallery();
+        showStatusMessage('galleryStatusMessage', 'Gallery cleared.', 'info');
+      }
+    });
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      updateStorageUsage();
+    });
+  </script>
+</body>
+</html>

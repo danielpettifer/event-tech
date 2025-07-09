@@ -26,8 +26,9 @@ export class EventService {
     }
   }
 
-  static async saveEvent(eventData: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>): Promise<Event> {
+  static async saveEvent(eventData: any): Promise<Event> {
     try {
+      console.log('EventService.saveEvent payload:', eventData); // DEBUG LOG
       const response = await axios.post(`${API_BASE_URL}/events`, eventData);
       return response.data;
     } catch (error) {

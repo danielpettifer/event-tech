@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Difficult Event Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+      overflow-x: hidden;
+    }
+    
+    .visitor-landing {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .background-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .background-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      transition: opacity 1s ease-in-out;
+      opacity: 0;
+    }
+    
+    .background-image.active {
+      opacity: 1;
+    }
+    
+    .background-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
+    }
+    
+    .event-banner {
+      padding: 2rem;
+      color: white;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+    
+    .event-title {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .event-description {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+    
+    .event-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .event-detail {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .event-detail-icon {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+    
+    .event-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+    }
+    
+    .btn-primary {
+      background-color: #ff4081;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #f50057;
+    }
+    
+    .btn-secondary {
+      background-color: rgba(255,255,255,0.2);
+      color: white;
+      backdrop-filter: blur(10px);
+    }
+    
+    .btn-secondary:hover {
+      background-color: rgba(255,255,255,0.3);
+    }
+    
+    .items-carousel-container {
+      margin-top: auto;
+      padding: 2rem;
+      width: 100%;
+    }
+    
+    .items-carousel {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      padding: 1rem 0;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    
+    .items-carousel::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .carousel-item {
+      flex: 0 0 300px;
+      scroll-snap-align: start;
+      background-color: rgba(255,255,255,0.9);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .carousel-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .item-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .item-content {
+      padding: 1rem;
+    }
+    
+    .item-title {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+    
+    .item-artist {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    
+    .item-price {
+      font-weight: bold;
+      color: #ff4081;
+    }
+    
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .carousel-control {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .carousel-control:hover {
+      background-color: white;
+    }
+    
+    .background-controls {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .background-control {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(0,0,0,0.5);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    
+    .background-control:hover {
+      background-color: rgba(0,0,0,0.7);
+    }
+    
+    @media (max-width: 768px) {
+      .event-title {
+        font-size: 2rem;
+      }
+      
+      .event-description {
+        font-size: 1rem;
+      }
+      
+      .carousel-item {
+        flex: 0 0 250px;
+      }
+    }
+    
+    /* Animation for the "Difficult" theme */
+    @keyframes glitch {
+      0% {
+        transform: translate(0);
+      }
+      20% {
+        transform: translate(-5px, 5px);
+      }
+      40% {
+        transform: translate(-5px, -5px);
+      }
+      60% {
+        transform: translate(5px, 5px);
+      }
+      80% {
+        transform: translate(5px, -5px);
+      }
+      100% {
+        transform: translate(0);
+      }
+    }
+    
+    .glitch-text {
+      position: relative;
+      animation: glitch 3s infinite;
+      display: inline-block;
+    }
+    
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .glitch-text::before {
+      left: 2px;
+      text-shadow: -2px 0 #ff00ff;
+      clip: rect(44px, 450px, 56px, 0);
+      animation: glitch-anim 5s infinite linear alternate-reverse;
+    }
+    
+    .glitch-text::after {
+      left: -2px;
+      text-shadow: -2px 0 #00ffff;
+      clip: rect(44px, 450px, 56px, 0);
+      animation: glitch-anim2 5s infinite linear alternate-reverse;
+    }
+    
+    @keyframes glitch-anim {
+      0% {
+        clip: rect(31px, 9999px, 94px, 0);
+      }
+      10% {
+        clip: rect(112px, 9999px, 76px, 0);
+      }
+      20% {
+        clip: rect(85px, 9999px, 77px, 0);
+      }
+      30% {
+        clip: rect(27px, 9999px, 97px, 0);
+      }
+      40% {
+        clip: rect(64px, 9999px, 98px, 0);
+      }
+      50% {
+        clip: rect(61px, 9999px, 85px, 0);
+      }
+      60% {
+        clip: rect(99px, 9999px, 114px, 0);
+      }
+      70% {
+        clip: rect(34px, 9999px, 115px, 0);
+      }
+      80% {
+        clip: rect(98px, 9999px, 129px, 0);
+      }
+      90% {
+        clip: rect(43px, 9999px, 96px, 0);
+      }
+      100% {
+        clip: rect(82px, 9999px, 64px, 0);
+      }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% {
+        clip: rect(125px, 9999px, 162px, 0);
+      }
+      10% {
+        clip: rect(120px, 9999px, 147px, 0);
+      }
+      20% {
+        clip: rect(113px, 9999px, 171px, 0);
+      }
+      30% {
+        clip: rect(123px, 9999px, 153px, 0);
+      }
+      40% {
+        clip: rect(142px, 9999px, 158px, 0);
+      }
+      50% {
+        clip: rect(131px, 9999px, 162px, 0);
+      }
+      60% {
+        clip: rect(141px, 9999px, 154px, 0);
+      }
+      70% {
+        clip: rect(129px, 9999px, 168px, 0);
+      }
+      80% {
+        clip: rect(133px, 9999px, 150px, 0);
+      }
+      90% {
+        clip: rect(146px, 9999px, 169px, 0);
+      }
+      100% {
+        clip: rect(121px, 9999px, 154px, 0);
+      }
+    }
+    
+    .distortion {
+      filter: blur(0.5px) contrast(150%) hue-rotate(5deg);
+      animation: distort 10s infinite alternate;
+    }
+    
+    @keyframes distort {
+      0% {
+        filter: blur(0.5px) contrast(150%) hue-rotate(5deg);
+      }
+      50% {
+        filter: blur(1px) contrast(200%) hue-rotate(-5deg);
+      }
+      100% {
+        filter: blur(0.5px) contrast(150%) hue-rotate(5deg);
+      }
+    }
+    
+    .carousel-item.difficult {
+      transform: skew(-2deg, 1deg);
+      transition: transform 0.5s ease, filter 0.5s ease;
+    }
+    
+    .carousel-item.difficult:hover {
+      transform: skew(2deg, -1deg) translateY(-5px);
+      filter: hue-rotate(90deg);
+    }
+  </style>
+</head>
+<body>
+  <div class="visitor-landing">
+    <div class="background-container">
+      <div class="background-image" id="bg1"></div>
+      <div class="background-image" id="bg2"></div>
+      <div class="background-image" id="bg3"></div>
+      <div class="background-overlay"></div>
+    </div>
+    
+    <div class="event-banner">
+      <h1 class="event-title"><span class="glitch-text" data-text="THE DIFFICULT EVENT">THE DIFFICULT EVENT</span></h1>
+      <p class="event-description distortion">
+        Welcome to the most challenging art exhibition of the year. "The Difficult Event" pushes boundaries and tests limits, featuring works that deliberately provoke discomfort and challenge conventional aesthetics. Each piece requires effort to understand, appreciate, and interpret - making this a truly difficult experience for everyone involved.
+      </p>
+      
+      <div class="event-details">
+        <div class="event-detail">
+          <svg class="event-detail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M19,4H18V2H16V4H8V2H6V4H5C3.89,4 3,4.9 3,6V20A2,2 0 0,0 5,22H19A2,2 0 0,0 21,20V6A2,2 0 0,0 19,4M19,20H5V10H19V20M19,8H5V6H19V8Z" />
+          </svg>
+          <span>August 15-30, 2025</span>
+        </div>
+        
+        <div class="event-detail">
+          <svg class="event-detail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z" />
+          </svg>
+          <span>Discomfort Gallery, 123 Challenging St.</span>
+        </div>
+        
+        <div class="event-detail">
+          <svg class="event-detail-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z" />
+          </svg>
+          <span>10:00 AM - 9:00 PM</span>
+        </div>
+      </div>
+      
+      <div class="event-actions">
+        <button class="btn btn-primary">Register (If You Dare)</button>
+        <button class="btn btn-secondary">Learn More</button>
+      </div>
+    </div>
+    
+    <div class="items-carousel-container">
+      <div class="items-carousel" id="itemsCarousel">
+        <!-- Items will be added here by JavaScript -->
+      </div>
+      
+      <div class="carousel-controls">
+        <div class="carousel-control" id="prevItem">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+          </svg>
+        </div>
+        <div class="carousel-control" id="nextItem">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+    
+    <div class="background-controls">
+      <div class="background-control" id="prevBg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+        </svg>
+      </div>
+      <div class="background-control" id="nextBg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Background images
+    const backgroundImages = [
+      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+      'https://images.unsplash.com/photo-1579541591970-e5a7882a53af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+      'https://images.unsplash.com/photo-1604871000636-074fa5117945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80'
+    ];
+    
+    // Items data
+    const items = [
+      {
+        title: "Uncomfortable Chair",
+        artist: "Pain Smith",
+        price: "$5,000",
+        image: "https://images.unsplash.com/photo-1581539250439-c96689b516dd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+      },
+      {
+        title: "Distorted Reality",
+        artist: "Confusion Jones",
+        price: "$8,200",
+        image: "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+      },
+      {
+        title: "Anxiety Inducer",
+        artist: "Stress Williams",
+        price: "$12,500",
+        image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80"
+      },
+      {
+        title: "Impossible Geometry",
+        artist: "M.C. Escher Jr.",
+        price: "$9,800",
+        image: "https://images.unsplash.com/photo-1633619774881-8b8e7a4ee7a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
+      },
+      {
+        title: "Cognitive Dissonance",
+        artist: "Paradox Lee",
+        price: "$7,300",
+        image: "https://images.unsplash.com/photo-1622737133809-d95047b9e673?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80"
+      },
+      {
+        title: "Frustration in Blue",
+        artist: "Annoyance Davis",
+        price: "$6,400",
+        image: "https://images.unsplash.com/photo-1536924430914-91f9e2041b83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+      }
+    ];
+    
+    // Initialize background images
+    let currentBgIndex = 0;
+    const bg1 = document.getElementById('bg1');
+    const bg2 = document.getElementById('bg2');
+    const bg3 = document.getElementById('bg3');
+    const bgElements = [bg1, bg2, bg3];
+    
+    function setInitialBackgrounds() {
+      bg1.style.backgroundImage = `url(${backgroundImages[0]})`;
+      bg1.classList.add('active');
+      
+      bg2.style.backgroundImage = `url(${backgroundImages[1]})`;
+      bg3.style.backgroundImage = `url(${backgroundImages[2]})`;
+    }
+    
+    function changeBackground(direction) {
+      const currentBg = bgElements.find(bg => bg.classList.contains('active'));
+      currentBg.classList.remove('active');
+      
+      if (direction === 'next') {
+        currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
+      } else {
+        currentBgIndex = (currentBgIndex - 1 + backgroundImages.length) % backgroundImages.length;
+      }
+      
+      const nextBgIndex = (currentBgIndex + 1) % backgroundImages.length;
+      const prevBgIndex = (currentBgIndex - 1 + backgroundImages.length) % backgroundImages.length;
+      
+      // Set the next background to show
+      const nextActiveBg = bgElements.find(bg => !bg.classList.contains('active') && bg !== currentBg);
+      nextActiveBg.style.backgroundImage = `url(${backgroundImages[currentBgIndex]})`;
+      nextActiveBg.classList.add('active');
+      
+      // Preload the next backgrounds
+      const remainingBg = bgElements.find(bg => bg !== nextActiveBg && bg !== currentBg);
+      remainingBg.style.backgroundImage = direction === 'next' 
+        ? `url(${backgroundImages[nextBgIndex]})` 
+        : `url(${backgroundImages[prevBgIndex]})`;
+    }
+    
+    // Initialize carousel items
+    function initializeCarousel() {
+      const carousel = document.getElementById('itemsCarousel');
+      carousel.innerHTML = '';
+      
+      items.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'carousel-item difficult';
+        
+        itemElement.innerHTML = `
+          <img src="${item.image}" alt="${item.title}" class="item-image">
+          <div class="item-content">
+            <h3 class="item-title">${item.title}</h3>
+            <p class="item-artist">${item.artist}</p>
+            <p class="item-price">${item.price}</p>
+          </div>
+        `;
+        
+        carousel.appendChild(itemElement);
+      });
+    }
+    
+    // Carousel navigation
+    function scrollCarousel(direction) {
+      const carousel = document.getElementById('itemsCarousel');
+      const scrollAmount = 320; // Approximate width of an item + gap
+      
+      if (direction === 'next') {
+        carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      } else {
+        carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      }
+    }
+    
+    // Initialize everything
+    document.addEventListener('DOMContentLoaded', () => {
+      setInitialBackgrounds();
+      initializeCarousel();
+      
+      // Set up event listeners
+      document.getElementById('nextBg').addEventListener('click', () => changeBackground('next'));
+      document.getElementById('prevBg').addEventListener('click', () => changeBackground('prev'));
+      
+      document.getElementById('nextItem').addEventListener('click', () => scrollCarousel('next'));
+      document.getElementById('prevItem').addEventListener('click', () => scrollCarousel('prev'));
+      
+      // Auto-rotate backgrounds
+      setInterval(() => {
+        changeBackground('next');
+      }, 10000);
+      
+      // Add some "difficult" behavior
+      setTimeout(() => {
+        const title = document.querySelector('.event-title');
+        title.style.transform = 'skew(-5deg, 2deg)';
+        
+        // Randomly change carousel item positions slightly
+        const items = document.querySelectorAll('.carousel-item');
+        items.forEach(item => {
+          const randomSkew = Math.random() * 4 - 2;
+          const randomRotate = Math.random() * 2 - 1;
+          item.style.transform = `skew(${randomSkew}deg, ${randomSkew/2}deg) rotate(${randomRotate}deg)`;
+        });
+      }, 2000);
+    });
+  </script>
+</body>
+</html>

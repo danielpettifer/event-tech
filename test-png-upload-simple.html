@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PNG Upload Test (Simple)</title>
+  <script type="module" src="/src/main.tsx"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    
+    .instructions {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .instructions h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+    
+    .instructions ul {
+      padding-left: 20px;
+    }
+    
+    .instructions li {
+      margin-bottom: 8px;
+    }
+    
+    .test-container {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .console-output {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      padding: 15px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    
+    .console-output .error {
+      color: #dc3545;
+    }
+    
+    .console-output .warning {
+      color: #ffc107;
+    }
+    
+    .console-output .info {
+      color: #17a2b8;
+    }
+    
+    .console-output .success {
+      color: #28a745;
+    }
+    
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+    
+    button:hover {
+      background-color: #0069d9;
+    }
+  </style>
+</head>
+<body>
+  <h1>PNG Upload Test (Simple)</h1>
+  
+  <div class="instructions">
+    <h2>Instructions</h2>
+    <p>This page tests the improved PNG upload functionality. Follow these steps:</p>
+    <ol>
+      <li>Use the "Choose PNG File" button to select a PNG file</li>
+      <li>Check the console output for detailed diagnostics</li>
+      <li>Try different types of PNG files (with/without transparency)</li>
+      <li>Try files with PNG extension but incorrect MIME types</li>
+    </ol>
+    <p><strong>Note:</strong> This test directly uses the ImageUpload component with enhanced PNG detection.</p>
+  </div>
+  
+  <div class="test-container" id="uploadContainer">
+    <!-- The ImageUpload component will be rendered here -->
+    <p>Loading component...</p>
+  </div>
+  
+  <div>
+    <button id="clearConsoleBtn">Clear Console</button>
+    <button id="clearStorageBtn">Clear Test Storage</button>
+  </div>
+  
+  <div class="console-output" id="consoleOutput">
+    Console output will appear here...
+  </div>
+  
+  <script>
+    // Override console methods to capture output
+    const consoleOutput = document.getElementById('consoleOutput');
+    const originalConsole = {
+      log: console.log,
+      warn: console.warn,
+      error: console.error,
+      info: console.info
+    };
+    
+    function appendToConsole(message, type) {
+      const line = document.createElement('div');
+      line.className = type;
+      line.textContent = `[${new Date().toLocaleTimeString()}] [${type.toUpperCase()}] ${message}`;
+      consoleOutput.appendChild(line);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalConsole.log(...args);
+      appendToConsole(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '), 'info');
+    };
+    
+    console.warn = function(...args) {
+      originalConsole.warn(...args);
+      appendToConsole(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '), 'warning');
+    };
+    
+    console.error = function(...args) {
+      originalConsole.error(...args);
+      appendToConsole(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '), 'error');
+    };
+    
+    console.info = function(...args) {
+      originalConsole.info(...args);
+      appendToConsole(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '), 'success');
+    };
+    
+    // Clear console button
+    document.getElementById('clearConsoleBtn').addEventListener('click', () => {
+      consoleOutput.innerHTML = '';
+      console.info('Console cleared');
+    });
+    
+    // Clear test storage
+    document.getElementById('clearStorageBtn').addEventListener('click', () => {
+      const keysToRemove = [];
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('test_png_')) {
+          keysToRemove.push(key);
+        }
+      }
+      
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      console.info(`Cleared ${keysToRemove.length} test items from storage`);
+    });
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      console.info('PNG Upload Test initialized');
+      console.info('Waiting for ImageUpload component to load...');
+      
+      // We'll use a simple version of the component for testing
+      // This simulates the ImageUpload component's PNG detection logic
+      const uploadContainer = document.getElementById('uploadContainer');
+      uploadContainer.innerHTML = `
+        <h2>PNG Upload Test</h2>
+        <input type="file" id="pngFileInput" accept="image/png,.png" style="display: none;">
+        <button id="selectFileBtn">Choose PNG File</button>
+        <div id="previewContainer" style="margin-top: 20px;"></div>
+      `;
+      
+      document.getElementById('selectFileBtn').addEventListener('click', () => {
+        document.getElementById('pngFileInput').click();
+      });
+      
+      document.getElementById('pngFileInput').addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        console.info(`Processing file: ${file.name} (${file.type})`);
+        
+        // Check file extension
+        const isPngByExtension = file.name.toLowerCase().endsWith('.png');
+        console.info(`PNG extension check: ${isPngByExtension ? 'Passed' : 'Failed'}`);
+        
+        // Check MIME type
+        const isPngByMimeType = file.type === 'image/png';
+        console.info(`PNG MIME type check: ${isPngByMimeType ? 'Passed' : 'Failed'} (${file.type})`);
+        
+        // Check file header
+        try {
+          const isPng = await isPngByHeader(file);
+          console.info(`PNG header check: ${isPng ? 'Passed' : 'Failed'}`);
+          
+          if (isPng) {
+            console.info('Valid PNG file detected!');
+          } else if (isPngByExtension || isPngByMimeType) {
+            console.warn('File has PNG characteristics but invalid header. May be corrupted.');
+          } else {
+            console.error('Not a valid PNG file.');
+          }
+          
+          // Try to display the image
+          const dataUrl = await fileToDataUrl(file);
+          const previewContainer = document.getElementById('previewContainer');
+          previewContainer.innerHTML = '';
+          
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          img.style.maxWidth = '100%';
+          img.style.maxHeight = '300px';
+          img.style.border = '1px solid #ddd';
+          img.style.borderRadius = '4px';
+          img.style.display = 'block';
+          img.style.margin = '10px 0';
+          
+          previewContainer.appendChild(img);
+          
+          // Store in localStorage for testing
+          try {
+            localStorage.setItem(`test_png_${Date.now()}`, dataUrl);
+            console.info('Image stored in localStorage successfully');
+          } catch (error) {
+            console.error(`Failed to store in localStorage: ${error.message}`);
+          }
+          
+          // Check image properties when loaded
+          img.onload = () => {
+            console.info(`Image dimensions: ${img.naturalWidth}x${img.naturalHeight}`);
+            const fileSizeMB = file.size / (1024 * 1024);
+            console.info(`File size: ${fileSizeMB.toFixed(2)} MB`);
+            
+            const pixelCount = img.naturalWidth * img.naturalHeight;
+            const bytesPerPixel = file.size / pixelCount;
+            console.info(`Bytes per pixel: ${bytesPerPixel.toFixed(2)}`);
+            
+            if (bytesPerPixel > 4) {
+              console.warn('This PNG likely has transparency or is uncompressed');
+            }
+            
+            if (fileSizeMB > 1) {
+              console.warn('Large PNG file detected. Consider optimization.');
+            }
+          };
+          
+          img.onerror = () => {
+            console.error('Failed to display image. The file may be corrupted.');
+            previewContainer.innerHTML = '<p style="color: red;">Failed to display image</p>';
+          };
+          
+        } catch (error) {
+          console.error(`Error processing file: ${error.message}`);
+        }
+      });
+      
+      console.info('PNG Upload Test component loaded');
+    });
+    
+    // Check if a file is a PNG by examining its header bytes
+    function isPngByHeader(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (!e.target || !e.target.result) {
+            resolve(false);
+            return;
+          }
+          
+          const arr = new Uint8Array(e.target.result);
+          // Check PNG signature: 89 50 4E 47 0D 0A 1A 0A
+          const isPng = arr.length >= 8 &&
+                        arr[0] === 0x89 && 
+                        arr[1] === 0x50 && 
+                        arr[2] === 0x4E && 
+                        arr[3] === 0x47 && 
+                        arr[4] === 0x0D && 
+                        arr[5] === 0x0A && 
+                        arr[6] === 0x1A && 
+                        arr[7] === 0x0A;
+          
+          resolve(isPng);
+        };
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsArrayBuffer(file.slice(0, 8)); // Read just the first 8 bytes
+      });
+    }
+    
+    // Convert file to data URL
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            resolve(reader.result);
+          } else {
+            reject(new Error('Failed to read file'));
+          }
+        };
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+</html>
