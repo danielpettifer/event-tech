@@ -1047,7 +1047,7 @@ const AdminDashboard: React.FC = () => {
                           </div>
                           <div className="item-location">
                             <p><strong>Location:</strong> {item.location}</p>
-                            <p><strong>Category:</strong> {item.category.name}</p>
+                            <p><strong>Category:</strong> {item.category}</p>
                           </div>
                           {item.tags.length > 0 && (
                             <div className="item-tags">
