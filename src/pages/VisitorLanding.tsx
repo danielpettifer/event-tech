@@ -28,6 +28,7 @@ import { GallerySettingsService } from '../services/GallerySettingsService';
 import { EventService } from '../services/EventService';
 import { Event } from '../types/Event';
 import { LogoImage } from '../types/GallerySettings';
+import { useMemo } from 'react';
 import useColorExtraction from './VisitorLanding/hooks/useColorExtraction';
 import './VisitorLanding.css';
 
@@ -169,15 +170,15 @@ const VisitorLanding: React.FC = () => {
   }, [showItemCards]);
 
   // Get the current background image URL
-  // const currentBackgroundImage = useMemo(() => {
-  //   if (backgroundImages.length > 0) {
-  //     return backgroundImages[currentBackgroundIndex];
-  //   }
-  //   return null;
-  // }, [backgroundImages, currentBackgroundIndex]);
+  const currentBackgroundImage = useMemo(() => {
+    if (backgroundImages.length > 0) {
+      return backgroundImages[currentBackgroundIndex];
+    }
+    return null;
+  }, [backgroundImages, currentBackgroundIndex]);
 
   // Extract dominant dark color from current background image
-  // const { dominantColor } = useColorExtraction(currentBackgroundImage);
+  useColorExtraction(currentBackgroundImage);
 
   // Function to update gradient heights based on content position
   const updateGradientHeights = () => {
